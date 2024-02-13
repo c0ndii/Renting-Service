@@ -1,0 +1,6 @@
+@RentingServiceBackend_HostAddress = http://localhost:5250
+
+GET {{RentingServiceBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
