@@ -17,16 +17,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.1" />
     <PackageReference Include="NBomber" Version="5.5.0" />
     <PackageReference Include="NBomber.Http" Version="5.0.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="xunit" Version="2.6.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\Validators\" />
   </ItemGroup>
 
 </Project>

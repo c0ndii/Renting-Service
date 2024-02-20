@@ -28,16 +28,17 @@ namespace RentingServiceBackend
             {
                 new Role()
                 {
+                    Name = "Unconfirmed"
+                },
+                new Role()
+                {
                     Name = "User"
                 },
                 new Role()
                 {
                     Name = "Admin"
-                },
-                new Role()
-                {
-                    Name = "Unconfirmed"
                 }
+                
             };
             return roles;
         }

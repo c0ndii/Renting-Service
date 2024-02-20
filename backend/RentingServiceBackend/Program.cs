@@ -16,6 +16,8 @@ using NLog.Web;
 using RentingServiceBackend.Authorization;
 using RentingServiceBackend.Middlewares;
 using RentingServiceBackend.Services;
+using RentingServiceBackend.Models;
+using RentingServiceBackend.Models.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,11 +63,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RentApiSeeder>();
 
-//builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
-//builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
