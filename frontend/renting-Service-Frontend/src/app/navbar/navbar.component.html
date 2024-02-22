@@ -1,18 +1,27 @@
-
-<div class="navbar-menu" >
-  <p>STATIC NAVBAR CONTENT</p>
+<div class="navbar-structure-container">
+  <div class="navbar-menu" >
+    <div class="navbar-menu-left">
+      <p>jakies info</p>
+    </div>
+    <div class="navbar-menu-middle">
+      <p>guzik do zmiany wyszukiwania (mapa/search)</p>
+    </div>
+    <div class="navbar-menu-right">
+      <p>jakies info</p>
+    </div>
+  </div>
+  
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="side" [(opened)]="opened" >
+      Sidenav content
+    </mat-sidenav>
+  
+    <mat-sidenav-content>
+      <span class="sidenav-toggle-button">
+        <button mat-button (click)="sidenav.toggle()">
+          <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
+        </button>
+      </span>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
-
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" [(opened)]="opened" >
-    Sidenav content
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <span class="sidenav-toggle-button">
-      <button mat-button (click)="sidenav.toggle()">
-        <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
-      </button>
-    </span>
-  </mat-sidenav-content>
-</mat-sidenav-container>
