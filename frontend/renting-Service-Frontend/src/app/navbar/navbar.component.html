@@ -4,24 +4,13 @@
       <p>jakies info</p>
     </div>
     <div class="navbar-menu-middle">
-      <p>guzik do zmiany wyszukiwania (mapa/search)</p>
+      <mat-button-toggle-group name="fontStyle" class="toggle" aria-label="Font Style" (change)="changeType()" [(ngModel)]="selectedValue">
+        <mat-button-toggle class="toggle item" value="map"><mat-icon> map</mat-icon></mat-button-toggle>
+        <mat-button-toggle class="toggle item" value="list"><mat-icon>list</mat-icon></mat-button-toggle>
+      </mat-button-toggle-group>
     </div>
     <div class="navbar-menu-right">
-      <p>jakies info</p>
+      <app-login></app-login>
     </div>
   </div>
-  
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #sidenav mode="side" [(opened)]="opened" >
-      Sidenav content
-    </mat-sidenav>
-  
-    <mat-sidenav-content>
-      <span class="sidenav-toggle-button">
-        <button mat-button (click)="sidenav.toggle()">
-          <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
-        </button>
-      </span>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
 </div>

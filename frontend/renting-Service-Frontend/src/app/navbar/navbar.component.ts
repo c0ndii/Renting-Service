@@ -1,19 +1,22 @@
+
 import {Component} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
 import { LoginComponent } from '../login/login.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatButtonToggleGroup } from '@angular/material/button-toggle';
+import {MatIconModule} from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [MatSidenavModule, MatCheckboxModule, FormsModule, MatButtonModule, MatIconModule, MatMenuModule, LoginComponent],
+  imports: [LoginComponent, MatButtonToggleModule, MatIconModule, MatButtonToggleGroup, FormsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  opened!: boolean;
+  selectedValue = "map";
+  changeType()
+  {
+    console.log(this.selectedValue);
+  }
 }
