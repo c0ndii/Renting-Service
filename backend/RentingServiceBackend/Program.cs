@@ -65,11 +65,13 @@ builder.Services.AddScoped<RentApiSeeder>();
 
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
+builder.Services.AddScoped<IValidator<CreatePostDto>, CreatePostDtoValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordDtoValidator>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IUserService, UserService>();
-//builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 builder.Services.AddCors((options) =>

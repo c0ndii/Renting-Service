@@ -41,20 +41,3 @@
   text-align: right;
 }
 
-.toggle{
-
-  border: none;
-  grid-column: 1 / span 2;
-  display: flex;
-  justify-content: center;
-  align-self: center;
-  color: var(--primary-color);
-  background-color: var(--background-color);
-  font-weight: 500;
-  height:50px;
-}
-.item{
-  border-color:var(--background-color);
-  background-color: var(--background-hover-color);
-  width: 150px;
-}

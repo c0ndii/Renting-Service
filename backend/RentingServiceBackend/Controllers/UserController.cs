@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentingServiceBackend.Models;
 using RentingServiceBackend.Services;
 
@@ -23,8 +24,8 @@ namespace RentingServiceBackend.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> LoginUser([FromBody] LoginUserDto dto)
         {
-            await _userService.LoginAsync(dto);
-            return Ok("Login successful");
+            string token = await _userService.LoginAsync(dto);
+            return Ok(token);
         }
         [HttpGet("verifyemail/{token}")]
         public async Task<IActionResult> VerifyEmail([FromRoute] string token)
@@ -43,6 +44,19 @@ namespace RentingServiceBackend.Controllers
         {
             await _userService.ResetPasswordAsync(resetPasswordDto);
             return Ok("Password has been reseted");
+        }
+        [HttpGet("getusername")]
+        [Authorize]
+        public async Task<UserDto> GetUserName()
+        {
+            var result = await _userService.GetUserName();
+            return result;
+        }
+        [HttpGet("getusername/{userId}")]
+        public async Task<UserDto> GetUserName([FromRoute] int userId)
+        {
+            var result = await _userService.GetUserName(userId);
+            return result;
         }
     }
 }

@@ -4,9 +4,9 @@
       <p>jakies info</p>
     </div>
     <div class="navbar-menu-middle">
-      <mat-button-toggle-group name="fontStyle" class="toggle" aria-label="Font Style" (change)="changeType()" [(ngModel)]="selectedValue">
-        <mat-button-toggle class="toggle item" value="map"><mat-icon> map</mat-icon></mat-button-toggle>
-        <mat-button-toggle class="toggle item" value="list"><mat-icon>list</mat-icon></mat-button-toggle>
+      <mat-button-toggle-group name="fontStyle" aria-label="Font Style" (change)="changeType()" [(ngModel)]="selectedValue">
+        <mat-button-toggle value="map"><mat-icon> map</mat-icon></mat-button-toggle>
+        <mat-button-toggle value="list"><mat-icon>list</mat-icon></mat-button-toggle>
       </mat-button-toggle-group>
     </div>
     <div class="navbar-menu-right">

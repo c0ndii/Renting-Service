@@ -20,6 +20,8 @@ namespace RentingServiceBackend.Services
         Task RegisterUserAsync(RegisterUserDto dto);
         Task ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
         Task VerifyAccountAsync(string token);
+        Task<UserDto> GetUserName();
+        Task<UserDto> GetUserName(int userId);
     }
 
     public class UserService : IUserService
@@ -109,7 +111,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == email.ToLower() && (x.ResetPasswordTimeExpires == null || DateTime.Now > x.ResetPasswordTimeExpires));
             if (user is null)
             {
-                throw new NotFoundException("User not found");
+                throw new NotFoundException("Account not found");
             }
             var code = CreateRandomToken(10);
             while (await _context.Users.AnyAsync(x => x.PasswordResetToken == code))
@@ -135,6 +137,31 @@ namespace RentingServiceBackend.Services
             user.ResetPasswordTimeExpires = null;
             _context.Update(user);
             await _context.SaveChangesAsync();
+        }
+        public async Task<UserDto> GetUserName()
+        {
+            var userId = _userContextService.GetUserId;
+            if(userId == null)
+            {
+                throw new NotFoundException("Id not found");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if(user == null)
+            {
+                throw new NotFoundException("Account not found");
+            }
+            var result = _mapper.Map<UserDto>(user);
+            return result;
+        }
+        public async Task<UserDto> GetUserName(int userId)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new NotFoundException("Account not found");
+            }
+            var result = _mapper.Map<UserDto>(user);
+            return result;
         }
     }
 }
