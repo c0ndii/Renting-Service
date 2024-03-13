@@ -68,11 +68,16 @@ namespace RentingServiceBackend.Services
         }
         public async Task<PostDto> GetPostById(int postId)
         {
-            var post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == postId);
+            var post = await _context.Posts.Include(x => x.User).Include(x => x.Features).Include(x => x.Categories).SingleOrDefaultAsync(x => x.PostId == postId);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
             }
+            //var postOwner = await _context.Users.SingleOrDefaultAsync(x => x.UserId == post.UserId);
+            //if (post == null)
+            //{
+            //    throw new NotFoundException("User not found");
+            //}
             var user = _mapper.Map<UserDto>(post.User);
             List<string> features = post.Features.Select(x => x.FeatureName).ToList();
             List<string> categories = post.Categories.Select(x => x.CategoryName).ToList();

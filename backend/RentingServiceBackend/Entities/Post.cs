@@ -14,8 +14,8 @@
         public virtual List<Feature> Features {  get; set; }
         public virtual List<Category> Categories {  get; set; }
         public virtual List<Comment> Comments {  get; set; }
-        public int RateScore { get; set; } = 0;
-        public int RateIterator { get; set; } = 0;
+        public double RateScore { get; set; } = 2.5;
+        public int RateIterator { get; set; } = 1;
         public int UserId { get; set; }
         public virtual User User { get; set; }
     }

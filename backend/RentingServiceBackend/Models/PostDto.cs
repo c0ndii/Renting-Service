@@ -14,7 +14,7 @@ namespace RentingServiceBackend.Models
         public List<string> Features { get; set; }
         public List<string> Categories { get; set; }
         public List<CommentDto> Comments { get; set; }
-        public int Rate { get; set; }
+        public double Rate { get; set; }
         public UserDto User { get; set; }
     }
 }
