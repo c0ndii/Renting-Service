@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { loginDto } from '../interfaces/loginDto';
 import {
@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NavbarService } from '../services/navbar.service';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -52,8 +53,10 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrl: './login.component.scss',
   providers: [AuthService],
 })
-export class LoginComponent {
-  constructor(private authService: AuthService) {}
+export class LoginComponent implements OnInit{
+  constructor(private authService: AuthService, private navbar: NavbarService) {
+    this.navbar.disableInputs();
+  }
   emailFormControl = new FormControl('', [
     Validators.required,
     Validators.email,
@@ -77,4 +80,8 @@ export class LoginComponent {
       });
     }
   };
+  ngOnInit(): void {
+  }
+  ngOnDestroy(): void {
+  }
 }

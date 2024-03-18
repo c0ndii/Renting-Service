@@ -4,6 +4,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterOutlet } from '@angular/router';
 import { NavbarLoggedComponent } from '../navbar-logged/navbar-logged.component';
 import { CommonModule } from '@angular/common';
+import { NavbarService } from '../services/navbar.service';
 
 @Component({
   selector: 'app-layout',
@@ -13,5 +14,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './layout.component.scss'
 })
 export class LayoutComponent {
+  constructor(private navbar: NavbarService){
+    this.navbar.enableInputs();
+  }
   isLogged: boolean = false;
 }

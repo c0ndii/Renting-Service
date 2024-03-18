@@ -13,16 +13,16 @@
           <input
             matInput
             type="text"
-            disabled="{{ inputsDisabled }}"
+            disabled="{{ navbar.inputsDisabled }}"
             placeholder="Wyszukaj..."
-            [(ngModel)]="clear_value"
+            [(ngModel)]="navbar.search_value"
           />
-          @if (clear_value) {
+          @if (navbar.search_value) {
           <button
             matSuffix
             mat-icon-button
             aria-label="Clear"
-            (click)="clear_value = ''"
+            (click)="navbar.search_value = ''"
           >
             <mat-icon>close</mat-icon>
           </button>
@@ -32,11 +32,11 @@
     </div>
     <div class="navbar-menu-middle">
       <mat-button-toggle-group
-        disabled="{{ inputsDisabled }}"
+        disabled="{{ navbar.inputsDisabled }}"
         name="fontStyle"
         aria-label="Font Style"
-        (change)="changeType()"
-        [(ngModel)]="selectedValue"
+        (change)="navbar.changeType()"
+        [(ngModel)]="navbar.selectedValue"
       >
         <mat-button-toggle value="map"
           ><mat-icon> map</mat-icon></mat-button-toggle

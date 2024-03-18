@@ -8,6 +8,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { RouterModule } from '@angular/router';
+import { NavbarService } from '../services/navbar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,13 +18,6 @@ import { RouterModule } from '@angular/router';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  selectedValue = "map";
-  clear_value = '';
-  @Input()
-  inputsDisabled: boolean = false;
-  changeType()
-  {
-    console.log(this.selectedValue);
-    console.log(this.inputsDisabled);
+  constructor(protected navbar: NavbarService) {
   }
 }
