@@ -1,0 +1,46 @@
+<div>
+  <app-navbar [inputsDisabled]="true"></app-navbar>
+  <div class="login-form-container-outer">
+    <div class="login-form-container">
+      <form class="login-form" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input
+            type="email"
+            matInput
+            [formControl]="emailFormControl"
+            [errorStateMatcher]="matcher"
+            placeholder="email@gmail.com"
+          />
+          @if (emailFormControl.hasError('email') &&
+          !emailFormControl.hasError('required')) {
+          <mat-error>Wprowadź poprawny adres email!</mat-error>
+          } @if (emailFormControl.hasError('required')) {
+          <mat-error>Email jest <strong>wymagany!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <mat-form-field>
+          <mat-label>Hasło</mat-label>
+          <input
+            type="password"
+            matInput
+            [formControl]="passwordFormControl"
+            [errorStateMatcher]="matcher"
+          />
+          @if (passwordFormControl.hasError('required')) {
+          <mat-error>Hasło jest <strong>wymagane!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <div class="button-form-container">
+          <button type="submit" mat-stroked-button>Zaloguj</button>
+          <button type="submit" mat-stroked-button>Przypomnij hasło</button>
+        </div>
+        <br />
+        <mat-error *ngIf="this.errorMessage">{{ this.errorMessage }}</mat-error>
+      </form>
+    </div>
+  </div>
+  
+</div>

@@ -1,30 +1,60 @@
 <div class="navbar-structure-container">
-  <div class="navbar-menu" >
+  <div class="navbar-menu">
     <div class="navbar-menu-left">
-      <mat-form-field class="searchbar">
-        <input matInput type="text" [(ngModel)]="clear_value" (click)="clearBar()" (blur)="restoreBar()">
-        @if (clear_value) {
-          <button matSuffix mat-icon-button aria-label="Clear" (click)="clear_value=''">
+      <div class="home-search-container">
+        <button class="home-button"
+          mat-button
+          aria-label="Home button"
+          [routerLink]="['']"
+        >
+          <mat-icon class="home-icon">home</mat-icon>
+        </button>
+        <mat-form-field class="searchbar">
+          <input
+            matInput
+            type="text"
+            disabled="{{ inputsDisabled }}"
+            placeholder="Wyszukaj..."
+            [(ngModel)]="clear_value"
+          />
+          @if (clear_value) {
+          <button
+            matSuffix
+            mat-icon-button
+            aria-label="Clear"
+            (click)="clear_value = ''"
+          >
             <mat-icon>close</mat-icon>
           </button>
-        }
-      </mat-form-field>
+          }
+        </mat-form-field>
+      </div>
     </div>
     <div class="navbar-menu-middle">
-      <mat-button-toggle-group name="fontStyle" aria-label="Font Style" (change)="changeType()" [(ngModel)]="selectedValue">
-        <mat-button-toggle value="map"><mat-icon> map</mat-icon></mat-button-toggle>
-        <mat-button-toggle value="list"><mat-icon>list</mat-icon></mat-button-toggle>
+      <mat-button-toggle-group
+        disabled="{{ inputsDisabled }}"
+        name="fontStyle"
+        aria-label="Font Style"
+        (change)="changeType()"
+        [(ngModel)]="selectedValue"
+      >
+        <mat-button-toggle value="map"
+          ><mat-icon> map</mat-icon></mat-button-toggle
+        >
+        <mat-button-toggle value="list"
+          ><mat-icon>list</mat-icon></mat-button-toggle
+        >
       </mat-button-toggle-group>
     </div>
     <div class="navbar-menu-right">
       <div class="user-panel-section">
         <div class="login-button">
-          <button mat-stroked-button>Logowanie</button>
-      </div>
-      <div class="register-button">
+          <button mat-stroked-button [routerLink]="['login']">Logowanie</button>
+        </div>
+        <div class="register-button">
           <button mat-stroked-button>Rejestracja</button>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </div>
