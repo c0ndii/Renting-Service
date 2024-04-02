@@ -1,20 +1,20 @@
 <div>
     <div class="register-form-container-outer">
       <div class="register-form-container">
-        <form  class="register-form" (ngSubmit)="onSubmit()">
+        <form [formGroup]="form" class="register-form" (ngSubmit)="onSubmit()">
           <mat-form-field>
             <mat-label>Imię</mat-label>
             <input
               type="text"
               matInput
-              [formControl]="nameFormControl"
+              formControlName="name"
               [errorStateMatcher]="matcher"
               placeholder="Andrzej"
             />
-            @if (nameFormControl.hasError('pattern')) {
+            @if (form.get('name')?.hasError('pattern')) {
                 <mat-error>Dozwolone są jedynie znaki!</mat-error>
                 }
-            @if (nameFormControl.hasError('required')) {
+            @if (form.get('name')?.hasError('required')) {
             <mat-error>Imię jest <strong>wymagane!</strong></mat-error>
             }
           </mat-form-field>
@@ -24,15 +24,15 @@
             <input
               type="email"
               matInput
-              [formControl]="emailFormControl"
+              formControlName="email"
               [errorStateMatcher]="matcher"
               placeholder="email@gmail.com"
             />
-            @if (emailFormControl.hasError('email') &&
-            !emailFormControl.hasError('required')) {
+            @if (form.get('email')?.hasError('email') &&
+            !form.get('email')?.hasError('required')) {
             <mat-error>Wprowadź poprawny adres email!</mat-error>
             }
-            @if (emailFormControl.hasError('required')) {
+            @if (form.get('email')?.hasError('required')) {
             <mat-error>Email jest <strong>wymagany!</strong></mat-error>
             }
           </mat-form-field>
@@ -42,13 +42,13 @@
             <input
               type="password"
               matInput
-              [formControl]="passwordFormControl"
+              formControlName="password"
               [errorStateMatcher]="matcher"
             />
-            @if (passwordFormControl.hasError('required')) {
+            @if (form.get('password')?.hasError('required')) {
                 <mat-error>Hasło jest <strong>wymagane!</strong></mat-error>
                 }
-            @if (passwordFormControl.hasError('minlength')) {
+            @if (form.get('password')?.hasError('minlength')) {
                 <mat-error>Hasło musi mieć minimum <strong>8 znaków!</strong></mat-error>
                 }
           </mat-form-field>
@@ -58,13 +58,13 @@
             <input
               type="password"
               matInput
-              [formControl]="passwordConfirmFormControl"
+              formControlName="passwordConfirm"
               [errorStateMatcher]="matcher"
             />
-            @if (passwordConfirmFormControl.hasError('required')) {
+            @if (form.get('passwordConfirm')?.hasError('required')) {
             <mat-error>Powtórzenie hasła jest <strong>wymagane!</strong></mat-error>
             }
-            @if(passwordConfirmFormControl.hasError('matchedpasswords')){
+            @if (form.get('passwordConfirm')?.hasError('passwordMismatch')){
             <mat-error>Hasła nie zgadzają się!</mat-error>
             }
           </mat-form-field>

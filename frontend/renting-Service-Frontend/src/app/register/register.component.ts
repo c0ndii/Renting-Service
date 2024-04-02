@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Directive, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { registerDto } from '../interfaces/registerDto';
 import {
@@ -6,11 +6,13 @@ import {
   FormGroupDirective,
   NgForm,
   Validators,
+  NG_VALIDATORS,
   FormsModule,
   ReactiveFormsModule,
   FormGroup,
   AbstractControl,
   ValidationErrors,
+  ValidatorFn,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +24,15 @@ import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
+
+export const passwordMatch: ValidatorFn = (control: AbstractControl) : ValidationErrors | null => {
+  const password = control.get('password')?.value;
+  const passwordConfirm = control.get('passwordConfirm')?.value;
+  if (password && passwordConfirm && password != passwordConfirm) {
+    return { passwordMismatch: true };
+  }
+  return null;
+}
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -36,6 +47,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     );
   }
 }
+
 
 @Component({
   selector: 'app-register',
@@ -55,40 +67,52 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent implements OnInit {
+  form: FormGroup;
   constructor(private authService: AuthService, private navbar: NavbarService) {
     this.navbar.disableInputs();
+    this.form = new FormGroup(
+      {
+      name: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(20),
+        Validators.pattern('^[a-zA-Z]*$'),
+      ]),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.email,
+      ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)
+      ]),
+      passwordConfirm: new FormControl('', [
+        Validators.required,
+      ]),
+    },
+    {
+      validators: passwordMatch,
+    }
+    );
   }
-  nameFormControl = new FormControl('', [
-    Validators.required,
-    Validators.maxLength(20),
-    Validators.pattern('^[a-zA-Z]*$'),
-  ])
-  emailFormControl = new FormControl('', [
-    Validators.required,
-    Validators.email,
-  ]);
-  passwordFormControl = new FormControl('', [
-    Validators.required,
-    Validators.minLength(8)
-  ]);
-  passwordConfirmFormControl = new FormControl('', [
-    Validators.required,
-  ]);
-  matchPasswordValidator(control: AbstractControl): ValidationErrors | null {
-    const password = this.passwordFormControl.root.value;
-    const passwordConfirm = this.passwordConfirmFormControl.root.value;
-    return password === passwordConfirm ? null : { matchedPasswords: true}
-  }
+
+  checkValidators: boolean = true;
   matcher = new MyErrorStateMatcher();
   registerDto = {} as registerDto;
   errorMessage = '';
   onSubmit = () => {
-    if (this.emailFormControl.errors || this.passwordFormControl.errors || this.nameFormControl.errors || this.passwordConfirmFormControl.errors) {
+    this.checkValidators = 
+    (this.form.get('name')?.hasError('required') ? true : (this.form.get('name')?.hasError('pattern') ? true : false))
+    || (this.form.get('email')?.hasError('required') ? true : (this.form.get('email')?.hasError('email') ? true : false))
+    || (this.form.get('password')?.hasError('required') ? true : (this.form.get('password')?.hasError('minlength') ? true : false))
+    || (this.form.get('passwordConfirm')?.hasError('required') ? true : (this.form.errors?.['passwordMismatch'] ? true : false))
+    
+    console.log((this.form.errors?.['passwordMismatch']));
+    if (this.checkValidators) {
     } else {
-      this.registerDto.name = this.nameFormControl.value!;
-      this.registerDto.email = this.emailFormControl.value!;
-      this.registerDto.password = this.passwordFormControl.value!;
-      this.registerDto.confirmpassword = this.passwordConfirmFormControl.value!;
+      this.registerDto.name = this.form.get('name')!.value;
+      this.registerDto.email = this.form.get('email')!.value;
+      this.registerDto.password = this.form.get('password')!.value;
+      this.registerDto.confirmpassword = this.form.get('passwordConfirm')!.value;
       // let token = this.authService.loginUser(this.loginDto);
       this.authService.loginUser(this.registerDto).subscribe((response) => {
         if (response) {
