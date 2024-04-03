@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { backendUrlBase } from '../appsettings/constant';
 import { loginDto } from '../interfaces/loginDto';
+import { registerDto } from '../interfaces/registerDto';
 import { of, Observable } from 'rxjs';
 
 @Injectable({
@@ -31,5 +32,8 @@ export class AuthService {
     });
     return of(false);
   }
-
+  registerUser(userDto: registerDto){
+    console.log(this.http.post(backendUrlBase + 'user/register', userDto));
+    return this.http.post(backendUrlBase + 'user/register', userDto);
+  }
 }

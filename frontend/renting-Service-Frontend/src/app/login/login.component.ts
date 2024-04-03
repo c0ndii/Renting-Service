@@ -17,8 +17,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
+import { Router } from '@angular/router';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -54,7 +55,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   providers: [AuthService],
 })
 export class LoginComponent implements OnInit{
-  constructor(private authService: AuthService, private navbar: NavbarService) {
+  constructor(private authService: AuthService, private navbar: NavbarService, private router: Router) {
     this.navbar.disableInputs();
   }
   emailFormControl = new FormControl('', [
@@ -68,12 +69,12 @@ export class LoginComponent implements OnInit{
   onSubmit = () => {
     if (this.emailFormControl.errors || this.passwordFormControl.errors) {
     } else {
-      this.loginDto.email = this.emailFormControl.value!;
-      this.loginDto.password = this.passwordFormControl.value!;
+      this.loginDto.Email = this.emailFormControl.value!;
+      this.loginDto.Password = this.passwordFormControl.value!;
       // let token = this.authService.loginUser(this.loginDto);
       this.authService.loginUser(this.loginDto).subscribe((response) => {
         if (response) {
-          window.location.reload();
+          this.router.navigate(['']);
         } else {
           this.errorMessage = 'Niepoprawne dane logowania';
         }

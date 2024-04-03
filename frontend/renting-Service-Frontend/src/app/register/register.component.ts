@@ -1,4 +1,4 @@
-import { Component, Directive, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { registerDto } from '../interfaces/registerDto';
 import {
@@ -6,13 +6,10 @@ import {
   FormGroupDirective,
   NgForm,
   Validators,
-  NG_VALIDATORS,
   FormsModule,
   ReactiveFormsModule,
-  FormGroup,
   AbstractControl,
   ValidationErrors,
-  ValidatorFn,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
@@ -24,15 +21,8 @@ import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
-
-export const passwordMatch: ValidatorFn = (control: AbstractControl) : ValidationErrors | null => {
-  const password = control.get('password')?.value;
-  const passwordConfirm = control.get('passwordConfirm')?.value;
-  if (password && passwordConfirm && password != passwordConfirm) {
-    return { passwordMismatch: true };
-  }
-  return null;
-}
+import { Router } from '@angular/router';
+import { json } from 'stream/consumers';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -47,7 +37,6 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     );
   }
 }
-
 
 @Component({
   selector: 'app-register',
@@ -66,57 +55,57 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
+
 export class RegisterComponent implements OnInit {
-  form: FormGroup;
-  constructor(private authService: AuthService, private navbar: NavbarService) {
+  name = new FormControl('', [
+    Validators.required,
+    Validators.maxLength(20),
+    Validators.pattern('^[a-zA-Z]*$'),
+  ]);
+  email = new FormControl('', [
+    Validators.required,
+    Validators.email,
+  ]);
+  password = new FormControl('', [
+    Validators.required,
+    Validators.minLength(8)
+  ]);
+  passwordConfirm = new FormControl('', [
+    Validators.required,
+    this.passwordMatch.bind(this),
+  ]);
+
+  constructor(private authService: AuthService, private navbar: NavbarService, private router: Router) {
     this.navbar.disableInputs();
-    this.form = new FormGroup(
-      {
-      name: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(20),
-        Validators.pattern('^[a-zA-Z]*$'),
-      ]),
-      email: new FormControl('', [
-        Validators.required,
-        Validators.email,
-      ]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(8)
-      ]),
-      passwordConfirm: new FormControl('', [
-        Validators.required,
-      ]),
-    },
-    {
-      validators: passwordMatch,
-    }
-    );
+  }
+  passwordMatch(control: AbstractControl) : ValidationErrors | null{
+    const password = this.password.value;
+    const passwordConfirm = control.value;
+    return password && passwordConfirm && password === passwordConfirm ?
+    null : { passwordMismatch: true };
   }
 
   checkValidators: boolean = true;
-  matcher = new MyErrorStateMatcher();
   registerDto = {} as registerDto;
   errorMessage = '';
   onSubmit = () => {
     this.checkValidators = 
-    (this.form.get('name')?.hasError('required') ? true : (this.form.get('name')?.hasError('pattern') ? true : false))
-    || (this.form.get('email')?.hasError('required') ? true : (this.form.get('email')?.hasError('email') ? true : false))
-    || (this.form.get('password')?.hasError('required') ? true : (this.form.get('password')?.hasError('minlength') ? true : false))
-    || (this.form.get('passwordConfirm')?.hasError('required') ? true : (this.form.errors?.['passwordMismatch'] ? true : false))
+    (this.name.hasError('required') ? true : (this.name.hasError('pattern') ? true : false))
+    || (this.email.hasError('required') ? true : (this.email.hasError('email') ? true : false))
+    || (this.password.hasError('required') ? true : (this.password.hasError('minlength') ? true : false))
+    || (this.passwordConfirm.hasError('required') ? true : (this.passwordConfirm.hasError('passwordMismatch') ? true : false))
     
-    console.log((this.form.errors?.['passwordMismatch']));
     if (this.checkValidators) {
     } else {
-      this.registerDto.name = this.form.get('name')!.value;
-      this.registerDto.email = this.form.get('email')!.value;
-      this.registerDto.password = this.form.get('password')!.value;
-      this.registerDto.confirmpassword = this.form.get('passwordConfirm')!.value;
-      // let token = this.authService.loginUser(this.loginDto);
-      this.authService.loginUser(this.registerDto).subscribe((response) => {
-        if (response) {
-          window.location.reload();
+      this.registerDto.Name = this.name.value!;
+      this.registerDto.Email = this.email.value!;
+      this.registerDto.Password = this.password.value!;
+      this.registerDto.Confirmpassword = this.passwordConfirm.value!;
+      this.authService.registerUser(this.registerDto).subscribe((response) => {
+        console.log(response);
+        if (response === null) {
+          console.log("sukces");
+          this.router.navigate(['']);
         } else {
           this.errorMessage = 'Niepoprawne dane logowania';
         }

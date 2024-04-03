@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatIconModule} from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { NavbarService } from '../services/navbar.service';
 
 @Component({
   selector: 'app-navbar-logged',
@@ -11,9 +12,6 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './navbar-logged.component.scss'
 })
 export class NavbarLoggedComponent {
-  selectedValue = "map";
-  changeType()
-  {
-    console.log(this.selectedValue);
+  constructor(protected navbar: NavbarService) {
   }
 }

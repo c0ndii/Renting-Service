@@ -1,6 +1,6 @@
 export interface registerDto {
-    name: string;
-    email: string;
-    password: string;
-    confirmpassword: string;
+    Name: string;
+    Email: string;
+    Password: string;
+    Confirmpassword: string;
 }

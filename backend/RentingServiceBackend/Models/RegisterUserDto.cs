@@ -1,5 +1,4 @@
-﻿using RentingServiceBackend.Entities;
-
+﻿
 namespace RentingServiceBackend.Models
 {
     public class RegisterUserDto

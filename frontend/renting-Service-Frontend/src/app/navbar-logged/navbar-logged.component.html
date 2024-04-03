@@ -1,21 +1,27 @@
 <div class="navbar-structure-container">
-    <div class="navbar-menu" >
-      <div class="navbar-menu-left">
-        <p>jakies info</p>
-      </div>
-      <div class="navbar-menu-middle">
-        <mat-button-toggle-group name="fontStyle" aria-label="Font Style" (change)="changeType()" [(ngModel)]="selectedValue">
-          <mat-button-toggle value="map"><mat-icon> map</mat-icon></mat-button-toggle>
-          <mat-button-toggle value="list"><mat-icon>list</mat-icon></mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-      <div class="navbar-menu-right">
-        <div class="user-panel-section">
-            <div class="login-avatar-holder">
-                
-            </div>
-        </div>
+  <div class="navbar-menu">
+    <div class="navbar-menu-left">
+      <p>jakies info</p>
+    </div>
+    <div class="navbar-menu-middle">
+      <mat-button-toggle-group
+        name="fontStyle"
+        aria-label="Font Style"
+        (change)="navbar.changeType()"
+        [(ngModel)]="navbar.selectedValue"
+      >
+        <mat-button-toggle value="map"
+          ><mat-icon> map</mat-icon></mat-button-toggle
+        >
+        <mat-button-toggle value="list"
+          ><mat-icon>list</mat-icon></mat-button-toggle
+        >
+      </mat-button-toggle-group>
+    </div>
+    <div class="navbar-menu-right">
+      <div class="user-panel-section">
+        <div class="login-avatar-holder"></div>
       </div>
     </div>
   </div>
-  
+</div>
