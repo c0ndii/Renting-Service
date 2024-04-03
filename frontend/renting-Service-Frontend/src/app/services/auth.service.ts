@@ -24,7 +24,7 @@ export class AuthService {
     return localStorage.removeItem('Authorization');
   }
   getUser():Observable<userDto>{
-    return this.http.get<userDto>(backendUrlBase + 'user/getusername', {responseType: 'json'});
+    return this.http.get<userDto>(backendUrlBase + 'user/getusername');
   }
   setUser(user: userDto){
     this.user = user;

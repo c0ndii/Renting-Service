@@ -25,6 +25,7 @@ export class jwtInterceptor implements HttpInterceptor {
       const tokenExpired = decodedToken && decodedToken.exp ? decodedToken.exp < Date.now() / 1000 : false;
       if(tokenExpired) {
         this.authService.removeToken();
+        this.authService.removeUser();
         this.router.navigate(['login']);
         return next.handle(req);
       }
@@ -41,6 +42,7 @@ export class jwtInterceptor implements HttpInterceptor {
         catchError((error: HttpErrorResponse) => {
           if(error.status == 401) {
             this.authService.removeToken();
+            this.authService.removeUser();
             return next.handle(req);
           }
           return next.handle(reqWithToken);

@@ -147,12 +147,12 @@ namespace RentingServiceBackend.Services
             var userId = _userContextService.GetUserId;
             if(userId == null)
             {
-                throw new NotFoundException("Id not found");
+                throw new UnauthorizedException("Invalid token");
             }
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
             if(user == null)
             {
-                throw new NotFoundException("Account not found");
+                throw new UnauthorizedException("Could not authorize user");
             }
             var result = _mapper.Map<UserDto>(user);
             return result;

@@ -21,6 +21,7 @@ import { RouterLink, RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
+import { userDto } from '../interfaces/userDto';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -84,8 +85,7 @@ export class LoginComponent implements OnInit {
           if (response !== null) {
             this.authService.setToken(response);
             this.authService.getUser().subscribe(response => {
-              console.log(response.Name);
-              // this.authService.setUser(response);
+              this.authService.setUser(response);
             });
             this.router.navigate(['']);
             this.snackbarService.openSnackbar(
