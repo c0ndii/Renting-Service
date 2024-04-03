@@ -19,7 +19,7 @@ namespace RentingServiceBackend.Controllers
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
         {
             await _userService.RegisterUserAsync(dto);
-            return Ok();
+            return Created();
         }
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginUserDto dto)
@@ -46,7 +46,7 @@ namespace RentingServiceBackend.Controllers
             return Ok();
         }
         [HttpGet("getusername")]
-        [Authorize]
+        [Authorize(Roles = ("Admin, User"))]
         public async Task<UserDto> GetUserName()
         {
             var result = await _userService.GetUserName();

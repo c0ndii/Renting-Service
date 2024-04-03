@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
+import { SnackbarService } from '../services/snackbar.service';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -54,8 +55,13 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrl: './login.component.scss',
   providers: [AuthService],
 })
-export class LoginComponent implements OnInit{
-  constructor(private authService: AuthService, private navbar: NavbarService, private router: Router) {
+export class LoginComponent implements OnInit {
+  constructor(
+    private authService: AuthService,
+    private navbar: NavbarService,
+    private router: Router,
+    private snackbarService: SnackbarService
+  ) {
     this.navbar.disableInputs();
   }
   emailFormControl = new FormControl('', [
@@ -66,23 +72,52 @@ export class LoginComponent implements OnInit{
   matcher = new MyErrorStateMatcher();
   loginDto = {} as loginDto;
   errorMessage = '';
+  status = '';
   onSubmit = () => {
     if (this.emailFormControl.errors || this.passwordFormControl.errors) {
     } else {
       this.loginDto.Email = this.emailFormControl.value!;
       this.loginDto.Password = this.passwordFormControl.value!;
       // let token = this.authService.loginUser(this.loginDto);
-      this.authService.loginUser(this.loginDto).subscribe((response) => {
-        if (response) {
-          this.router.navigate(['']);
-        } else {
-          this.errorMessage = 'Niepoprawne dane logowania';
+      this.authService.loginUser(this.loginDto).subscribe(
+        (response) => {
+          if (response !== null) {
+            this.authService.setToken(response);
+            this.authService.getUser().subscribe(response => {
+              console.log(response.Name);
+              // this.authService.setUser(response);
+            });
+            this.router.navigate(['']);
+            this.snackbarService.openSnackbar(
+              'Pomyślnie zalogowano',
+              'Success'
+            );
+          }
+        },
+        (error) => {
+          switch (error.status) {
+            case 404:
+              this.errorMessage = 'Nie znaleziono konta';
+              this.status = 'Info';
+              break;
+            case 401:
+              this.errorMessage = 'Błędne hasło bądź email';
+              this.status = 'Error';
+              break;
+            case 403:
+              this.errorMessage = 'Konto nie zostało potwierdzone';
+              this.status = 'Info';
+              break;
+            default:
+              this.errorMessage = 'Nie można połączyć się z serwerem';
+              this.status = 'Error';
+              break;
+          }
+          this.snackbarService.openSnackbar(this.errorMessage, this.status);
         }
-      });
+      );
     }
   };
-  ngOnInit(): void {
-  }
-  ngOnDestroy(): void {
-  }
+  ngOnInit(): void {}
+  ngOnDestroy(): void {}
 }

@@ -25,6 +25,21 @@ namespace RentingServiceBackend.Middlewares
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
+            catch(ConflictException conflictException)
+            {
+                context.Response.StatusCode = 409;
+                await context.Response.WriteAsync(conflictException.Message);
+            }
+            catch(UnauthorizedException unauthorizedException)
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync(unauthorizedException.Message);
+            }
+            catch(ForbidException forbidException)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(forbidException.Message);
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, e.Message);

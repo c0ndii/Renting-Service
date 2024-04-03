@@ -65,15 +65,19 @@ namespace RentingServiceBackend.Services
         {
             var user = await _context.Users
                 .Include(x => x.Role)
-                .SingleOrDefaultAsync(x => x.Email == dto.Email && x.Role.Name != "Unconfirmed");
+                .SingleOrDefaultAsync(x => x.Email == dto.Email);
             if (user is null)
             {
-                throw new BadRequestException("Invalid password or account not confirmed");
+                throw new UnauthorizedException("Account not found"); //tutaj zmiana na unauthorized z notfound zeby nie leakowac danych
             }
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new BadRequestException("Invalid username or password");
+                throw new UnauthorizedException("Invalid username or password");
+            }
+            if(user.Role.Name == "Unconfirmed")
+            {
+                throw new ForbidException("Account has not been confirmed yet");
             }
             var claims = new List<Claim>()
             {

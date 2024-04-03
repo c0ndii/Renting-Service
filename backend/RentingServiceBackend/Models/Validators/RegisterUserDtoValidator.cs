@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using RentingServiceBackend.Entities;
+using RentingServiceBackend.Exceptions;
 
 namespace RentingServiceBackend.Models.Validators
 {
@@ -17,6 +18,7 @@ namespace RentingServiceBackend.Models.Validators
                     if (usedEmail)
                     {
                         context.AddFailure("Email", "This email is already taken");
+                        throw new ConflictException("This email is already taken");
                     }
                 });
 

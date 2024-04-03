@@ -5,9 +5,10 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpHeaders,
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 
@@ -25,17 +26,26 @@ export class jwtInterceptor implements HttpInterceptor {
       if(tokenExpired) {
         this.authService.removeToken();
         this.router.navigate(['login']);
-        console.log("Token expired");
         return next.handle(req);
       }
-      console.log("Token not expired");
       const reqWithToken = req.clone({
         headers: new HttpHeaders({
-          Authorization: `Bearer + ${token}`,
+          Authorization: `${token}`,
           'Content-Type': 'application/json',
         }),
       });
-      return next.handle(reqWithToken);
+      return next.handle(reqWithToken).pipe(
+        map(res => {
+          return res;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if(error.status == 401) {
+            this.authService.removeToken();
+            return next.handle(req);
+          }
+          return next.handle(reqWithToken);
+        })
+      );
     }
     return next.handle(req);
   }

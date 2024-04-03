@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { backendUrlBase } from '../appsettings/constant';
 import { loginDto } from '../interfaces/loginDto';
 import { registerDto } from '../interfaces/registerDto';
+import { userDto } from '../interfaces/userDto';
 import { of, Observable } from 'rxjs';
 
 @Injectable({
@@ -11,7 +12,7 @@ import { of, Observable } from 'rxjs';
 export class AuthService {
 
   constructor(private http: HttpClient) { }
-  user: any = null;
+  user: userDto | null = null;
 
   getToken(){
     return localStorage.getItem('Authorization');
@@ -22,18 +23,19 @@ export class AuthService {
   removeToken(){
     return localStorage.removeItem('Authorization');
   }
-  loginUser(userDto: loginDto):Observable<boolean> {
-    this.http.post(backendUrlBase + 'user/login', userDto, {responseType: 'text'}).subscribe(token => {
-      if(token){
-        this.setToken(token);
-        return true;
-      }
-        return false;
-    });
-    return of(false);
+  getUser():Observable<userDto>{
+    return this.http.get<userDto>(backendUrlBase + 'user/getusername', {responseType: 'json'});
+  }
+  setUser(user: userDto){
+    this.user = user;
+  }
+  removeUser(){
+    this.user = null;
+  }
+  loginUser(userDto: loginDto){
+    return this.http.post(backendUrlBase + 'user/login', userDto, {responseType: 'text'});
   }
   registerUser(userDto: registerDto){
-    console.log(this.http.post(backendUrlBase + 'user/register', userDto));
     return this.http.post(backendUrlBase + 'user/register', userDto);
   }
 }
