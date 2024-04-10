@@ -83,7 +83,8 @@ export class LoginComponent implements OnInit {
       this.authService.loginUser(this.loginDto).subscribe(
         (response) => {
           if (response !== null) {
-            this.authService.setToken(response);
+            this.authService.setJwtToken(response.jwtToken);
+            this.authService.setRefreshToken(response.refreshToken);
             this.authService.getUser().subscribe(response => {
               this.authService.setUser(response);
             });

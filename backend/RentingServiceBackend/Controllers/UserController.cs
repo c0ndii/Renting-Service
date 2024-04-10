@@ -15,36 +15,6 @@ namespace RentingServiceBackend.Controllers
         {
             _userService = userService;
         }
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
-        {
-            await _userService.RegisterUserAsync(dto);
-            return Created();
-        }
-        [HttpPost("login")]
-        public async Task<IActionResult> LoginUser([FromBody] LoginUserDto dto)
-        {
-            string token = await _userService.LoginAsync(dto);
-            return Ok(token);
-        }
-        [HttpGet("verifyemail/{token}")]
-        public async Task<IActionResult> VerifyEmail([FromRoute] string token)
-        {
-            await _userService.VerifyAccountAsync(token);
-            return Ok();
-        }
-        [HttpPost("forgotpassword/{email}")]
-        public async Task<IActionResult> ForgotPassword([FromRoute] string email)
-        {
-            await _userService.ForgotPasswordAsync(email);
-            return Ok();
-        }
-        [HttpPost("resetpassword")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
-        {
-            await _userService.ResetPasswordAsync(resetPasswordDto);
-            return Ok();
-        }
         [HttpGet("getusername")]
         [Authorize(Roles = ("Admin, User"))]
         public async Task<UserDto> GetUserName()

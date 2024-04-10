@@ -4,6 +4,8 @@ import { backendUrlBase } from '../appsettings/constant';
 import { loginDto } from '../interfaces/loginDto';
 import { registerDto } from '../interfaces/registerDto';
 import { userDto } from '../interfaces/userDto';
+import { tokenDto } from '../interfaces/tokenDto';
+import { refreshTokenDto } from '../interfaces/refreshTokenDto';
 import { of, Observable } from 'rxjs';
 
 @Injectable({
@@ -14,14 +16,23 @@ export class AuthService {
   constructor(private http: HttpClient) { }
   user: userDto | null = null;
 
-  getToken(){
+  getJwtToken(){
     return localStorage.getItem('Authorization');
   }
-  setToken(token: string){
+  setJwtToken(token: string){
     return localStorage.setItem('Authorization', 'Bearer '+token);
   }
-  removeToken(){
+  getRefreshToken(){
+    return localStorage.getItem('RefreshToken');
+  }
+  setRefreshToken(token: string){
+    return localStorage.setItem('RefreshToken', token);
+  }
+  removeJwtToken(){
     return localStorage.removeItem('Authorization');
+  }
+  removeRefreshToken(){
+    return localStorage.removeItem('RefreshToken');
   }
   getUser():Observable<userDto>{
     return this.http.get<userDto>(backendUrlBase + 'user/getusername');
@@ -33,9 +44,16 @@ export class AuthService {
     this.user = null;
   }
   loginUser(userDto: loginDto){
-    return this.http.post(backendUrlBase + 'user/login', userDto, {responseType: 'text'});
+    return this.http.post<tokenDto>(backendUrlBase + 'auth/login', userDto);
   }
   registerUser(userDto: registerDto){
-    return this.http.post(backendUrlBase + 'user/register', userDto);
+    return this.http.post(backendUrlBase + 'auth/register', userDto);
+  }
+  refreshToken(refreshTokenDto: refreshTokenDto) {
+    return this.http.post<tokenDto>(backendUrlBase + 'auth/refreshtoken', refreshTokenDto);
+  }
+  revokeToken(){
+    return this.http.delete(backendUrlBase + 'auth/revoketoken');
+    //logout
   }
 }

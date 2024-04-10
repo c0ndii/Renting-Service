@@ -11,6 +11,8 @@ namespace RentingServiceBackend.Entities
         public string? VerificationToken { get; set; }
         public string? PasswordResetToken { get; set; }
         public DateTime? ResetPasswordTimeExpires { get; set; }
+        public string? RefreshToken {  get; set; }
+        public DateTime RefreshTokenTimeExpires { get; set; }
         public virtual List<Post> OwnedPosts { get; set; }
         public virtual List<Post> FollowedPosts { get; set; }
         public virtual List<Reservation> Reservations { get; set; }
