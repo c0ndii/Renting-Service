@@ -7,6 +7,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
+import { AuthService } from './services/auth.service';
+import { NavbarService } from './services/navbar.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +22,7 @@ export const appConfig: ApplicationConfig = {
       useClass: jwtInterceptor,
       multi: true
     },
+    AuthService,
+    NavbarService,
     ]
 };

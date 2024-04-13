@@ -36,9 +36,7 @@ export class jwtInterceptor implements HttpInterceptor {
         if(this.tokenDto.refreshToken !== undefined && this.tokenDto.refreshToken !== undefined){
           this.authService.setJwtToken("Bearer "+this.tokenDto.jwtToken);
         } else {
-          this.authService.removeJwtToken();
-          this.authService.removeRefreshToken();
-          this.authService.removeUser();
+          this.authService.logout();
           this.router.navigate(['login']);
           return next.handle(req);
         }
@@ -55,9 +53,7 @@ export class jwtInterceptor implements HttpInterceptor {
         }),
         catchError((error: HttpErrorResponse) => {
           if(error.status == 401) {
-            this.authService.removeJwtToken();
-            this.authService.removeRefreshToken();
-            this.authService.removeUser();
+            this.authService.logout();
             return next.handle(req);
           }
           return next.handle(reqWithToken);

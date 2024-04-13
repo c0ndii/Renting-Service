@@ -79,15 +79,10 @@ export class LoginComponent implements OnInit {
     } else {
       this.loginDto.Email = this.emailFormControl.value!;
       this.loginDto.Password = this.passwordFormControl.value!;
-      // let token = this.authService.loginUser(this.loginDto);
       this.authService.loginUser(this.loginDto).subscribe(
         (response) => {
           if (response !== null) {
-            this.authService.setJwtToken(response.jwtToken);
-            this.authService.setRefreshToken(response.refreshToken);
-            this.authService.getUser().subscribe(response => {
-              this.authService.setUser(response);
-            });
+            this.authService.login(response);
             this.router.navigate(['']);
             this.snackbarService.openSnackbar(
               'Pomyślnie zalogowano',

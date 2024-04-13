@@ -46,7 +46,7 @@
         >
       </mat-button-toggle-group>
     </div>
-    <div class="navbar-menu-right">
+    <div class="navbar-menu-right" *ngIf="!isUserLoggedIn()">
       <div class="user-panel-section">
         <div class="login-button">
           <button mat-stroked-button [routerLink]="['login']">Logowanie</button>
@@ -54,6 +54,12 @@
         <div class="register-button">
           <button mat-stroked-button [routerLink]="['register']">Rejestracja</button>
         </div>
+      </div>
+    </div>
+
+    <div class="navbar-menu-right" *ngIf="isUserLoggedIn()">
+      <div class="user-panel-section">
+        <div class="login-avatar-holder"></div>
       </div>
     </div>
   </div>
