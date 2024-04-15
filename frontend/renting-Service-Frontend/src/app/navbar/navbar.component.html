@@ -62,14 +62,22 @@
 
     <div class="navbar-menu-right" *ngIf="navbar.isUserLoggedIn()">
       <div class="user-panel-section">
-        <div class="login-name-holder">
-          <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">{{ this.username }}</button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item>Profil</button>
-            <button (click)="this.authService.logout()" mat-menu-item>Wyloguj</button>
-          </mat-menu>
-        </div>
-        <div class="login-avatar-holder"></div>
+        <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
+          <div class="user-panel-holder">
+            <div class="login-name-holder">
+              {{ this.username }}
+            </div>
+            <div class="login-avatar-holder">
+              a
+            </div>
+          </div>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>Profil</button>
+          <button (click)="this.authService.logout()" mat-menu-item>
+            Wyloguj
+          </button>
+        </mat-menu>
       </div>
     </div>
   </div>
