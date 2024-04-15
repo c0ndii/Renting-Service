@@ -24,7 +24,8 @@ export class jwtInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     const token = this.authService.getJwtToken();
-    if (token) {
+    const refreshToken = this.authService.getRefreshToken();
+    if (token && refreshToken) {
       let decodedToken = jwtDecode(token);
       const tokenExpired = decodedToken && decodedToken.exp ? decodedToken.exp < Date.now() / 1000 : false;
       if(tokenExpired) {
@@ -60,6 +61,7 @@ export class jwtInterceptor implements HttpInterceptor {
         })
       );
     }
+    this.authService.logout();
     return next.handle(req);
   }
 }

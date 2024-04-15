@@ -1,54 +1,54 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable} from '@angular/core';
+import { Inject, Injectable} from '@angular/core';
 import { backendUrlBase } from '../appsettings/constant';
 import { loginDto } from '../interfaces/loginDto';
 import { registerDto } from '../interfaces/registerDto';
 import { userDto } from '../interfaces/userDto';
 import { tokenDto } from '../interfaces/tokenDto';
 import { refreshTokenDto } from '../interfaces/refreshTokenDto';
-import { of, Observable} from 'rxjs';
+import { Observable} from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient) { 
-    
+  localStorage: Storage | undefined;
+  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document) { 
+    this.localStorage = document.defaultView?.localStorage;
   }
   //JWT
   getJwtToken(){
-    try{
-      return localStorage.getItem('Authorization');
-    } catch (error){
-      return null;
+    if(this.localStorage){
+      return this.localStorage.getItem('Authorization');
     }
+    return null;
   }
   setJwtToken(token: string){
-    return localStorage.setItem('Authorization', 'Bearer '+token);
+    if(this.localStorage){
+      return this.localStorage.setItem('Authorization', 'Bearer '+token);
+    }
   }
   removeJwtToken(){
-    try{
-      return localStorage.removeItem('Authorization');  
-    } catch (error){
-      return null;
+    if(this.localStorage){
+      return this.localStorage.removeItem('Authorization');
     }
   }
   //REFRESH
   getRefreshToken(){
-    try {
-      return localStorage.getItem('RefreshToken');
-    } catch (error){
-      return null;
+    if(this.localStorage){
+      return this.localStorage.getItem('RefreshToken');
     }
+    return null;
   }
   setRefreshToken(token: string){
-    return localStorage.setItem('RefreshToken', token);
+    if(this.localStorage){
+      return this.localStorage.setItem('RefreshToken', token);
+    }
   }
   removeRefreshToken(){
-    try {
-      return localStorage.removeItem('RefreshToken');
-    } catch (error){
-      return null;
+    if(this.localStorage){
+      return this.localStorage.removeItem('RefreshToken');
     }
   }
   //USER
@@ -56,25 +56,32 @@ export class AuthService {
     return this.http.get<userDto>(backendUrlBase + 'user/getusername');
   }
   setUser(user: userDto){
-    return localStorage.setItem('User', JSON.stringify(user));
+    if(this.localStorage){
+      return this.localStorage.setItem('User', JSON.stringify(user));
+    }
   }
   removeUser(){
-    try {
-      return localStorage.removeItem('User');
-    }
-    catch (errror){
-      return null;
+    if(this.localStorage){
+      return this.localStorage.removeItem('User');
     }
   }
   getUserFromLocalStorage(){
-    try {
-      var user = localStorage.getItem('User');
+    if(this.localStorage){
+      var user = this.localStorage.getItem('User');
       if(user){
         return JSON.parse(user);
       }
-    } catch (error){
-      return null;
     }
+  }
+  getUserName() : string | undefined{
+    if(this.localStorage){
+      var user = this.localStorage.getItem('User');
+      if(user){
+        var userDto = JSON.parse(user) as userDto;
+        return userDto.name;
+      }
+    }
+    return undefined;
   }
   //ROLE
   getRole() : string | null{

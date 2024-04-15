@@ -23,10 +23,25 @@
   width: 40vw;
   padding-right: 10px;
   padding-top: 10px;
-  padding-left: 10px;
+  padding-left: 5px;
   justify-content: left;
   align-items: center;
   text-align: left;
+}
+.user-menu-button{
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  min-width: 150px !important;
+  min-height: 50px !important;
+  max-width: 150px !important;
+  max-height: 50px !important;
+}
+.user-menu-container{
+  display: flex !important;
+  min-width: 150px !important;
+  min-height: 50px !important;
+  max-width: 150px !important;
+  max-height: 50px !important;
 }
 
 .navbar-menu-middle {
@@ -46,7 +61,6 @@
   align-items: center;
   text-align: right;
 }
-
 .user-panel-section {
   display: flex;
   flex-direction: row;
@@ -71,26 +85,36 @@
   max-width: 20vw;
 }
 .home-icon {
-  font-size: 45px;
-  width: 45px;
-  height: 45px;
+  font-size: 45px !important;
+  width: 45px !important;
+  height: 45px!important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
-.home-button {
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-  min-width: 60px;
-  max-width: 60px;
-  max-height: 60px;
-  margin-right: 20px;
+.home-button  {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 60px !important;
+  min-width: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
 }
 ::ng-deep .mat-mdc-form-field-bottom-align{
   height: 5px !important;
 }
 .login-avatar-holder {
+  background-color: black !important;
   border-radius: 50%;
   width: 50px;
   height: 50px;
+}
+.login-name-holder {
+  max-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-right: 50px;
+  max-height: 50px;
+  font-size: large;
 }

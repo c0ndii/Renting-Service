@@ -9,6 +9,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
 import { AuthService } from './services/auth.service';
 import { NavbarService } from './services/navbar.service';
+import { SnackbarService } from './services/snackbar.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,5 +25,6 @@ export const appConfig: ApplicationConfig = {
     },
     AuthService,
     NavbarService,
+    SnackbarService,
     ]
 };

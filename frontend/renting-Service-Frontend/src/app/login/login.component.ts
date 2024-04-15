@@ -83,6 +83,9 @@ export class LoginComponent implements OnInit {
         (response) => {
           if (response !== null) {
             this.authService.login(response);
+            this.authService.getUserFetch().subscribe((user) =>{
+              this.navbar.UserName = user.name;
+            });
             this.router.navigate(['']);
             this.snackbarService.openSnackbar(
               'Pomyślnie zalogowano',
@@ -115,5 +118,6 @@ export class LoginComponent implements OnInit {
     }
   };
   ngOnInit(): void {}
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+  }
 }

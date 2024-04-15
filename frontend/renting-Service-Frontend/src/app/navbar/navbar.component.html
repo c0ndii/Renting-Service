@@ -2,7 +2,8 @@
   <div class="navbar-menu">
     <div class="navbar-menu-left">
       <div class="home-search-container">
-        <button class="home-button"
+        <button
+          class="home-button"
           mat-button
           aria-label="Home button"
           [routerLink]="['']"
@@ -46,19 +47,28 @@
         >
       </mat-button-toggle-group>
     </div>
-    <div class="navbar-menu-right" *ngIf="!isUserLoggedIn()">
+    <div class="navbar-menu-right" *ngIf="!navbar.isUserLoggedIn()">
       <div class="user-panel-section">
         <div class="login-button">
           <button mat-stroked-button [routerLink]="['login']">Logowanie</button>
         </div>
         <div class="register-button">
-          <button mat-stroked-button [routerLink]="['register']">Rejestracja</button>
+          <button mat-stroked-button [routerLink]="['register']">
+            Rejestracja
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="navbar-menu-right" *ngIf="isUserLoggedIn()">
+    <div class="navbar-menu-right" *ngIf="navbar.isUserLoggedIn()">
       <div class="user-panel-section">
+        <div class="login-name-holder">
+          <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">{{ this.username }}</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>Profil</button>
+            <button (click)="this.authService.logout()" mat-menu-item>Wyloguj</button>
+          </mat-menu>
+        </div>
         <div class="login-avatar-holder"></div>
       </div>
     </div>
