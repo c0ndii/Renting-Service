@@ -67,14 +67,16 @@
             <div class="login-name-holder">
               {{ this.username }}
             </div>
-            <div class="login-avatar-holder">
-              a
-            </div>
+            <div class="login-avatar-holder">a</div>
           </div>
         </button>
         <mat-menu #menu="matMenu">
           <button mat-menu-item>Profil</button>
-          <button (click)="this.authService.logout()" mat-menu-item>
+          <button mat-menu-item>Moje ogłoszenia</button>
+          <button mat-menu-item>Śledzone ogłoszenia</button>
+          <button mat-menu-item>Rezerwacje</button>
+          <button mat-menu-item>Komentarze</button>
+          <button (click)="logout()" mat-menu-item>
             Wyloguj
           </button>
         </mat-menu>

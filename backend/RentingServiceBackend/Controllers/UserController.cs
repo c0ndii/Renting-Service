@@ -17,16 +17,22 @@ namespace RentingServiceBackend.Controllers
         }
         [HttpGet("getusername")]
         [Authorize(Roles = ("Admin, User"))]
-        public async Task<UserDto> GetUserName()
+        public async Task<IActionResult> GetUserName()
         {
             var result = await _userService.GetUserName();
-            return result;
+            return Ok(result);
         }
         [HttpGet("getusername/{userId}")]
-        public async Task<UserDto> GetUserName([FromRoute] int userId)
+        public async Task<IActionResult> GetUserName([FromRoute] int userId)
         {
             var result = await _userService.GetUserName(userId);
-            return result;
+            return Ok(result);
+        }
+        [HttpPut("editprofile")]
+        public async Task<IActionResult> EditUserProfile([FromBody] EditUserDto dto)
+        {
+            await _userService.EditProfile(dto);
+            return Ok();
         }
     }
 }

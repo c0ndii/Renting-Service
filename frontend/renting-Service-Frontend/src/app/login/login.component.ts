@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { loginDto } from '../interfaces/loginDto';
 import {
@@ -17,11 +17,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
-import { userDto } from '../interfaces/userDto';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -56,12 +55,13 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrl: './login.component.scss',
   providers: [AuthService],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit{
   constructor(
     private authService: AuthService,
     private navbar: NavbarService,
     private router: Router,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private elementRef: ElementRef,
   ) {
     this.navbar.disableInputs();
   }

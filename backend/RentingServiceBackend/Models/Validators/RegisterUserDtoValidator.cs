@@ -21,6 +21,9 @@ namespace RentingServiceBackend.Models.Validators
                         throw new ConflictException("This email is already taken");
                     }
                 });
+            RuleFor(x => x.Name)
+                .NotNull()
+                .MaximumLength(20);
 
             RuleFor(x => x.Password)
                 .NotEmpty()
