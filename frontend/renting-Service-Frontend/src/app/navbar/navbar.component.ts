@@ -12,7 +12,6 @@ import { NavbarService } from '../services/navbar.service';
 import { CommonModule } from '@angular/common';
 import {MatMenuModule} from '@angular/material/menu';
 import { AuthService } from '../services/auth.service';
-import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +22,7 @@ import { SnackbarService } from '../services/snackbar.service';
 })
 export class NavbarComponent implements OnInit{
   username: string = '';
-  constructor(protected navbar: NavbarService, protected authService: AuthService, private snackbar: SnackbarService) {
+  constructor(protected navbar: NavbarService, protected authService: AuthService) {
   }
   ngOnInit(): void {
     this.navbar.UsernameOnReload();
@@ -31,8 +30,5 @@ export class NavbarComponent implements OnInit{
       this.username = result;
     })
   }
-  logout(){
-    this.authService.logout();
-    this.snackbar.openSnackbar("Wylogowano", "Info");
-  }
+  
 }

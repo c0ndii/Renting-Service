@@ -71,12 +71,12 @@
           </div>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item>Profil</button>
+          <button (click)="this.navbar.profile()" mat-menu-item>Profil</button>
           <button mat-menu-item>Moje ogłoszenia</button>
           <button mat-menu-item>Śledzone ogłoszenia</button>
           <button mat-menu-item>Rezerwacje</button>
           <button mat-menu-item>Komentarze</button>
-          <button (click)="logout()" mat-menu-item>
+          <button (click)="this.navbar.logout()" mat-menu-item>
             Wyloguj
           </button>
         </mat-menu>

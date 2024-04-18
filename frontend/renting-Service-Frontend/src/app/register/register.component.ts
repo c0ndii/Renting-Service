@@ -22,9 +22,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
-import { json } from 'stream/consumers';
 import { SnackbarService } from '../services/snackbar.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -54,6 +54,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatIconModule,
     CommonModule,
     RouterModule,
+    MatProgressSpinnerModule,
   ],
   providers: [AuthService],
   templateUrl: './register.component.html',
@@ -152,6 +153,10 @@ export class RegisterComponent implements OnInit {
       });
     }
   };
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.authService.getJwtToken() !== null) {
+      this.router.navigate(['']);
+    }
+  }
   ngOnDestroy(): void {}
 }
