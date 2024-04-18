@@ -1,5 +1,5 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { SnackbarService } from './services/snackbar.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes), 
+    provideRouter(routes, withViewTransitions()), 
     provideHttpClient(withFetch()),
     provideAnimations(),
     importProvidersFrom(MatNativeDateModule), 

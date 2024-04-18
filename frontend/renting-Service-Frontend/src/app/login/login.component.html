@@ -1,6 +1,10 @@
-<div>
+@defer {
+<div class="background-holder">
   <div class="login-form-container-outer">
     <div class="login-form-container">
+      <div class="login-text-holder">
+        <span>Zaloguj się</span>
+      </div>
       <form class="login-form" (ngSubmit)="onSubmit()">
         <mat-form-field>
           <mat-label>Email</mat-label>
@@ -19,6 +23,7 @@
           }
         </mat-form-field>
         <br />
+        <br />
         <mat-form-field>
           <mat-label>Hasło</mat-label>
           <input
@@ -32,6 +37,7 @@
           }
         </mat-form-field>
         <br />
+        <br />
         <div class="button-form-container">
           <button type="submit" mat-stroked-button>Zaloguj</button>
           <button type="submit" mat-stroked-button>Przypomnij hasło</button>
@@ -41,3 +47,8 @@
   </div>
   
 </div>
+} @loading (; minimum 1.5s) {
+  <div class="spinner-holder">
+    <mat-spinner></mat-spinner>
+  </div>
+}

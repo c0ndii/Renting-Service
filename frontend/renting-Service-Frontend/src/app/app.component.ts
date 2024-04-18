@@ -6,7 +6,6 @@ import { LayoutComponent } from './layout/layout.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './navbar/navbar.component';
 
-
 @Component({
     selector: 'app-root',
     standalone: true,

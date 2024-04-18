@@ -16,11 +16,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -50,6 +51,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatIconModule,
     CommonModule,
     RouterModule,
+    MatProgressSpinnerModule,
+    NgOptimizedImage,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
