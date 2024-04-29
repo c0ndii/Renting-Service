@@ -1,0 +1,78 @@
+
+.profile-container {
+  margin: 40px;
+  display: flex;
+  width: 60vw;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 80vh;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  border-radius: 1%;
+}
+.profile-container-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 75px);
+}
+.spinner-holder {
+  display: flex;
+  height: calc(100vh - 75px);
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+}
+.background-holder {
+  background-image: url("/assets/lrbg.jpg");
+  background-position: 25%;
+  background-size: cover;
+}
+.title-holder {
+  font-size: 32px;
+  font-weight: bold;
+  height: 5vh;
+}
+.profile-details {
+  height: 60vh;
+  width: 40vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.login-avatar-holder {
+  background-color: black !important;
+  border: 1px solid gray;
+  border-radius: 30%;
+  width: 150px;
+  height: 150px;
+}
+.changable-property-holder {
+  display: flex;
+  width: 40vw;
+  padding: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content:space-between;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+button {
+  margin-right: 30px;
+  border: 2px solid rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+.login-name-holder {
+    font-size: 24px;
+    font-weight: bold;
+}
+.subtitle {
+  display: flex;
+  padding: 5px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+}
