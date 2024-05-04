@@ -11,6 +11,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,7 +25,8 @@ import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { VerifyAccountDialogComponent } from '../dialogs/verify-account-dialog/verify-account-dialog.component';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -55,6 +57,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     CommonModule,
     RouterModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   providers: [AuthService],
   templateUrl: './register.component.html',
@@ -80,9 +83,18 @@ export class RegisterComponent implements OnInit {
     private authService: AuthService,
     private navbar: NavbarService,
     private router: Router,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    public dialog: MatDialog,
   ) {
     this.navbar.disableInputs();
+  }
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+    this.dialog.open(VerifyAccountDialogComponent, {
+      width: '400px',
+      minHeight: '300px',
+      enterAnimationDuration,
+      exitAnimationDuration
+    });
   }
   passwordMatch(control: AbstractControl): ValidationErrors | null {
     const password = this.password.value;
@@ -90,6 +102,13 @@ export class RegisterComponent implements OnInit {
     return password && passwordConfirm && password === passwordConfirm
       ? null
       : { passwordMismatch: true };
+  }
+
+  clearInputs(){
+    this.name.reset();
+    this.email.reset();
+    this.password.reset();
+    this.passwordConfirm.reset();
   }
 
   checkValidators: boolean = true;
@@ -128,33 +147,33 @@ export class RegisterComponent implements OnInit {
       this.authService.registerUser(this.registerDto).subscribe(
         (response) => {
           if (response === null) {
-            this.router.navigate(['']);
+            this.clearInputs();
+            this.openDialog('300ms','150ms');
             this.snackbarService.openSnackbar('Utworzono konto', 'Success');
           }
-        }, (error: HttpErrorResponse) => {
-          switch(error.status){
+        },
+        (error: HttpErrorResponse) => {
+          switch (error.status) {
             case 409:
-              this.errorMessage = "Email jest zajęty";
+              this.errorMessage = 'Email jest zajęty';
               this.status = 'Info';
               break;
             case 500:
-              this.errorMessage = "Wewnętrzny błąd serwera";
+              this.errorMessage = 'Wewnętrzny błąd serwera';
               this.status = 'Error';
               break;
             default:
-              this.errorMessage = "Nie można połączyć się z serwerem";
+              this.errorMessage = 'Nie można połączyć się z serwerem';
               this.status = 'Error';
               break;
           }
-          this.snackbarService.openSnackbar(
-            this.errorMessage,
-            this.status
-          );
-      });
+          this.snackbarService.openSnackbar(this.errorMessage, this.status);
+        }
+      );
     }
   };
   ngOnInit(): void {
-    if(this.authService.getJwtToken() !== null) {
+    if (this.authService.getJwtToken() !== null) {
       this.router.navigate(['']);
     }
   }

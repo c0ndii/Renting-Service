@@ -151,7 +151,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.VerificationToken == token && x.Role.Name == "Unconfirmed");
             if (user is null)
             {
-                throw new NotFoundException("Account not found");
+                throw new UnauthorizedException("Account does not exist");
             }
             user.Role = await _context.Roles.SingleOrDefaultAsync(x => x.Name == "User");
             user.VerificationToken = null;

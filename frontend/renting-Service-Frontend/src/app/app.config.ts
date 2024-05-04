@@ -10,6 +10,7 @@ import { jwtInterceptor } from './interceptors/jwt.interceptor';
 import { AuthService } from './services/auth.service';
 import { NavbarService } from './services/navbar.service';
 import { SnackbarService } from './services/snackbar.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,6 +23,10 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: jwtInterceptor,
       multi: true
+    },
+    {
+      provide: MatDialogRef,
+      useValue: {}
     },
     AuthService,
     NavbarService,

@@ -108,6 +108,9 @@ export class AuthService {
     return this.http.delete(backendUrlBase + 'auth/revoketoken');
     //logout
   }
+  verifyAccount(code: string){
+    return this.http.get(backendUrlBase + 'auth/verifyemail/' + code);
+  }
   login(token: tokenDto){
     this.setJwtToken(token.jwtToken);
     this.setRefreshToken(token.refreshToken);

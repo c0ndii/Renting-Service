@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { loginDto } from '../interfaces/loginDto';
 import {
@@ -9,6 +9,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +23,7 @@ import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { VerifyAccountDialogComponent } from '../dialogs/verify-account-dialog/verify-account-dialog.component';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -53,6 +55,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     RouterModule,
     MatProgressSpinnerModule,
     NgOptimizedImage,
+    MatInputModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -64,7 +67,7 @@ export class LoginComponent implements OnInit{
     private navbar: NavbarService,
     private router: Router,
     private snackbarService: SnackbarService,
-    private elementRef: ElementRef,
+    public dialog: MatDialog,
   ) {
     this.navbar.disableInputs();
   }
@@ -72,6 +75,14 @@ export class LoginComponent implements OnInit{
     Validators.required,
     Validators.email,
   ]);
+  openVerifyDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+    this.dialog.open(VerifyAccountDialogComponent, {
+      width: '400px',
+      minHeight: '300px',
+      enterAnimationDuration,
+      exitAnimationDuration
+    });
+  }
   passwordFormControl = new FormControl('', [Validators.required]);
   matcher = new MyErrorStateMatcher();
   loginDto = {} as loginDto;
@@ -116,6 +127,10 @@ export class LoginComponent implements OnInit{
               break;
           }
           this.snackbarService.openSnackbar(this.errorMessage, this.status);
+          if(error.status===403){
+            this.router.navigate(['register']);
+            this.openVerifyDialog('300ms', '150ms');
+          }
         }
       );
     }
