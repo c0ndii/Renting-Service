@@ -163,7 +163,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == email.ToLower() && (x.ResetPasswordTimeExpires == null || DateTime.Now > x.ResetPasswordTimeExpires));
             if (user is null)
             {
-                throw new NotFoundException("Account not found");
+                throw new NotFoundException("Account does not exist");
             }
             var code = CreateRandomToken(10);
             while (await _context.Users.AnyAsync(x => x.PasswordResetToken == code))
@@ -181,7 +181,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.SingleOrDefaultAsync(x => x.PasswordResetToken == resetPasswordDto.ResetToken && x.ResetPasswordTimeExpires > DateTime.Now);
             if (user == null)
             {
-                throw new NotFoundException("Invalid or expired token");
+                throw new NotFoundException("Wrong reset code");
             }
             var newPasswordHash = _passwordHasher.HashPassword(user, resetPasswordDto.Password);
             user.PasswordHash = newPasswordHash;

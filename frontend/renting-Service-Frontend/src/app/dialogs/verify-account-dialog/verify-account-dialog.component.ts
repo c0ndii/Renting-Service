@@ -55,7 +55,7 @@ export class VerifyAccountDialogComponent {
       }, (error: HttpErrorResponse) => {
         console.log(error.status);
         switch (error.status) {
-          case 401:
+          case 404:
             this.errorMessage = 'Konto zostało już potwierdzone bądź podano błędny kod';
             this.status = 'Error';
             break;

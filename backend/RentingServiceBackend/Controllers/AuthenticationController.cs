@@ -32,7 +32,7 @@ namespace RentingServiceBackend.Controllers
             await _authenticationService.VerifyAccountAsync(token);
             return Ok();
         }
-        [HttpPost("forgotpassword/{email}")]
+        [HttpGet("forgotpassword/{email}")]
         public async Task<IActionResult> ForgotPassword([FromRoute] string email)
         {
             await _authenticationService.ForgotPasswordAsync(email);

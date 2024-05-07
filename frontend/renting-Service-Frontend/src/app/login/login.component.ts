@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { VerifyAccountDialogComponent } from '../dialogs/verify-account-dialog/verify-account-dialog.component';
+import { RemindPasswordDialogComponent } from '../dialogs/remind-password-dialog/remind-password-dialog.component';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -55,7 +56,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     RouterModule,
     MatProgressSpinnerModule,
     NgOptimizedImage,
-    MatInputModule
+    MatInputModule,
+    RemindPasswordDialogComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -135,6 +137,14 @@ export class LoginComponent implements OnInit{
       );
     }
   };
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+    this.dialog.open(RemindPasswordDialogComponent, {
+      width: '600px',
+      minHeight: '300px',
+      enterAnimationDuration,
+      exitAnimationDuration
+    });
+  }
   ngOnInit(): void {
     if(this.authService.getJwtToken() !== null) {
       this.router.navigate(['']);

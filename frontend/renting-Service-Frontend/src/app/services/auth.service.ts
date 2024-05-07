@@ -8,6 +8,7 @@ import { tokenDto } from '../interfaces/tokenDto';
 import { refreshTokenDto } from '../interfaces/refreshTokenDto';
 import { Observable} from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { resetPasswordDto } from '../interfaces/resetPasswordDto';
 
 @Injectable({
   providedIn: 'root'
@@ -110,6 +111,12 @@ export class AuthService {
   }
   verifyAccount(code: string){
     return this.http.get(backendUrlBase + 'auth/verifyemail/' + code);
+  }
+  sendPasswordResetCode(mail: string){
+    return this.http.get(backendUrlBase + 'auth/forgotpassword/' + mail);
+  }
+  resetPassword(resetPasswordDto: resetPasswordDto){
+    return this.http.post(backendUrlBase + 'auth/resetpassword', resetPasswordDto);
   }
   login(token: tokenDto){
     this.setJwtToken(token.jwtToken);

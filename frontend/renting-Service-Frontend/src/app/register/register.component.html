@@ -5,7 +5,7 @@
       <div class="register-text-holder">
         Zarejestruj się
       </div>
-      <form class="register-form" (ngSubmit)="onSubmit()">
+      <form class="register-form" id="register-form" (ngSubmit)="onSubmit()">
         <mat-form-field>
           <mat-label>Imię</mat-label>
           <input
@@ -63,7 +63,7 @@
         <br />
         <br />
         <div class="button-form-container">
-          <button type="submit" mat-stroked-button>Zarejestruj</button>
+          <button form="register-form" type="submit" mat-stroked-button>Zarejestruj</button>
           <button (click)="openDialog('300ms', '150ms')" mat-stroked-button>Zweryfikuj konto</button>
         </div>
         <br />
