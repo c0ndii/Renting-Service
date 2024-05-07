@@ -11,6 +11,7 @@ import { AuthService } from './services/auth.service';
 import { NavbarService } from './services/navbar.service';
 import { SnackbarService } from './services/snackbar.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: MatDialogRef,
       useValue: {}
+    },
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {showError: true},
     },
     AuthService,
     NavbarService,

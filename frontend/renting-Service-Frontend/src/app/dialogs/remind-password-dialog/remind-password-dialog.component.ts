@@ -14,6 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import {
   FormControl,
+  FormBuilder,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -27,6 +28,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { resetPasswordDto } from 'src/app/interfaces/resetPasswordDto';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-remind-password-dialog',
@@ -42,37 +44,34 @@ import { resetPasswordDto } from 'src/app/interfaces/resetPasswordDto';
     FormsModule,
     MatFormFieldModule,
     MatDividerModule,
+    MatStepperModule,
   ],
   templateUrl: './remind-password-dialog.component.html',
   styleUrl: './remind-password-dialog.component.scss',
 })
 export class RemindPasswordDialogComponent {
-  disableMail: boolean;
+  emailFormGroup = this.formBuilder.group({
+    email: ['', Validators.email],
+  });
+  resetPasswordFormGroup = this.formBuilder.group({
+    resetCode: [
+      '',
+      Validators.required,
+      Validators.maxLength(10),
+      Validators.minLength(10),
+    ],
+    password: ['', Validators.required, Validators.minLength(8)],
+    passwordConfirm: ['', Validators.required, this.passwordMatch.bind(this)],
+  });
   constructor(
     private snackbarService: SnackbarService,
     private authService: AuthService,
     public dialog: MatDialogRef<RemindPasswordDialogComponent>,
-    private router: Router
-  ) {
-    this.disableMail = false;
-  }
-  email = new FormControl('', [Validators.required, Validators.email]);
-  resetCode = new FormControl('', [
-    Validators.required,
-    Validators.maxLength(10),
-    Validators.minLength(10),
-  ]);
-  password = new FormControl('', [
-    Validators.required,
-    Validators.minLength(8),
-  ]);
-  passwordConfirm = new FormControl('', [
-    Validators.required,
-    this.passwordMatch.bind(this),
-  ]);
-
+    private router: Router,
+    private formBuilder: FormBuilder
+  ) {}
   passwordMatch(control: AbstractControl): ValidationErrors | null {
-    const password = this.password.value;
+    const password = this.resetPasswordFormGroup.controls['password'].value!;
     const passwordConfirm = control.value;
     return password && passwordConfirm && password === passwordConfirm
       ? null
@@ -81,56 +80,46 @@ export class RemindPasswordDialogComponent {
   errorMessage: string = '';
   status: string = '';
   sendCode() {
-    if (!this.email.errors) {
-      this.authService.sendPasswordResetCode(this.email.value!).subscribe(
-        (response) => {
-          if (response === null) {
-            this.snackbarService.openSnackbar('Kod został wysłany', 'Success');
-            this.disableMail = true;
+    if (!this.emailFormGroup.errors) {
+      this.authService
+        .sendPasswordResetCode(this.emailFormGroup.controls['email'].value!)
+        .subscribe(
+          (response) => {
+            if (response === null) {
+              this.snackbarService.openSnackbar(
+                'Kod został wysłany',
+                'Success'
+              );
+            }
+          },
+          (error: HttpErrorResponse) => {
+            console.log(error.status);
+            switch (error.status) {
+              case 401:
+                this.errorMessage =
+                  'Konto nie istnieje lub poprzedni kod jest jeszcze ważny';
+                this.status = 'Error';
+                break;
+              default:
+                this.errorMessage = 'Nie można połączyć się z serwerem';
+                this.status = 'Error';
+                break;
+            }
+            this.snackbarService.openSnackbar(this.errorMessage, this.status);
           }
-        },
-        (error: HttpErrorResponse) => {
-          console.log(error.status);
-          switch (error.status) {
-            case 401:
-              this.errorMessage =
-                'Konto nie istnieje lub poprzedni kod jest jeszcze ważny';
-              this.status = 'Error';
-              break;
-            default:
-              this.errorMessage = 'Nie można połączyć się z serwerem';
-              this.status = 'Error';
-              break;
-          }
-          this.snackbarService.openSnackbar(this.errorMessage, this.status);
-        }
-      );
+        );
     }
   }
-  checkValidators: boolean = true;
   resetPasswordDto = {} as resetPasswordDto;
   resetPassword() {
-    this.checkValidators =
-      (this.email.hasError('required')
-        ? true
-        : this.email.hasError('email')
-        ? true
-        : false) ||
-      (this.password.hasError('required')
-        ? true
-        : this.password.hasError('minlength')
-        ? true
-        : false) ||
-      (this.passwordConfirm.hasError('required')
-        ? true
-        : this.passwordConfirm.hasError('passwordMismatch')
-        ? true
-        : false);
-    if (this.checkValidators) {
+    if (this.emailFormGroup.errors || this.resetPasswordFormGroup.errors) {
     } else {
-      this.resetPasswordDto.ResetToken = this.resetCode.value!;
-      this.resetPasswordDto.Password = this.password.value!;
-      this.resetPasswordDto.PasswordConfirm = this.passwordConfirm.value!;
+      this.resetPasswordDto.ResetToken =
+        this.resetPasswordFormGroup.controls['resetCode'].value!;
+      this.resetPasswordDto.Password =
+        this.resetPasswordFormGroup.controls['password'].value!;
+      this.resetPasswordDto.PasswordConfirm =
+        this.resetPasswordFormGroup.controls['passwordConfirm'].value!;
       this.authService.resetPassword(this.resetPasswordDto).subscribe(
         (response) => {
           if (response === null) {

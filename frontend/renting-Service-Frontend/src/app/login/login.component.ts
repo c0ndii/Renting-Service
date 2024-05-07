@@ -139,7 +139,7 @@ export class LoginComponent implements OnInit{
   };
   openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
     this.dialog.open(RemindPasswordDialogComponent, {
-      width: '600px',
+      minWidth: '700px',
       minHeight: '300px',
       enterAnimationDuration,
       exitAnimationDuration
