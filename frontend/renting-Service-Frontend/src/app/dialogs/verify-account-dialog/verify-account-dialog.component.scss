@@ -1,11 +1,14 @@
-* {
+.form-holder {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content:space-evenly;
+    justify-content: center;
 }
 button {
-    margin-right: 30px;
     border: 2px solid rgba(0, 0, 0, 0.5) !important;
     background-color: rgba(255,255,255, 0.95) !important;
+  }
+  .button-holder {
+    display: flex;
+    justify-content: flex-end;
   }
