@@ -4,13 +4,14 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
 import { backendUrlBase } from '../appsettings/constant';
+import { LayoutComponent } from '../layout/layout.component';
 
 @Component({
-  selector: 'app-sidenavbar',
-  standalone: true,
-  imports: [MatSidenavModule, MatButtonModule, MatIconModule],
-  templateUrl: './sidenavbar.component.html',
-  styleUrl: './sidenavbar.component.scss'
+    selector: 'app-sidenavbar',
+    standalone: true,
+    templateUrl: './sidenavbar.component.html',
+    styleUrl: './sidenavbar.component.scss',
+    imports: [MatSidenavModule, MatButtonModule, MatIconModule, LayoutComponent]
 })
 export class SidenavbarComponent{
   showFiller = false;
