@@ -1,4 +1,7 @@
-app-sidenavbar {
-    display: flex;
-    max-width: 40vw !important;
+.map {
+  height: calc(100vh - 75px);
+  min-width: calc(100vw - 300px);
+  max-width: 100vw;
+  padding: 0;
+  overflow: hidden;
 }

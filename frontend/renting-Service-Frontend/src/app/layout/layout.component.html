@@ -1,2 +1,7 @@
-<div>
-</div>
+<div
+  class="map"
+  id="map"
+  leaflet
+  [leafletOptions]="options"
+  (leafletMapReady)="readyUpMap($event)"
+></div>
