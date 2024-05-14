@@ -17,6 +17,8 @@ export class LayoutComponent {
   constructor(private navbar: NavbarService){
     this.navbar.enableInputs();
   }
+  isLogged: boolean = false;
+  map!: Leaflet.Map;
   options: Leaflet.MapOptions = {
     layers: getLayers(),
     zoom: 12,
@@ -24,9 +26,23 @@ export class LayoutComponent {
     center: new Leaflet.LatLng(52.13, 21.0)
   };
   readyUpMap(map: Leaflet.Map){
-    map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
+    this.map = map;
+    this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
+   }
   }
-  isLogged: boolean = false;
+  setGeoLocation(position: { coords: { latitude: any; longitude: any } }) {
+    const {
+       coords: { latitude, longitude },
+    } = position;
+ 
+    this.map.setView([latitude, longitude], 15);
+ 
+    Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>contributors'
+     } ).addTo(this.map);
+ }
 }
 export const getLayers = (): Leaflet.Layer[] => {
   return [
