@@ -36,8 +36,8 @@
         disabled="{{ navbar.inputsDisabled }}"
         name="fontStyle"
         aria-label="Font Style"
-        (change)="navbar.changeType()"
-        [(ngModel)]="navbar.selectedValue"
+        (change)="onChange()"
+        [(ngModel)]="selectedValue"
       >
         <mat-button-toggle value="map"
           ><mat-icon> map</mat-icon></mat-button-toggle
@@ -62,6 +62,7 @@
 
     <div class="navbar-menu-right" *ngIf="navbar.isUserLoggedIn()">
       <div class="user-panel-section">
+        <button class="add-post-button-holder" (click)="openDialog('300ms', '150ms')" mat-menu-item><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
           <div class="user-panel-holder">
             <div class="login-name-holder">

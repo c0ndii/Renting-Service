@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using RentingServiceBackend.Entities;
 using RentingServiceBackend.Exceptions;
-using RentingServiceBackend.Migrations;
 using RentingServiceBackend.Models;
 using RentingServiceBackend.ServiceSettings;
 using System.IdentityModel.Tokens.Jwt;

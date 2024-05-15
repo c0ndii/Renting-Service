@@ -9,8 +9,8 @@ namespace RentingServiceBackend.Services
 {
     public interface IPostService
     {
-        Task AddPost(CreatePostDto dto);
-        Task<PostDto> GetPostById(int postId);
+        Task AddRentPost(CreateForRentPostDto dto);
+        Task<ForRentPostDto> GetRentPostById(int postId);
     }
 
     public class PostService : IPostService
@@ -27,7 +27,7 @@ namespace RentingServiceBackend.Services
             _userContextService = userContextService;
             _mapper = mapper;
         }
-        public async Task AddPost(CreatePostDto dto)
+        public async Task AddRentPost(CreateForRentPostDto dto)
         {
             var userId = _userContextService.GetUserId;
             if (userId == null)
@@ -49,11 +49,13 @@ namespace RentingServiceBackend.Services
             {
                 throw new NotFoundException("Categories not found");
             }
-            var postToBeAdded = new Post()
+            var postToBeAdded = new ForRentPost()
             {
                 Title = dto.Title,
                 Description = dto.Description,
                 Image = dto.Image,
+                SleepingPlaceCount = dto.SleepingPlaceCount,
+
                 Location = dto.Location,
                 AddDate = DateTime.Now,
                 FollowedBy = new List<User>(),
@@ -63,12 +65,12 @@ namespace RentingServiceBackend.Services
                 Comments = new List<Comment>(),
                 User = user
             };
-            await _context.Posts.AddAsync(postToBeAdded);
+            await _context.ForRentPosts.AddAsync(postToBeAdded);
             await _context.SaveChangesAsync();
         }
-        public async Task<PostDto> GetPostById(int postId)
+        public async Task<ForRentPostDto> GetRentPostById(int postId)
         {
-            var post = await _context.Posts.Include(x => x.User).Include(x => x.Features).Include(x => x.Categories).SingleOrDefaultAsync(x => x.PostId == postId);
+            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.Features).Include(x => x.Categories).SingleOrDefaultAsync(x => x.PostId == postId);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
@@ -82,7 +84,7 @@ namespace RentingServiceBackend.Services
             List<string> features = post.Features.Select(x => x.FeatureName).ToList();
             List<string> categories = post.Categories.Select(x => x.CategoryName).ToList();
             var comments = _mapper.Map<List<CommentDto>>(post.Comments);
-            var result = _mapper.Map<PostDto>(post);
+            var result = _mapper.Map<ForRentPostDto>(post);
             result.Features = features;
             result.Categories = categories;
             result.Comments = comments;

@@ -17,7 +17,7 @@ namespace RentingServiceBackend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -89,6 +89,32 @@ namespace RentingServiceBackend.Migrations
                     b.ToTable("Features");
                 });
 
+            modelBuilder.Entity("RentingServiceBackend.Entities.MainCategory", b =>
+                {
+                    b.Property<int>("MainCategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MainCategoryId"));
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
+                    b.Property<string>("MainCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MainCategoryId");
+
+                    b.ToTable("MainCategories");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("MainCategory");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("RentingServiceBackend.Entities.Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -108,6 +134,11 @@ namespace RentingServiceBackend.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -116,11 +147,8 @@ namespace RentingServiceBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RateIterator")
-                        .HasColumnType("int");
-
-                    b.Property<double>("RateScore")
-                        .HasColumnType("float");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -135,6 +163,10 @@ namespace RentingServiceBackend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Post");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.PostCategoryLinkEnitity", b =>
@@ -279,9 +311,62 @@ namespace RentingServiceBackend.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForRentMainCategory", b =>
+                {
+                    b.HasBaseType("RentingServiceBackend.Entities.MainCategory");
+
+                    b.HasDiscriminator().HasValue("ForRentMainCategory");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForSaleMainCategory", b =>
+                {
+                    b.HasBaseType("RentingServiceBackend.Entities.MainCategory");
+
+                    b.HasDiscriminator().HasValue("ForSaleMainCategory");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForRentPost", b =>
+                {
+                    b.HasBaseType("RentingServiceBackend.Entities.Post");
+
+                    b.Property<int>("MainCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RateIterator")
+                        .HasColumnType("int");
+
+                    b.Property<double>("RateScore")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SleepingPlaceCount")
+                        .HasColumnType("int");
+
+                    b.HasIndex("MainCategoryId");
+
+                    b.ToTable("Posts", t =>
+                        {
+                            t.Property("MainCategoryId")
+                                .HasColumnName("ForRentPost_MainCategoryId");
+                        });
+
+                    b.HasDiscriminator().HasValue("ForRentPost");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForSalePost", b =>
+                {
+                    b.HasBaseType("RentingServiceBackend.Entities.Post");
+
+                    b.Property<int>("MainCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("MainCategoryId");
+
+                    b.HasDiscriminator().HasValue("ForSalePost");
+                });
+
             modelBuilder.Entity("RentingServiceBackend.Entities.Comment", b =>
                 {
-                    b.HasOne("RentingServiceBackend.Entities.Post", "Post")
+                    b.HasOne("RentingServiceBackend.Entities.ForRentPost", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -317,7 +402,7 @@ namespace RentingServiceBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RentingServiceBackend.Entities.Post", null)
+                    b.HasOne("RentingServiceBackend.Entities.ForRentPost", null)
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -332,7 +417,7 @@ namespace RentingServiceBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RentingServiceBackend.Entities.Post", null)
+                    b.HasOne("RentingServiceBackend.Entities.ForRentPost", null)
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -356,7 +441,7 @@ namespace RentingServiceBackend.Migrations
 
             modelBuilder.Entity("RentingServiceBackend.Entities.Reservation", b =>
                 {
-                    b.HasOne("RentingServiceBackend.Entities.Post", "Post")
+                    b.HasOne("RentingServiceBackend.Entities.ForRentPost", "Post")
                         .WithMany("Reservations")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -384,11 +469,26 @@ namespace RentingServiceBackend.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("RentingServiceBackend.Entities.Post", b =>
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForRentPost", b =>
                 {
-                    b.Navigation("Comments");
+                    b.HasOne("RentingServiceBackend.Entities.ForRentMainCategory", "MainCategory")
+                        .WithMany("ForRentPosts")
+                        .HasForeignKey("MainCategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.Navigation("Reservations");
+                    b.Navigation("MainCategory");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForSalePost", b =>
+                {
+                    b.HasOne("RentingServiceBackend.Entities.ForSaleMainCategory", "MainCategory")
+                        .WithMany("ForSalePosts")
+                        .HasForeignKey("MainCategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("MainCategory");
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.User", b =>
@@ -396,6 +496,23 @@ namespace RentingServiceBackend.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("OwnedPosts");
+
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForRentMainCategory", b =>
+                {
+                    b.Navigation("ForRentPosts");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForSaleMainCategory", b =>
+                {
+                    b.Navigation("ForSalePosts");
+                });
+
+            modelBuilder.Entity("RentingServiceBackend.Entities.ForRentPost", b =>
+                {
+                    b.Navigation("Comments");
 
                     b.Navigation("Reservations");
                 });

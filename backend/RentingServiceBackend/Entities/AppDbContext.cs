@@ -16,7 +16,12 @@ namespace RentingServiceBackend.Entities
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public DbSet<MainCategory> MainCategories { get; set; }
+        public DbSet<ForRentPost> ForRentPosts { get; set; }
+        public DbSet<ForSalePost> ForSalePosts { get; set; }
+        public DbSet<ForSaleMainCategory> ForSaleMainCategories { get; set; }
+        public DbSet<ForRentMainCategory> ForRentMainCategories { get; set; }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
@@ -31,7 +36,7 @@ namespace RentingServiceBackend.Entities
             modelBuilder.Entity<Category>()
                 .HasMany(x => x.Posts)
                 .WithMany(x => x.Categories)
-                .UsingEntity<PostCategoryLinkEnitity>(l => l.HasOne<Post>().WithMany().HasForeignKey(y => y.PostId).OnDelete(DeleteBehavior.Cascade),
+                .UsingEntity<PostCategoryLinkEnitity>(l => l.HasOne<ForRentPost>().WithMany().HasForeignKey(y => y.PostId).OnDelete(DeleteBehavior.Cascade),
                 r => r.HasOne<Category>().WithMany().HasForeignKey(y => y.CategoryId).OnDelete(DeleteBehavior.Cascade));
 
             modelBuilder.Entity<Comment>()
@@ -50,7 +55,7 @@ namespace RentingServiceBackend.Entities
             modelBuilder.Entity<Feature>()
                 .HasMany(x => x.Posts)
                 .WithMany(x => x.Features)
-                .UsingEntity<PostFeatureLinkEntity>(l => l.HasOne<Post>().WithMany().HasForeignKey(y => y.PostId).OnDelete(DeleteBehavior.Cascade),
+                .UsingEntity<PostFeatureLinkEntity>(l => l.HasOne<ForRentPost>().WithMany().HasForeignKey(y => y.PostId).OnDelete(DeleteBehavior.Cascade),
                 r => r.HasOne<Feature>().WithMany().HasForeignKey(y => y.FeatureId).OnDelete(DeleteBehavior.Cascade));
 
             modelBuilder.Entity<Post>()
@@ -69,12 +74,12 @@ namespace RentingServiceBackend.Entities
                 .HasPrincipalKey(x => x.UserId)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Post>()
+            modelBuilder.Entity<ForRentPost>()
                 .HasMany(x => x.Comments)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Post>()
+            modelBuilder.Entity<ForRentPost>()
                 .HasMany(x => x.Reservations)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)
@@ -127,6 +132,17 @@ namespace RentingServiceBackend.Entities
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ForRentPost>()
+                .HasOne(x => x.MainCategory)
+                .WithMany(x => x.ForRentPosts)
+                .HasForeignKey(x => x.MainCategoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ForSalePost>()
+                .HasOne(x => x.MainCategory)
+                .WithMany(x => x.ForSalePosts)
+                .HasForeignKey(x => x.MainCategoryId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

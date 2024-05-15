@@ -22,7 +22,7 @@ namespace RentingServiceBackend
                 .ForMember(x => x.Comments, y => y.MapFrom(z => new List<Comment>()))
                 .ForMember(x => x.Reservations, y => y.MapFrom(z => new List<Reservation>()))
                 .ForMember(x => x.OwnedPosts, y => y.MapFrom(z => new List<Post>()));
-            CreateMap<Post, PostDto>()
+            CreateMap<ForRentPost, ForRentPostDto>()
                 .ForMember(x => x.Rate, y => y.MapFrom(z => z.RateScore / z.RateIterator))
                 .ForMember(x => x.FollowCount, y => y.MapFrom(z => z.FollowedBy.Count));     
         }

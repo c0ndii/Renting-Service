@@ -1,12 +1,13 @@
-﻿using RentingServiceBackend.Entities;
-
-namespace RentingServiceBackend.Models
+﻿namespace RentingServiceBackend.Models
 {
-    public class PostDto
+    public class ForRentPostDto
     {
         public int PostId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string MainCategory { get; set; }
+        public int SleepingPlaceCount { get; set; }
+        public float Price { get; set; }
         public string Image { get; set; }
         public string Location { get; set; }
         public DateTime AddDate { get; set; }

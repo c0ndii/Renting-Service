@@ -13,10 +13,10 @@ namespace RentingServiceBackend.Entities
         public DateTime? ResetPasswordTimeExpires { get; set; }
         public string? RefreshToken {  get; set; }
         public DateTime RefreshTokenTimeExpires { get; set; }
-        public virtual List<Post> OwnedPosts { get; set; }
-        public virtual List<Post> FollowedPosts { get; set; }
-        public virtual List<Reservation> Reservations { get; set; }
-        public virtual List<Comment> Comments { get; set; }
+        public virtual List<Post> OwnedPosts { get; set; } = new List<Post>();
+        public virtual List<Post> FollowedPosts { get; set; } = new List<Post>();
+        public virtual List<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public virtual List<Comment> Comments { get; set; } = new List<Comment>();
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }
     }

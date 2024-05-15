@@ -4,6 +4,6 @@
     {
         public int FeatureId { get; set; }
         public string FeatureName { get; set; }
-        public virtual List<Post> Posts { get; set; }
+        public virtual List<ForRentPost> Posts { get; set; } = new List<ForRentPost>();
     }
 }

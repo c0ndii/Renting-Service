@@ -1,7 +1,2 @@
-<div
-  class="map"
-  id="map"
-  leaflet
-  [leafletOptions]="options"
-  (leafletMapReady)="readyUpMap($event)"
-></div>
+<app-map-layout *ngIf="selectedValue == 'map'"></app-map-layout>
+<app-list-layout *ngIf="selectedValue == 'list'"></app-list-layout>

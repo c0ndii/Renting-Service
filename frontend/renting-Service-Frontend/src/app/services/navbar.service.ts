@@ -9,9 +9,10 @@ import { Router } from '@angular/router';
 })
 export class NavbarService{
   private username = new BehaviorSubject<string>('');
+  private selectedValue = new BehaviorSubject<string>('map');
   constructor(protected authService: AuthService, protected snackbar: SnackbarService, protected router: Router) { 
   }
-  selectedValue = "map";
+  
   inputsDisabled: boolean = false;
   search_value = '';
   disableInputs(){
@@ -19,11 +20,6 @@ export class NavbarService{
   }
   enableInputs(){
     this.inputsDisabled = false;
-  }
-  changeType()
-  {
-    console.log(this.selectedValue);
-    console.log(this.inputsDisabled);
   }
   isUserLoggedIn(): boolean{
     if(this.authService.getRole() != null){
@@ -41,9 +37,15 @@ export class NavbarService{
   }
   public set UserName(username: string) {
     this.username.next(username);
-  };
+  }
   public get UserName() : Observable<string> {
     return this.username.asObservable();
+  }
+  public set SelectedValue(selectedValue: string) {
+    this.selectedValue.next(selectedValue);
+  }
+  public get SelectedValue() : Observable<string> {
+    return this.selectedValue.asObservable();
   }
   logout(){
     this.authService.logout();
