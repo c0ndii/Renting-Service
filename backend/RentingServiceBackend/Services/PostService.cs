@@ -56,7 +56,8 @@ namespace RentingServiceBackend.Services
                 Image = dto.Image,
                 SleepingPlaceCount = dto.SleepingPlaceCount,
 
-                Location = dto.Location,
+                Lat = dto.Lat,
+                Lng = dto.Lng,
                 AddDate = DateTime.Now,
                 FollowedBy = new List<User>(),
                 Reservations = new List<Reservation>(),

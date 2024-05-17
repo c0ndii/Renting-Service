@@ -18,7 +18,9 @@ namespace RentingServiceBackend.Models.Validators
                 .MaximumLength(500);
             RuleFor(x => x.Image)
                 .NotEmpty();
-            RuleFor(x => x.Location)
+            RuleFor(x => x.Lat)
+                .NotEmpty();
+            RuleFor(x => x.Lng)
                 .NotEmpty();
             RuleFor(x => x.Features)
                 .NotEmpty();

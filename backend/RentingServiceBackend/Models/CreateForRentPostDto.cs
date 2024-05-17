@@ -10,7 +10,8 @@ namespace RentingServiceBackend.Models
         public int SleepingPlaceCount { get; set; }
         public float Price { get; set; }
         public string Image { get; set; }
-        public string Location { get; set; }
+        public string Lat { get; set; }
+        public string Lng { get; set; }
         public virtual List<string> Features { get; set; }
         public virtual List<string> Categories { get; set; }
     }

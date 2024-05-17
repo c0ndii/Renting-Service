@@ -21,14 +21,23 @@
           <input
             matInput
             type="text"
-            [formControl]="codeFormControl"
+            [formControl]="title"
           />
-          @if (codeFormControl.hasError('required')) {
+          @if (title.hasError('required')) {
           <mat-error>Kod jest <strong>wymagany!</strong></mat-error>
-          } @if (codeFormControl.hasError('minlength')) {
-          <mat-error>Kod musi mieć <strong>8 znaków!</strong></mat-error>
-          } @if (codeFormControl.hasError('maxlength')) {
-          <mat-error>Kod musi mieć <strong>8 znaków!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <br />
+        <mat-form-field>
+          <mat-label>Tytuł</mat-label>
+          <input
+            matInput
+            type="text"
+            [formControl]="title"
+          />
+          @if (title.hasError('required')) {
+          <mat-error>Kod jest <strong>wymagany!</strong></mat-error>
           }
         </mat-form-field>
         <br />

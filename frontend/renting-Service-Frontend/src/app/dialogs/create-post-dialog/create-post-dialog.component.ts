@@ -37,10 +37,30 @@ import { CommonModule } from '@angular/common';
 export class CreatePostDialogComponent {
   constructor(private snackbarService: SnackbarService, private authService: AuthService, public dialog: MatDialogRef<CreatePostDialogComponent>, private router: Router ) {
   }
-  codeFormControl = new FormControl('', [
+  title = new FormControl('', [
     Validators.required,
-    Validators.maxLength(8),
-    Validators.minLength(8),
+    Validators.maxLength(20),
+  ]);
+  description = new FormControl('', [
+    Validators.required,
+    Validators.maxLength(500),
+  ]);
+  mainCategory = new FormControl('', [
+    Validators.required,
+  ]);
+  sleepingPlaceCount = new FormControl('', [
+    Validators.required,
+    Validators.min(1),
+  ]);
+  price = new FormControl('', [
+    Validators.required,
+    Validators.min(1),
+  ]);
+  features = new FormControl('', [
+    Validators.required,
+  ]);
+  categories = new FormControl('', [
+    Validators.required,
   ]);
   checkPostType() : boolean{
     console.log(this.selectedValue)
