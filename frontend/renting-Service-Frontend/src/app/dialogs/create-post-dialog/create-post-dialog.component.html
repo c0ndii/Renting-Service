@@ -1,6 +1,7 @@
 <div class="form-holder">
-    <h2 mat-dialog-title>Dodaj post</h2>
-    <mat-dialog-content>
+    <div class="dialog-toggle-button-holder">
+      <h2 mat-dialog-title>Dodaj post</h2>
+      <mat-dialog-content>
         <mat-button-toggle-group
         name="fontStyle"
         aria-label="Font Style"
@@ -14,38 +15,105 @@
         >
       </mat-button-toggle-group>
     </mat-dialog-content>
+    </div>
+    
     <mat-dialog-actions *ngIf="this.checkPostType()">
-      <form>
-        <mat-form-field>
-          <mat-label>Tytuł</mat-label>
-          <input
-            matInput
-            type="text"
-            [formControl]="title"
-          />
-          @if (title.hasError('required')) {
-          <mat-error>Kod jest <strong>wymagany!</strong></mat-error>
-          }
-        </mat-form-field>
-        <br />
-        <br />
-        <mat-form-field>
-          <mat-label>Tytuł</mat-label>
-          <input
-            matInput
-            type="text"
-            [formControl]="title"
-          />
-          @if (title.hasError('required')) {
-          <mat-error>Kod jest <strong>wymagany!</strong></mat-error>
-          }
-        </mat-form-field>
-        <br />
-        <br />
-        <div class="button-holder">
-          <button  mat-stroked-button>Wyślij kod</button>
-        </div>
-      </form>
+        <form>
+          <div class="inner-form">
+            <div class="txt-content">
+              <mat-form-field>
+                <mat-label>Tytuł</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [formControl]="title"
+                />
+                @if (title.hasError('required')) {
+                <mat-error>Tytuł jest <strong>wymagany!</strong></mat-error>
+                }
+                @if (title.hasError('maxlength')) {
+                  <mat-error>Tytuł może mieć maksymalnie <strong>20 znaków!</strong></mat-error>
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Opis</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [formControl]="description"
+                />
+                @if (description.hasError('required')) {
+                <mat-error>Opis jest <strong>wymagany!</strong></mat-error>
+                }
+                @if (description.hasError('maxlength')) {
+                  <mat-error>Opis może mieć maksymalnie<strong>500 znaków</strong></mat-error>
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Główna kategoria</mat-label>
+                <mat-select [(ngModel)]="selectedMainCategory" name="mainCategory">
+                  @for (mainRentCategory of mainRentCategories; track mainRentCategory) {
+                    <mat-option [value]="mainRentCategory">{{mainRentCategory}}</mat-option>
+                  }
+                </mat-select>
+                @if (mainCategory.hasError('required')) {
+                  <mat-error>Główna kategoria jest <strong>wymagana!</strong></mat-error>
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Maksymalna ilość osób</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [formControl]="sleepingPlaceCount"
+                />
+                @if (sleepingPlaceCount.hasError('required')) {
+                <mat-error>Liczba osób jest <strong>wymagana!</strong></mat-error>
+                }
+                @if (sleepingPlaceCount.hasError('min')) {
+                  <mat-error>Liczba osób musi wynosić <strong>przynajmniej 1!</strong></mat-error>
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Cena {{ selectedMainCategory == "Wypoczynek" ? "za dobę" : "za miesiąc" }}</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [formControl]="price"
+                />
+                @if (price.hasError('required')) {
+                <mat-error>Cena jest <strong>wymagana!</strong></mat-error>
+                }
+                @if (price.hasError('min')) {
+                  <mat-error>Cena musi wynosić <strong>przynajmniej 1zł!</strong></mat-error>
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+            </div>
+            <div class="map-content">
+              <div class="dialog-map-holder"
+              id="map"
+              leaflet
+              [leafletOptions]="options"
+              (leafletMapReady)="readyUpMap($event)">
+              </div>
+            </div>
+          </div>
+            <div class="button-holder">
+              <button  mat-stroked-button>Wyślij kod</button>
+            </div>
+          
+        </form>
+      
       <br />
     </mat-dialog-actions>
   </div>

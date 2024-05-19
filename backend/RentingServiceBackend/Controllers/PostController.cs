@@ -16,15 +16,16 @@ namespace RentingServiceBackend.Controllers
         }
         [HttpPost("addrentpost")]
         [Authorize]
-        public async Task AddRentPost([FromBody] CreateForRentPostDto dto)
+        public async Task<IActionResult> AddRentPost([FromBody] CreateForRentPostDto dto)
         {
             await _postService.AddRentPost(dto);
+            return Created();
         }
         [HttpGet("rentpost/{postId}")]
-        public async Task<ForRentPostDto> GetRentPostById([FromRoute] int postId)
+        public async Task<IActionResult> GetRentPostById([FromRoute] int postId)
         {
             var result = await _postService.GetRentPostById(postId);
-            return result;
+            return Ok(result);
         }
     }
 }

@@ -80,6 +80,7 @@ builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IMainCategoryService, MainCategoryService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 builder.Services.AddCors((options) =>

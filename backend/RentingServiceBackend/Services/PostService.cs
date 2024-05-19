@@ -53,7 +53,7 @@ namespace RentingServiceBackend.Services
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                Image = dto.Image,
+                //Image = dto.Image,
                 SleepingPlaceCount = dto.SleepingPlaceCount,
 
                 Lat = dto.Lat,

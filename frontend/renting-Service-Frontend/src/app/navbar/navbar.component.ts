@@ -39,7 +39,7 @@ export class NavbarComponent implements OnInit{
   openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
     this.dialog.open(CreatePostDialogComponent, {
       width: '70vw',
-      minHeight: '80vh',
+      height: '80vh',
       enterAnimationDuration,
       exitAnimationDuration
     });
