@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { NavbarService } from '../services/navbar.service';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import * as GeoSearch from 'leaflet-geosearch';
 
 @Component({
   selector: 'app-map-layout',
@@ -14,6 +16,8 @@ import * as Leaflet from 'leaflet';
   styleUrl: './map-layout.component.scss'
 })
 export class MapLayoutComponent {
+  mapSerachProvider = new OpenStreetMapProvider();
+  // mapSearchResult = await this.mapSerachProvider.search({ query: input.value}) 
   constructor(private navbar: NavbarService){
     this.navbar.enableInputs();
   }
@@ -31,6 +35,15 @@ export class MapLayoutComponent {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
    }
+   var searchBar = GeoSearch.GeoSearchControl({
+    provider: this.mapSerachProvider,
+    style: 'bar',
+    autoComplete: true, 
+    autoCompleteDelay: 250,
+    searchLabel: 'Wpisz adres'
+    
+   });
+   this.map.addControl(searchBar);
   }
   setGeoLocation(position: { coords: { latitude: any; longitude: any } }) {
     const {
