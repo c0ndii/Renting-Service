@@ -23,6 +23,7 @@ namespace RentingServiceBackend.Services
         Task VerifyAccountAsync(string token);
         Task<TokenDto> RefreshToken(RefreshTokenDto dto);
         Task RevokeToken();
+        Task ChangePassword(ChangePasswordDto dto);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -90,7 +91,7 @@ namespace RentingServiceBackend.Services
             var jwtSecure = secToken as JwtSecurityToken;
             if (jwtSecure == null || !jwtSecure.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new UnauthorizedException("Could not authorize user");
+                throw new UnauthorizedException("Could not authenticate user");
             }
             return principal;
         }
@@ -117,12 +118,12 @@ namespace RentingServiceBackend.Services
                 .SingleOrDefaultAsync(x => x.Email == dto.Email);
             if (user is null)
             {
-                throw new UnauthorizedException("Could not authorize user");
+                throw new UnauthorizedException("Could not authenticate user");
             }
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new UnauthorizedException("Could not authorize user");
+                throw new UnauthorizedException("Could not authenticate user");
             }
             if (user.Role.Name == "Unconfirmed")
             {
@@ -150,7 +151,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.VerificationToken == token && x.Role.Name == "Unconfirmed");
             if (user is null)
             {
-                throw new UnauthorizedException("Account does not exist");
+                throw new NotFoundException("Account does not exist");
             }
             user.Role = await _context.Roles.SingleOrDefaultAsync(x => x.Name == "User");
             user.VerificationToken = null;
@@ -180,7 +181,7 @@ namespace RentingServiceBackend.Services
             var user = await _context.Users.SingleOrDefaultAsync(x => x.PasswordResetToken == resetPasswordDto.ResetToken && x.ResetPasswordTimeExpires > DateTime.Now);
             if (user == null)
             {
-                throw new NotFoundException("Wrong reset code");
+                throw new UnprocessableEntityException("Wrong reset code");
             }
             var newPasswordHash = _passwordHasher.HashPassword(user, resetPasswordDto.Password);
             user.PasswordHash = newPasswordHash;
@@ -219,14 +220,31 @@ namespace RentingServiceBackend.Services
             var userId = _userContextService.GetUserId;
             if(userId is null)
             {
-                throw new UnauthorizedException("Could not authorize user");
+                throw new UnauthorizedException("Could not authenticate user");
             }
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
             if(user is null)
             {
-                throw new UnauthorizedException("Could not authorize user");
+                throw new UnauthorizedException("Could not authenticate user");
             }
             user.RefreshToken = null;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+        public async Task ChangePassword(ChangePasswordDto dto)
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId is null)
+            {
+                throw new UnauthorizedException("Could not authenticate user");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user is null)
+            {
+                throw new UnauthorizedException("Could not authenticate user");
+            }
+            var passwordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+            user.PasswordHash = passwordHash;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }

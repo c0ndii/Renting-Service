@@ -1,6 +1,6 @@
 ﻿namespace RentingServiceBackend.Models
 {
-    public class EditUserDto
+    public class EditUserNameDto
     {
         public string Name { get; set; }
     }

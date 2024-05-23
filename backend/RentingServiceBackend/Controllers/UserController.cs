@@ -28,8 +28,16 @@ namespace RentingServiceBackend.Controllers
             var result = await _userService.GetUserName(userId);
             return Ok(result);
         }
-        [HttpPut("editprofile")]
-        public async Task<IActionResult> EditUserProfile([FromBody] EditUserDto dto)
+        [HttpPatch("editname")]
+        [Authorize(Roles = ("Admin, User"))]
+        public async Task<IActionResult> EditUserName([FromBody] EditUserNameDto dto)
+        {
+            await _userService.EditProfile(dto);
+            return Ok();
+        }
+        [HttpPatch("editpicture")]
+        [Authorize(Roles = ("Admin, User"))]
+        public async Task<IActionResult> EditUserPicture([FromBody] EditUserPictureDto dto)
         {
             await _userService.EditProfile(dto);
             return Ok();

@@ -57,5 +57,12 @@ namespace RentingServiceBackend.Controllers
             await _authenticationService.RevokeToken();
             return Ok();
         }
+        [HttpPatch("changepassword")]
+        [Authorize(Roles = ("Admin, User"))]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            await _authenticationService.ChangePassword(dto);
+            return Ok();
+        }
     }
 }

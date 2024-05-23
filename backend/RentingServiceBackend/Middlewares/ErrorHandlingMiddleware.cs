@@ -40,6 +40,11 @@ namespace RentingServiceBackend.Middlewares
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsync(forbidException.Message);
             }
+            catch (UnprocessableEntityException unprocessableEntityException)
+            {
+                context.Response.StatusCode = 422;
+                await context.Response.WriteAsync(unprocessableEntityException.Message);
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, e.Message);
