@@ -5,18 +5,32 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatIconModule} from '@angular/material/icon';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { ChangeNameDialogComponent } from '../dialogs/change-name-dialog/change-name-dialog.component';
+import { NavbarService } from '../services/navbar.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule],
+  imports: [MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatDialogModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
   username: string | undefined = '';
-  constructor(private authService: AuthService, private router: Router) {
-    this.username = authService.getUserName();
+  constructor(private authService: AuthService, private router: Router, public dialog: MatDialog, private navbar: NavbarService) {
+    this.navbar.UserName.subscribe((result: string) => {
+      this.username = result;
+    })
+  }
+
+  openChangeNameDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+    this.dialog.open(ChangeNameDialogComponent, {
+      width: '400px',
+      minHeight: '250px',
+      enterAnimationDuration,
+      exitAnimationDuration
+    });
   }
 
   ngOnInit(): void {

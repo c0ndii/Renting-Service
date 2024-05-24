@@ -16,10 +16,10 @@ namespace RentingServiceBackend.Services
 {
     public interface IUserService
     {
-        Task<UserDto> GetUserName();
-        Task<UserDto> GetUserName(int userId);
-        Task EditProfile(EditUserNameDto dto);
-        Task EditProfile(EditUserPictureDto dto);
+        Task<UserDto> GetUser();
+        Task<UserDto> GetUser(int userId);
+        Task EditUserName(string dto);
+        Task EditUserPicture(EditUserPictureDto dto);
     }
 
     public class UserService : IUserService
@@ -41,7 +41,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authorize user");
             }
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.UserId == userId);
             if (user == null)
             {
                 throw new UnauthorizedException("Could not authorize user");
@@ -57,32 +57,40 @@ namespace RentingServiceBackend.Services
             }
             return user;
         }
-        public async Task<UserDto> GetUserName()
+        public async Task<UserDto> GetUser()
         {
             var user = await AuthUser();
             var result = _mapper.Map<UserDto>(user);
-            byte[] bytes = File.ReadAllBytes(Path.Combine(userPicturesPath, $"{user.UserId}avatar"));
-            string image = Convert.ToBase64String(bytes);
-            result.Picture = image;
+            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar");
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                string image = Convert.ToBase64String(bytes);
+                result.Picture = image;
+            }
             return result;
         }
-        public async Task<UserDto> GetUserName(int userId)
+        public async Task<UserDto> GetUser(int userId)
         {
             var user = await AuthUser(userId);
             var result = _mapper.Map<UserDto>(user);
-            byte[] bytes = File.ReadAllBytes(Path.Combine(userPicturesPath, $"{user.UserId}avatar"));
-            string image = Convert.ToBase64String(bytes);
-            result.Picture = image;
+            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar");
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                string image = Convert.ToBase64String(bytes);
+                result.Picture = image;
+            }
             return result;
         }
-        public async Task EditProfile(EditUserNameDto dto)
+        public async Task EditUserName(string dto)
         {
             var user = await AuthUser();
-            user.Name = dto.Name;
+            user.Name = dto;
             _context.Update(user);
             await _context.SaveChangesAsync();
         }
-        public async Task EditProfile(EditUserPictureDto dto)
+        public async Task EditUserPicture(EditUserPictureDto dto)
         {
             List<string> PermittedFileTypes = new List<string> {
                 "image/jpeg",

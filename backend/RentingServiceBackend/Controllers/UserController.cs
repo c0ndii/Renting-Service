@@ -15,31 +15,31 @@ namespace RentingServiceBackend.Controllers
         {
             _userService = userService;
         }
-        [HttpGet("getusername")]
+        [HttpGet("getuser")]
         [Authorize(Roles = ("Admin, User"))]
-        public async Task<IActionResult> GetUserName()
+        public async Task<IActionResult> GetUser()
         {
-            var result = await _userService.GetUserName();
+            var result = await _userService.GetUser();
             return Ok(result);
         }
-        [HttpGet("getusername/{userId}")]
-        public async Task<IActionResult> GetUserName([FromRoute] int userId)
+        [HttpGet("getuser/{userId}")]
+        public async Task<IActionResult> GetUser([FromRoute] int userId)
         {
-            var result = await _userService.GetUserName(userId);
+            var result = await _userService.GetUser(userId);
             return Ok(result);
         }
-        [HttpPatch("editname")]
+        [HttpPatch("editname/{dto}")]
         [Authorize(Roles = ("Admin, User"))]
-        public async Task<IActionResult> EditUserName([FromBody] EditUserNameDto dto)
+        public async Task<IActionResult> EditUserName([FromRoute] string dto)
         {
-            await _userService.EditProfile(dto);
+            await _userService.EditUserName(dto);
             return Ok();
         }
         [HttpPatch("editpicture")]
         [Authorize(Roles = ("Admin, User"))]
         public async Task<IActionResult> EditUserPicture([FromBody] EditUserPictureDto dto)
         {
-            await _userService.EditProfile(dto);
+            await _userService.EditUserPicture(dto);
             return Ok();
         }
     }

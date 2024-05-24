@@ -1,0 +1,26 @@
+<div class="form-holder">
+    <h2 mat-dialog-title>Zmień imię</h2>
+    <mat-dialog-actions>
+      <form>
+        <mat-form-field>
+          <mat-label>Imię</mat-label>
+          <input
+            matInput
+            type="text"
+            [formControl]="name"
+          />
+          @if (name.hasError('required')) {
+          <mat-error>Imię jest <strong>wymagane!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <br />
+        <div class="button-holder">
+          <button (click)="changeName()" mat-stroked-button>Zmień imię</button>
+        </div>
+      </form>
+      <br />
+    </mat-dialog-actions>
+  </div>
+  
+  

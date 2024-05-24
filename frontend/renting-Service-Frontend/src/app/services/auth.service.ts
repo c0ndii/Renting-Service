@@ -9,13 +9,14 @@ import { refreshTokenDto } from '../interfaces/refreshTokenDto';
 import { Observable} from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { resetPasswordDto } from '../interfaces/resetPasswordDto';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   localStorage: Storage | undefined;
-  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document) { 
+  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document, private router: Router) { 
     this.localStorage = document.defaultView?.localStorage;
   }
   //JWT
@@ -54,7 +55,7 @@ export class AuthService {
   }
   //USER
   getUserFetch():Observable<userDto>{
-    return this.http.get<userDto>(backendUrlBase + 'user/getusername');
+    return this.http.get<userDto>(backendUrlBase + 'user/getuser');
   }
   setUser(user: userDto){
     if(this.localStorage){
@@ -83,6 +84,16 @@ export class AuthService {
       }
     }
     return undefined;
+  }
+  changeName(name: string){
+    if(this.localStorage){
+      var user = this.localStorage.getItem('User');
+      if(user){
+        var userDto = JSON.parse(user) as userDto;
+        userDto.name = name;
+        this.setUser(userDto);
+      }
+    }
   }
   //ROLE
   getRole() : string | null{
@@ -129,5 +140,6 @@ export class AuthService {
     this.removeJwtToken();
     this.removeRefreshToken();
     this.removeUser();
+    this.router.navigate(['']);
   }
 }
