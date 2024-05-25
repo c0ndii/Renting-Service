@@ -8,6 +8,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { ChangeNameDialogComponent } from '../dialogs/change-name-dialog/change-name-dialog.component';
 import { NavbarService } from '../services/navbar.service';
+import { ChangePasswordDialogComponent } from '../dialogs/change-password-dialog/change-password-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -33,6 +34,14 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  openChangePasswordDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+    this.dialog.open(ChangePasswordDialogComponent, {
+      width: '400px',
+      minHeight: '250px',
+      enterAnimationDuration,
+      exitAnimationDuration
+    });
+  }
   ngOnInit(): void {
     if(this.authService.getJwtToken() === null) {
       this.router.navigate(['']);

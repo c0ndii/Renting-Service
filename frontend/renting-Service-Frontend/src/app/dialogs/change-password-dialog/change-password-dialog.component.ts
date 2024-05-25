@@ -19,6 +19,8 @@ import {
   Validators,
   FormsModule,
   ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -26,38 +28,56 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { backendUrlBase } from 'src/app/appsettings/constant';
 import { NavbarService } from 'src/app/services/navbar.service';
+import { changePasswordDto } from 'src/app/interfaces/changePasswordDto';
 
 @Component({
-  selector: 'app-change-name-dialog',
+  selector: 'app-change-password-dialog',
   standalone: true,
   imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, MatInputModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatDividerModule, ],
-  templateUrl: './change-name-dialog.component.html',
-  styleUrl: './change-name-dialog.component.scss'
+  templateUrl: './change-password-dialog.component.html',
+  styleUrl: './change-password-dialog.component.scss'
 })
-export class ChangeNameDialogComponent {
-  constructor(private snackbarService: SnackbarService, private authService: AuthService, public dialog: MatDialogRef<ChangeNameDialogComponent>, private http: HttpClient, private navbar: NavbarService) {
+export class ChangePasswordDialogComponent {
+  constructor(private snackbarService: SnackbarService, private authService: AuthService, public dialog: MatDialogRef<changePasswordDto>, private http: HttpClient, private navbar: NavbarService) {
     
   }
-  name = new FormControl('', [
+  oldpassword = new FormControl('', [
     Validators.required,
-    Validators.maxLength(20),
-    Validators.pattern('^[a-zA-Z]*$'),
+    Validators.minLength(8),
   ]);
+  password = new FormControl('', [
+    Validators.required,
+    Validators.minLength(8),
+  ]);
+  passwordConfirm = new FormControl('', [
+    Validators.required,
+    this.passwordMatch.bind(this),
+  ]);
+  passwordMatch(control: AbstractControl): ValidationErrors | null {
+    const password = this.password.value;
+    const passwordConfirm = control.value;
+    return password && passwordConfirm && password === passwordConfirm
+      ? null
+      : { passwordMismatch: true };
+  }
   errorMessage: string = '';
   status: string = '';
-  changeName = () => {
-    if(!this.name.errors){
-      this.http.patch(backendUrlBase + 'user/editname/'+this.name.value,null).subscribe((response) => {
+  changePasswordto = {} as changePasswordDto;
+  changePassword = () => {
+    if(!(this.oldpassword.errors || this.password.errors || this.passwordConfirm.errors)){
+      this.changePasswordto.OldPassword = this.oldpassword.value!;
+      this.changePasswordto.NewPassword = this.password.value!;
+      this.changePasswordto.ConfirmNewPassword = this.passwordConfirm.value!;
+      this.http.patch(backendUrlBase + 'auth/changepassword/',this.changePasswordto).subscribe((response) => {
         if(response === null){
-          this.snackbarService.openSnackbar("Imię zostało zmienione", "Success");
-          this.authService.changeName(this.name.value!);
-          this.navbar.UserName = this.name.value!;
+          this.snackbarService.openSnackbar("Hasło zostało zmienione, zaloguj się ponownie", "Success");
+          this.authService.logout();
         }
         this.dialog.close();
       }, (error: HttpErrorResponse) => {
         switch (error.status) {
           case 401:
-            this.errorMessage = 'Nie można zmienić imienia innego użytkownika';
+            this.errorMessage = 'Nie można zmienić hasła innego użytkownika';
             this.status = 'Error';
             break;
           default:
@@ -68,5 +88,6 @@ export class ChangeNameDialogComponent {
         this.snackbarService.openSnackbar(this.errorMessage,this.status);
       });
     }
+    
   }
 }

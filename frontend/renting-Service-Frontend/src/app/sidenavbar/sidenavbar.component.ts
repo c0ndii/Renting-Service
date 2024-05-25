@@ -18,7 +18,7 @@ export class SidenavbarComponent{
 
   constructor(private http: HttpClient) {}
   onClick(){
-    return this.http.get(backendUrlBase + 'user/getusername', {}).subscribe(data => {
+    return this.http.get(backendUrlBase + 'user/getuser', {}).subscribe(data => {
       console.log(data);
     });
   }
