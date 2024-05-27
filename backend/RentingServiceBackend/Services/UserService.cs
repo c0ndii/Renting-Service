@@ -19,7 +19,7 @@ namespace RentingServiceBackend.Services
         Task<UserDto> GetUser();
         Task<UserDto> GetUser(int userId);
         Task EditUserName(string dto);
-        Task EditUserPicture(EditUserPictureDto dto);
+        Task EditUserPicture(IFormFile dto);
     }
 
     public class UserService : IUserService
@@ -90,14 +90,18 @@ namespace RentingServiceBackend.Services
             _context.Update(user);
             await _context.SaveChangesAsync();
         }
-        public async Task EditUserPicture(EditUserPictureDto dto)
+        public async Task EditUserPicture(IFormFile dto)
         {
+            if(dto is null)
+            {
+                throw new UnprocessableEntityException("No file has been selected");
+            }
             List<string> PermittedFileTypes = new List<string> {
                 "image/jpeg",
                 "image/png",
             };
             var user = await AuthUser();
-            if (!PermittedFileTypes.Contains(dto.Picture.ContentType))
+            if (!PermittedFileTypes.Contains(dto.ContentType))
             {
                 throw new UnprocessableEntityException("Wrong image format");
             }
@@ -105,7 +109,7 @@ namespace RentingServiceBackend.Services
             Console.WriteLine(path);
             using (FileStream stream = new FileStream(path, FileMode.Create))
             {
-                await dto.Picture.CopyToAsync(stream);
+                await dto.CopyToAsync(stream);
                 stream.Close();
             }
             user.Picture = $"{user.UserId}avatar";

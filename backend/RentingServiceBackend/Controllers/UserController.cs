@@ -36,8 +36,9 @@ namespace RentingServiceBackend.Controllers
             return Ok();
         }
         [HttpPatch("editpicture")]
+        [DisableRequestSizeLimit]
         [Authorize(Roles = ("Admin, User"))]
-        public async Task<IActionResult> EditUserPicture([FromBody] EditUserPictureDto dto)
+        public async Task<IActionResult> EditUserPicture([FromForm] IFormFile dto)
         {
             await _userService.EditUserPicture(dto);
             return Ok();
