@@ -45,7 +45,7 @@ export class jwtInterceptor implements HttpInterceptor {
       const reqWithToken = req.clone({
         headers: new HttpHeaders({
           Authorization: `${token}`,
-          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/json', prsuje upload image
         }),
       });
       return next.handle(reqWithToken).pipe(

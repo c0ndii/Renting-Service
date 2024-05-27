@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
 import { backendUrlBase } from 'src/app/appsettings/constant';
 import { NavbarService } from 'src/app/services/navbar.service';
 import { MatFileUploadModule } from 'angular-material-fileupload';
+import { editUserPictureDto } from 'src/app/interfaces/editUserPictureDto';
 
 @Component({
   selector: 'app-change-picture-dialog',
@@ -44,28 +45,25 @@ export class ChangePictureDialogComponent {
   ]);
   errorMessage: string = '';
   status: string = '';
-  data: any | null = null;
+  data = new FormData();
   imageSrc: string | ArrayBuffer | null= '';
-  handleFileInput(data: any){
-    const files = data.files as File[];
+  handleFileInput(event: any){
+    const files = event.files as File[];
     this.snackbarService.openSnackbar("Zdjęcie jest dodawane", "info");
-    const formData = new FormData();
-    Array.from(files).forEach((f)=>formData.append('file', f));
+    this.data.append('Picture',files[0]);
     this.snackbarService.dismissSnackbar();
-    this.data = formData;
     const reader = new FileReader();
     reader.onload = e => this.imageSrc = reader.result;
     reader.readAsDataURL(files[0]);
     this.snackbarService.openSnackbar("Zdjęcie zostało załadowane", "info");
   }
   sendFileInput(){
-    if(!this.data){
+    if(!this.data.get('Picture')){
       this.snackbarService.openSnackbar("Nie wybrano zdjęcia", "Error");
       return;
     }
-    console.log(this.data);
     const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
-    this.http.patch(backendUrlBase + 'user/editpicture/',this.data, {headers}).subscribe((response) => {
+    this.http.patch(backendUrlBase + 'user/editpicture/',this.data, {headers: headers}).subscribe((response) => {
       if(response === null){
         this.snackbarService.openSnackbar("Zdjęcie zostało dodane", "Success");
       }
