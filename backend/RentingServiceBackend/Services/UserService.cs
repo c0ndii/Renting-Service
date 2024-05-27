@@ -19,7 +19,7 @@ namespace RentingServiceBackend.Services
         Task<UserDto> GetUser();
         Task<UserDto> GetUser(int userId);
         Task EditUserName(string dto);
-        Task EditUserPicture(IFormFile dto);
+        Task EditUserPicture(EditUserPictureDto dto);
     }
 
     public class UserService : IUserService
@@ -90,7 +90,7 @@ namespace RentingServiceBackend.Services
             _context.Update(user);
             await _context.SaveChangesAsync();
         }
-        public async Task EditUserPicture(IFormFile dto)
+        public async Task EditUserPicture(EditUserPictureDto dto)
         {
             if(dto is null)
             {
@@ -101,15 +101,15 @@ namespace RentingServiceBackend.Services
                 "image/png",
             };
             var user = await AuthUser();
-            if (!PermittedFileTypes.Contains(dto.ContentType))
+            if (!PermittedFileTypes.Contains(dto.Picture.ContentType))
             {
                 throw new UnprocessableEntityException("Wrong image format");
             }
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,$"images/profilePictures/{user.UserId}avatar");
-            Console.WriteLine(path);
+            var path = Path.Combine(System.Environment.CurrentDirectory, $"images/profilePictures/{user.UserId}avatar.png");
+            //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,$"images/profilePictures/{user.UserId}avatar");
             using (FileStream stream = new FileStream(path, FileMode.Create))
             {
-                await dto.CopyToAsync(stream);
+                await dto.Picture.CopyToAsync(stream);
                 stream.Close();
             }
             user.Picture = $"{user.UserId}avatar";
