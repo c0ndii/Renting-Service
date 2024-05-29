@@ -27,7 +27,7 @@ namespace RentingServiceBackend.Services
         private readonly AppDbContext _context;
         private readonly IUserContextService _userContextService;
         private readonly IMapper _mapper;
-        private readonly string userPicturesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"images/profilePictures/");
+        private readonly string userPicturesPath = Path.Combine(System.Environment.CurrentDirectory, $"images\\profilePictures\\");
         public UserService(AppDbContext context, IUserContextService userContextService, IMapper mapper)
         {
             _context = context;
@@ -61,7 +61,7 @@ namespace RentingServiceBackend.Services
         {
             var user = await AuthUser();
             var result = _mapper.Map<UserDto>(user);
-            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar");
+            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar.png");
             if (File.Exists(path))
             {
                 byte[] bytes = File.ReadAllBytes(path);
@@ -74,7 +74,7 @@ namespace RentingServiceBackend.Services
         {
             var user = await AuthUser(userId);
             var result = _mapper.Map<UserDto>(user);
-            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar");
+            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar.png");
             if (File.Exists(path))
             {
                 byte[] bytes = File.ReadAllBytes(path);
@@ -105,7 +105,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnprocessableEntityException("Wrong image format");
             }
-            var path = Path.Combine(System.Environment.CurrentDirectory, $"images/profilePictures/{user.UserId}avatar.png");
+            var path = Path.Combine(userPicturesPath, $"{user.UserId}avatar.png");
             //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,$"images/profilePictures/{user.UserId}avatar");
             using (FileStream stream = new FileStream(path, FileMode.Create))
             {

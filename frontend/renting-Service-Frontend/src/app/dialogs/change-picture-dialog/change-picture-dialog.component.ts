@@ -48,14 +48,23 @@ export class ChangePictureDialogComponent {
   data = new FormData();
   imageSrc: string | ArrayBuffer | null= '';
   handleFileInput(event: any){
-    const files = event.files as File[];
-    this.snackbarService.openSnackbar("Zdjęcie jest dodawane", "info");
-    this.data.append('Picture',files[0]);
-    this.snackbarService.dismissSnackbar();
     const reader = new FileReader();
-    reader.onload = e => this.imageSrc = reader.result;
-    reader.readAsDataURL(files[0]);
-    this.snackbarService.openSnackbar("Zdjęcie zostało załadowane", "info");
+    const image = event.files[0];
+    reader.readAsDataURL(image);
+    reader.onload = async () => {
+      await this.resizeImage(reader.result as string ).then((resolve: any) => {
+        this.data.append('Picture',this.urlToFile(resolve));
+        this.imageSrc = resolve;
+      });
+    }
+    // const files = event.files as File[];
+    // this.snackbarService.openSnackbar("Zdjęcie jest dodawane", "info");
+    // this.data.append('Picture',files[0]);
+    // this.snackbarService.dismissSnackbar();
+    // const reader = new FileReader();
+    // reader.onload = e => this.imageSrc = reader.result;
+    // reader.readAsDataURL(files[0]);
+    // this.snackbarService.openSnackbar("Zdjęcie zostało załadowane", "info");
   }
   sendFileInput(){
     if(!this.data.get('Picture')){
@@ -82,4 +91,27 @@ export class ChangePictureDialogComponent {
       this.snackbarService.openSnackbar(this.errorMessage,this.status);
     });
   }
+  resizeImage(imageURL: any): Promise<any> {
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        if (ctx != null) {
+          ctx.drawImage(image, 0, 0, 200, 200);
+        }
+        var data = canvas.toDataURL('image/png', 1);
+        resolve(data);
+      };
+      image.src = imageURL;
+    });
+  }
+  urlToFile(url: string) {
+    url = url.replace('data:image/png;base64,','');
+    const bytesArray = new Uint8Array(atob(url).split('').map((char) => char.charCodeAt(0)));
+    const blob = new Blob([bytesArray], { type: 'image/png' });    
+    return blob;
+ }
 }
