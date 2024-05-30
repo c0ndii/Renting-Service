@@ -1,0 +1,63 @@
+@defer {
+<div class="background-holder">
+  <div class="profile-container-outer">
+    <div class="profile-container">
+      <div class="title-holder">
+        <p>Twój profil</p>
+      </div>
+      <div class="profile-details">
+        <div class="subtitle">
+          Imię
+        </div>
+        <div class="changable-property-holder">
+          <div class="login-name-holder">
+            {{ this.username }}
+          </div>
+          <br />
+          <button (click)="openChangeNameDialog('300ms', '150ms')" mat-stroked-button>Zmień imię</button>
+        </div>
+        <br />
+        <br />
+        <div class="subtitle">
+          Awatar
+        </div>
+        <div class="changable-property-holder">
+          <div class="avatar-holder">
+            <img [src]="'data:image/png;base64,' +this.picture">
+          </div>
+          <br />
+          <button (click)="openChangePictureDialog('300ms', '150ms')" mat-stroked-button>Zmień zdjęcie</button>
+        </div>
+        <br />
+        <br />
+        <div class="subtitle">
+          Motyw i hasło
+        </div>
+        <div class="changable-property-holder">
+          <div>
+            <mat-button-toggle-group
+            name="fontStyle"
+            aria-label="Font Style"
+          >
+            <mat-button-toggle value="map"
+              ><mat-icon> map</mat-icon></mat-button-toggle
+            >
+            <mat-button-toggle value="list"
+              ><mat-icon>list</mat-icon></mat-button-toggle
+            >
+          </mat-button-toggle-group>
+          </div>
+          <div>
+            <button (click)="openChangePasswordDialog('300ms', '150ms')" mat-stroked-button>Zmień hasło</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+} @loading (; minimum 1.5s) {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
+}

@@ -1,0 +1,134 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+.navbar-structure-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.navbar-menu {
+  display: flex;
+  min-height: 75px;
+  max-height: 75px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  height: fit-content;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.12);
+}
+
+.navbar-menu-left {
+  float: left;
+  width: 40vw;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-left: 5px;
+  justify-content: left;
+  align-items: center;
+  text-align: left;
+}
+
+.navbar-menu-middle {
+  display: inline-block;
+  width: 20vw;
+  margin: 0 auto;
+  padding: 10px;
+  text-align: center;
+  align-items: center;
+}
+
+.navbar-menu-right {
+  float: right;
+  width: 40vw;
+  padding: 10px;
+  justify-content: right;
+  align-items: center;
+  text-align: right;
+}
+.user-panel-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  height: fit-content;
+}
+.home-search-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  height: fit-content;
+}
+.searchbar {
+  display: flex;
+  height: fit-content;
+  min-height: 50px;
+  max-height: 60px;
+  max-width: 20vw;
+}
+.home-icon {
+  font-size: 45px !important;
+  width: 45px !important;
+  height: 45px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+img {
+  width: 50px;
+  height: 50px;
+}
+.home-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 60px !important;
+  min-width: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
+}
+::ng-deep .mat-mdc-form-field-bottom-align {
+  height: 5px !important;
+}
+.login-avatar-holder {
+  background-color: black !important;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+.user-menu-button {
+  max-width: 400px !important;
+  max-height: 50px !important;
+  min-height: 50px !important;
+  min-width: 150px !important;
+}
+.user-panel-holder{
+  display: flex;
+  align-items: center;
+  justify-content:flex-end;
+  max-width: 400px;
+  max-height: 50px;
+  min-height: 50px;
+  min-width: 150px;
+}
+.login-name-holder {
+  display: flex;
+  align-items: flex-end;
+  margin-right: 20px;
+  font-size: 20px;
+}
+.add-post-holder{
+  display: flex;
+  font-weight: bold;
+  flex-direction: columns;
+  align-items: center;
+  justify-content: start;
+  justify-self: end;
+}
+.add-post-button-holder{
+  max-width: 200px;
+}

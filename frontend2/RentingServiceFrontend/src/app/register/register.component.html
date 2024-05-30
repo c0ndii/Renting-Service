@@ -1,0 +1,81 @@
+@defer(){
+<div class="background-holder">
+  <div class="register-form-container-outer">
+    <div class="register-form-container">
+      <div class="register-text-holder">
+        Zarejestruj się
+      </div>
+      <form class="register-form" id="register-form" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <mat-label>Imię</mat-label>
+          <input
+            type="text"
+            matInput
+            [formControl]="name"
+            placeholder="Andrzej"
+          />
+          @if (name.hasError('pattern')) {
+          <mat-error>Dozwolone są jedynie znaki!</mat-error>
+          } @if (name.hasError('required')) {
+          <mat-error>Imię jest <strong>wymagane!</strong></mat-error>
+          } @if(name.hasError('maxlength')) {
+            <mat-error>Imię może mieć <strong> 20 znaków!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input
+            type="email"
+            matInput
+            [formControl]="email"
+            placeholder="email@gmail.com"
+          />
+          @if (email.hasError('email') && !email.hasError('required')) {
+          <mat-error>Wprowadź poprawny adres email!</mat-error>
+          } @if (email.hasError('required')) {
+          <mat-error>Email jest <strong>wymagany!</strong></mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <mat-form-field>
+          <mat-label>Hasło</mat-label>
+          <input type="password" matInput [formControl]="password" />
+          @if (password.hasError('required')) {
+          <mat-error>Hasło jest <strong>wymagane!</strong></mat-error>
+          } @if (password.hasError('minlength')) {
+          <mat-error
+            >Hasło musi mieć minimum <strong>8 znaków!</strong></mat-error
+          >
+          }
+        </mat-form-field>
+        <br />
+        <mat-form-field>
+          <mat-label>Powtórz hasło</mat-label>
+          <input type="password" matInput [formControl]="passwordConfirm" />
+          @if (passwordConfirm.hasError('required')) {
+          <mat-error
+            >Powtórzenie hasła jest <strong>wymagane!</strong></mat-error
+          >
+          } @if (passwordConfirm.hasError('passwordMismatch') &&
+          !passwordConfirm.hasError('required')){
+          <mat-error>Hasła nie zgadzają się!</mat-error>
+          }
+        </mat-form-field>
+        <br />
+        <br />
+        <div class="button-form-container">
+          <button form="register-form" type="submit" mat-stroked-button>Zarejestruj</button>
+          <button (click)="openDialog('300ms', '150ms')" mat-stroked-button>Zweryfikuj konto</button>
+        </div>
+        <br />
+      </form>
+      
+    </div>
+  </div>
+</div>
+} @loading () {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
+}

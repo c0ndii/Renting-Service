@@ -1,0 +1,32 @@
+<div class="form-holder">
+  <h2 mat-dialog-title>Zweryfikuj swoje konto</h2>
+  <mat-dialog-content>
+    Wpisz kod wysłany na podany przy rejestracji adres e-mail
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <form>
+      <mat-form-field>
+        <mat-label>Kod</mat-label>
+        <input
+          matInput
+          type="text"
+          [formControl]="codeFormControl"
+        />
+        @if (codeFormControl.hasError('required')) {
+        <mat-error>Kod jest <strong>wymagany!</strong></mat-error>
+        } @if (codeFormControl.hasError('minlength')) {
+        <mat-error>Kod musi mieć <strong>8 znaków!</strong></mat-error>
+        } @if (codeFormControl.hasError('maxlength')) {
+        <mat-error>Kod musi mieć <strong>8 znaków!</strong></mat-error>
+        }
+      </mat-form-field>
+      <br />
+      <br />
+      <div class="button-holder">
+        <button (click)="sendCode()" mat-stroked-button>Wyślij kod</button>
+      </div>
+    </form>
+    <br />
+  </mat-dialog-actions>
+</div>
+
