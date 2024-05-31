@@ -51,7 +51,7 @@ export class ChangeNameDialogComponent {
         if(response === null){
           this.snackbarService.openSnackbar("Imię zostało zmienione", "Success");
           this.authService.changeName(this.name.value!);
-          this.navbar.UserName = this.name.value!;
+          this.authService.UserName = this.name.value!;
         }
         this.dialog.close();
       }, (error: HttpErrorResponse) => {

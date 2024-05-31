@@ -22,10 +22,10 @@ export class ProfileComponent implements OnInit {
   username: string | undefined = '';
   picture: string | undefined = '';
   constructor(private authService: AuthService, private router: Router, public dialog: MatDialog, private navbar: NavbarService) {
-    this.navbar.UserName.subscribe((result: string) => {
+    this.authService.UserName.subscribe((result: string) => {
       this.username = result;
     })
-    this.navbar.Picture.subscribe((result: string) => {
+    this.authService.Picture.subscribe((result: string) => {
       this.picture = result;
     })
   }

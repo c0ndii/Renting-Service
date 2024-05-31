@@ -15,6 +15,7 @@ namespace RentingServiceBackend.Controllers
             _postService = postService;
         }
         [HttpPost("addrentpost")]
+        [DisableRequestSizeLimit]
         [Authorize]
         public async Task<IActionResult> AddRentPost([FromBody] CreateForRentPostDto dto)
         {
@@ -25,6 +26,14 @@ namespace RentingServiceBackend.Controllers
         public async Task<IActionResult> GetRentPostById([FromRoute] int postId)
         {
             var result = await _postService.GetRentPostById(postId);
+            return Ok(result);
+        }
+        [HttpPost("addpicturestopost")]
+        [DisableRequestSizeLimit]
+        [Authorize]
+        public async Task<IActionResult> AddPicturesToPost([FromForm] EditPostPicturesDto dto)
+        {
+            var result = await _postService.AddPicturesToPost(dto);
             return Ok(result);
         }
     }

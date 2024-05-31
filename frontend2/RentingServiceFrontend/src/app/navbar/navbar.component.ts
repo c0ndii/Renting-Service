@@ -7,7 +7,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { CommonModule } from '@angular/common';
 import {MatMenuModule} from '@angular/material/menu';
@@ -26,28 +26,21 @@ export class NavbarComponent implements OnInit{
   username: string = '';
   picture: string = '';
   selectedValue: string = 'map';
-  constructor(public navbar: NavbarService, protected authService: AuthService, public dialog: MatDialog,) {
+  constructor(public navbar: NavbarService, protected authService: AuthService, public dialog: MatDialog, private router: Router) {
   }
   ngOnInit(): void {
-    this.navbar.UsernameOnReload();
-    this.navbar.UserName.subscribe((result: string) => {
+    this.authService.userOnReload();
+    this.authService.UserName.subscribe((result: string) => {
       this.username = result;
     })
-    this.navbar.PictureOnReload();
-    this.navbar.Picture.subscribe((result: string) => {
+    this.authService.Picture.subscribe((result: string) => {
       this.picture = result;
     })
   }
   onChange(){
     this.navbar.SelectedValue = this.selectedValue;
   }
-  openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
-    this.dialog.open(CreatePostDialogComponent, {
-      width: '70vw',
-      height: '80vh',
-      enterAnimationDuration,
-      exitAnimationDuration
-    });
+  navigateToCreatePost(){
+    this.router.navigate(['addpost']);
   }
-  
 }

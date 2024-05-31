@@ -11,6 +11,7 @@ namespace RentingServiceBackend.Services
     {
         Task AddRentPost(CreateForRentPostDto dto);
         Task<ForRentPostDto> GetRentPostById(int postId);
+        Task<string> AddPicturesToPost(EditPostPicturesDto dto);
     }
 
     public class PostService : IPostService
@@ -19,6 +20,7 @@ namespace RentingServiceBackend.Services
         private readonly IEmailSenderService _emailSenderService;
         private readonly IUserContextService _userContextService;
         private readonly IMapper _mapper;
+        private readonly string userPostPicturesPath = Path.Combine(System.Environment.CurrentDirectory, $"images\\postPictures\\");
 
         public PostService(AppDbContext context, IEmailSenderService emailSenderService, IUserContextService userContextService, IMapper mapper)
         {
@@ -26,6 +28,43 @@ namespace RentingServiceBackend.Services
             _emailSenderService = emailSenderService;
             _userContextService = userContextService;
             _mapper = mapper;
+        }
+        public async Task<string> AddPicturesToPost(EditPostPicturesDto dto)
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            if (dto.Pictures.All(x => !(x.ContentType == "image/jpeg" || x.ContentType == "image/png")))
+            {
+                throw new UnprocessableEntityException("Wrong image format");
+            }
+            string? dirname;
+            string? path;
+            do
+            {
+                dirname = Path.GetRandomFileName();
+                path = Path.Combine(userPostPicturesPath, $"{user.UserId}user_{dirname}\\");
+            } while (Directory.Exists(path));
+            Directory.CreateDirectory(path);
+            int iter = 0;
+            foreach (var picture in dto.Pictures)
+            {
+                using (FileStream stream = new FileStream(Path.Combine(path, $"image{iter}.png"), FileMode.Create))
+                {
+
+                    await picture.CopyToAsync(stream);
+                    stream.Close();
+                }
+                iter++;
+            }
+            return $"{user.UserId}user_{dirname}";
         }
         public async Task AddRentPost(CreateForRentPostDto dto)
         {
@@ -49,13 +88,18 @@ namespace RentingServiceBackend.Services
             {
                 throw new NotFoundException("Categories not found");
             }
+
             var postToBeAdded = new ForRentPost()
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                //Image = dto.Image,
+                PicturesPath = "",
                 SleepingPlaceCount = dto.SleepingPlaceCount,
-
+                BuildingNumber = dto.BuildingNumber,
+                Street = dto.Street,
+                District = dto.District,
+                City = dto.City,
+                Country = dto.Country,
                 Lat = dto.Lat,
                 Lng = dto.Lng,
                 AddDate = DateTime.Now,

@@ -47,7 +47,7 @@
         >
       </mat-button-toggle-group>
     </div>
-    <div class="navbar-menu-right" *ngIf="!navbar.isUserLoggedIn()">
+    <div class="navbar-menu-right" *ngIf="!authService.isUserLoggedIn()">
       <div class="user-panel-section">
         <div class="login-button">
           <button mat-stroked-button [routerLink]="['login']">Logowanie</button>
@@ -60,9 +60,9 @@
       </div>
     </div>
 
-    <div class="navbar-menu-right" *ngIf="navbar.isUserLoggedIn()">
+    <div class="navbar-menu-right" *ngIf="authService.isUserLoggedIn()">
       <div class="user-panel-section">
-        <button class="add-post-button-holder" (click)="openDialog('300ms', '150ms')" mat-menu-item><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
+        <button class="add-post-button-holder" (click)="navigateToCreatePost()" mat-menu-item><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
           <div class="user-panel-holder">
             <div class="login-name-holder">

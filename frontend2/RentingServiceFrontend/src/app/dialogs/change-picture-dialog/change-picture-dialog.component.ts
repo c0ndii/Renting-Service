@@ -26,7 +26,6 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Router } from '@angular/router';
 import { backendUrlBase } from '../../appsettings/constant';
 import { NavbarService } from '../../services/navbar.service';
-import { editUserPictureDto } from '../../interfaces/editUserPictureDto';
 
 @Component({
   selector: 'app-change-picture-dialog',
@@ -75,7 +74,7 @@ export class ChangePictureDialogComponent {
       if(response === null){
         const img = this.imageSrc.replace('data:image/png;base64,','');
         this.authService.changePicture(img);
-          this.navbar.Picture = img;
+          this.authService.Picture = img;
         this.snackbarService.openSnackbar("Zdjęcie zostało dodane", "Success");
       }
       this.dialog.close();

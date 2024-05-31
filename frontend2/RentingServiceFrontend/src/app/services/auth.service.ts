@@ -19,6 +19,36 @@ export class AuthService {
   constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document, private router: Router) { 
     this.localStorage = document.defaultView?.localStorage;
   }
+  private username = new BehaviorSubject<string>('');
+  private picture = new BehaviorSubject<string>('');
+  public set UserName(username: string) {
+    this.username.next(username);
+  }
+  public get UserName() : Observable<string> {
+    return this.username.asObservable();
+  }
+  public set Picture(picture: string) {
+    this.picture.next(picture);
+  }
+  public get Picture() : Observable<string> {
+    return this.picture.asObservable();
+  }
+  isUserLoggedIn(): boolean{
+    if(this.getRole() != null){
+      return true;
+    }
+    return false;
+  }
+  public userOnReload(){
+    if(this.isUserLoggedIn()){
+      var username = this.getUserName();
+      var picture = this.getUserPicture();
+      if(username && picture) {
+        this.UserName = username;
+        this.Picture = picture;
+      }
+    }
+  }
   //JWT
   getJwtToken(){
     if(this.localStorage){

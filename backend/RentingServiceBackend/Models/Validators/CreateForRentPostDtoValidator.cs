@@ -16,8 +16,8 @@ namespace RentingServiceBackend.Models.Validators
             RuleFor(x => x.Description)
                 .MinimumLength(20)
                 .MaximumLength(500);
-            //RuleFor(x => x.Image)
-            //    .NotEmpty();
+            RuleFor(x => x.PicturesPath)
+                .NotEmpty();
             RuleFor(x => x.Lat)
                 .NotEmpty();
             RuleFor(x => x.Lng)
@@ -26,6 +26,16 @@ namespace RentingServiceBackend.Models.Validators
                 .NotEmpty();
             RuleFor(x => x.Categories)
                 .NotEmpty();
-        }
+            RuleFor(x => x.BuildingNumber)
+                .NotEmpty();
+            RuleFor(x => x.Street)
+                .NotEmpty();
+            RuleFor(x => x.District)
+                .NotEmpty();
+            RuleFor(x => x.City)
+                .NotEmpty();
+            RuleFor(x => x.Country)
+                .NotEmpty();
+    }
     }
 }

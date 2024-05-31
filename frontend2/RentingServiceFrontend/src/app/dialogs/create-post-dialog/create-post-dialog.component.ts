@@ -31,6 +31,8 @@ import { backendUrlBase } from '../../appsettings/constant';
 import { getLayers } from '../../map-layout/map-layout.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import * as GeoSearch from 'leaflet-geosearch';
 
 @Component({
   selector: 'app-create-post-dialog',
@@ -46,6 +48,7 @@ export class CreatePostDialogComponent {
     }
   );
   }
+  mapSerachProvider = new OpenStreetMapProvider();
   title = new FormControl('', [
     Validators.required,
     Validators.maxLength(20),
@@ -72,7 +75,6 @@ export class CreatePostDialogComponent {
     Validators.required,
   ]);
   checkPostType() : boolean{
-    console.log(this.selectedValue)
     if(this.selectedValue == "rent"){
       return true;
     }
@@ -84,6 +86,17 @@ export class CreatePostDialogComponent {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
    }
+   var searchBar = GeoSearch.GeoSearchControl({
+    provider: this.mapSerachProvider,
+
+    style: 'button',
+    position: 'topright',
+    autoComplete: true, 
+    autoCompleteDelay: 250,
+    searchLabel: 'Wpisz adres'
+    
+   });
+   this.map.addControl(searchBar);
   }
   setGeoLocation(position: { coords: { latitude: any; longitude: any } }) {
     const {
@@ -108,4 +121,55 @@ export class CreatePostDialogComponent {
     zoomControl: false,
     center: new Leaflet.LatLng(52.13, 21.0)
   };
+  sendFileInput(){
+    // if(!this.data.get('Picture')){
+    //   this.snackbarService.openSnackbar("Nie wybrano zdjęcia", "Error");
+    //   return;
+    // }
+    // const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+    // this.http.patch(backendUrlBase + 'user/editpicture/',this.data, {headers: headers}).subscribe((response) => {
+    //   if(response === null){
+    //     const img = this.imageSrc.replace('data:image/png;base64,','');
+    //     this.authService.changePicture(img);
+    //       this.authService.Picture = img;
+    //     this.snackbarService.openSnackbar("Zdjęcie zostało dodane", "Success");
+    //   }
+    //   this.dialog.close();
+    // }, (error: HttpErrorResponse) => {
+    //   switch (error.status) {
+    //     case 401:
+    //       this.errorMessage = 'Nie można zmienić zdjęcia innego użytkownika';
+    //       this.status = 'Error';
+    //       break;
+    //     default:
+    //       this.errorMessage = 'Nie można połączyć się z serwerem';
+    //       this.status = 'Error';
+    //       break;
+    //   }
+    //   this.snackbarService.openSnackbar(this.errorMessage,this.status);
+    // });
+  }
+  resizeImage(imageURL: any): Promise<any> {
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        if (ctx != null) {
+          ctx.drawImage(image, 0, 0, 200, 200);
+        }
+        var data = canvas.toDataURL('image/png', 1);
+        resolve(data);
+      };
+      image.src = imageURL;
+    });
+  }
+  urlToFile(url: string) {
+    url = url.replace('data:image/png;base64,','');
+    const bytesArray = new Uint8Array(atob(url).split('').map((char) => char.charCodeAt(0)));
+    const blob = new Blob([bytesArray], { type: 'image/png' });    
+    return blob;
+ }
 }

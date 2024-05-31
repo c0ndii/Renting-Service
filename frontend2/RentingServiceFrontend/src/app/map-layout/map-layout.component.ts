@@ -37,7 +37,8 @@ export class MapLayoutComponent {
    }
    var searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSerachProvider,
-    style: 'bar',
+    style: 'button',
+    position: 'topright',
     autoComplete: true, 
     autoCompleteDelay: 250,
     searchLabel: 'Wpisz adres'

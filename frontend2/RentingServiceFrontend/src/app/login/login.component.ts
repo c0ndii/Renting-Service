@@ -100,7 +100,8 @@ export class LoginComponent implements OnInit{
           if (response !== null) {
             this.authService.login(response);
             this.authService.getUserFetch().subscribe((user) =>{
-              this.navbar.UserName = user.name;
+              this.authService.UserName = user.name;
+              this.authService.Picture = user.picture;
             });
             this.router.navigate(['']);
             this.snackbarService.openSnackbar(
