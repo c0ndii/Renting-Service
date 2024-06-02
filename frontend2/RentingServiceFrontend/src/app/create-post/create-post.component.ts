@@ -36,8 +36,8 @@ import { backendUrlBase } from '../appsettings/constant';
 import { getLayers } from '../map-layout/map-layout.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import * as GeoSearch from 'leaflet-geosearch';
+import { GeoSearchControl, OpenStreetMapProvider} from 'leaflet-geosearch';
 import {
   CdkDragDrop,
   CdkDrag,
@@ -74,9 +74,64 @@ import { Observable, firstValueFrom, lastValueFrom, take, forkJoin } from 'rxjs'
   styleUrl: './create-post.component.scss',
 })
 export class CreatePostComponent {
+  mapSearchProvider = new OpenStreetMapProvider();
+  searchBar = GeoSearch.GeoSearchControl({
+    provider: this.mapSearchProvider,
+
+    style: 'button',
+    position: 'topright',
+    autoComplete: true,
+    autoCompleteDelay: 250,
+    searchLabel: 'Wpisz adres',
+  });
+  title = new FormControl('', [Validators.required, Validators.maxLength(20), Validators.minLength(8)]);
+  description = new FormControl('', [
+    Validators.required,
+    Validators.maxLength(500)
+    , Validators.minLength(20)
+  ]);
+  mainCategory = new FormControl('', [Validators.required]);
+  sleepingPlaceCount = new FormControl('', [
+    Validators.required,
+    Validators.min(1),
+  ]);
+  price = new FormControl('', [Validators.required, Validators.min(1)]);
+  features = new FormControl('', [Validators.required]);
+  categories = new FormControl('', [Validators.required]);
   topImages: string[] = [];
   bottomImages: string[] = [];
   postDto = {} as createForRentPostDto;
+  mainRentCategories: string[] = [];
+  selectedRentMainCategory: string = '';
+  selectedValue: string = 'rent';
+  errorMessage: string = '';
+  status: string = '';
+  marker: Leaflet.Marker = new Leaflet.Marker(new Leaflet.LatLng(52.13, 21.0));
+  map!: Leaflet.Map;
+  options: Leaflet.MapOptions = {
+    layers: getLayers(),
+    zoom: 12,
+    zoomControl: false,
+    center: new Leaflet.LatLng(52.13, 21.0),
+  };
+  picture = new FormControl('', [Validators.required]);
+  data = new FormData();
+  emptyAddress: boolean = false;
+
+  constructor(
+    private snackbarService: SnackbarService,
+    private authService: AuthService,
+    private router: Router,
+    private http: HttpClient
+  ) {
+    this.http
+      .get<string[]>(backendUrlBase + 'maincategory/rent')
+      .subscribe((res) => {
+        this.mainRentCategories = res;
+      });
+      this.selectedRentMainCategory = 'Mieszkanie'
+  }
+  
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
@@ -100,57 +155,35 @@ export class CreatePostComponent {
       );
     }
   }
-  constructor(
-    private snackbarService: SnackbarService,
-    private authService: AuthService,
-    private router: Router,
-    private http: HttpClient
-  ) {
-    this.http
-      .get<string[]>(backendUrlBase + 'maincategory/rent')
-      .subscribe((res) => {
-        this.mainRentCategories = res;
-      });
-      this.selectedRentMainCategory = 'Mieszkanie'
-  }
-  mapSerachProvider = new OpenStreetMapProvider();
-  title = new FormControl('', [Validators.required, Validators.maxLength(20), Validators.minLength(8)]);
-  description = new FormControl('', [
-    Validators.required,
-    Validators.maxLength(500)
-    , Validators.minLength(20)
-  ]);
-  mainCategory = new FormControl('', [Validators.required]);
-  sleepingPlaceCount = new FormControl('', [
-    Validators.required,
-    Validators.min(1),
-  ]);
-  price = new FormControl('', [Validators.required, Validators.min(1)]);
-  features = new FormControl('', [Validators.required]);
-  categories = new FormControl('', [Validators.required]);
+
   checkPostType(): boolean {
     if (this.selectedValue == 'rent') {
       return true;
     }
     return false;
   }
+
+  bindAddress(){
+    
+  }
+  
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
     }
-    var searchBar = GeoSearch.GeoSearchControl({
-      provider: this.mapSerachProvider,
-
-      style: 'button',
-      position: 'topright',
-      autoComplete: true,
-      autoCompleteDelay: 250,
-      searchLabel: 'Wpisz adres',
-    });
-    this.map.addControl(searchBar);
+    this.searchBar.onSubmit = (query: any) => {
+      //console.log(query);
+      this.map.setView([query.data.y, query.data.x], 15);
+      this.marker.setLatLng([query.data.y, query.data.x]);
+      this.marker.addTo(this.map);
+      this.searchBar.close();
+    }
+    this.map.addControl(this.searchBar);
+    //this.map.on('click', <LeafletMouseEvent>(e: any) => { console.log(e.latlng) });
   }
+
   setGeoLocation(position: { coords: { latitude: any; longitude: any } }) {
     const {
       coords: { latitude, longitude },
@@ -163,20 +196,7 @@ export class CreatePostComponent {
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>contributors',
     }).addTo(this.map);
   }
-  mainRentCategories: string[] = [];
-  selectedRentMainCategory: string = '';
-  selectedValue: string = 'rent';
-  errorMessage: string = '';
-  status: string = '';
-  map!: Leaflet.Map;
-  options: Leaflet.MapOptions = {
-    layers: getLayers(),
-    zoom: 12,
-    zoomControl: false,
-    center: new Leaflet.LatLng(52.13, 21.0),
-  };
-  picture = new FormControl('', [Validators.required]);
-  data = new FormData();
+
   async handleFileInput(event: any) {
     let j = 0;
     for (let i = 0; i < 6; i++) {
@@ -197,6 +217,7 @@ export class CreatePostComponent {
       };
     }
   }
+
   createPost(path:string) {
     this.postDto.PicturesPath = path;
     this.http
@@ -219,6 +240,7 @@ export class CreatePostComponent {
         this.snackbarService.openSnackbar(this.errorMessage,this.status);
       });
   }
+
   sendFileInput() {
     if(this.title.errors && this.description.errors && this.mainCategory.errors && this.sleepingPlaceCount.errors && this.price.errors){
       return;
@@ -266,6 +288,7 @@ export class CreatePostComponent {
     });
     return "";
   }
+  
   resizeImage(imageURL: any): Promise<any> {
     return new Promise((resolve) => {
       const image = new Image();
@@ -283,6 +306,7 @@ export class CreatePostComponent {
       image.src = imageURL;
     });
   }
+
   urlToFile(url: string) {
     url = url.replace('data:image/png;base64,', '');
     const bytesArray = new Uint8Array(

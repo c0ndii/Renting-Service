@@ -113,6 +113,7 @@
                 [leafletOptions]="options"
                 (leafletMapReady)="readyUpMap($event)"
               ></div>
+              <span class="errorMessage" *ngIf="emptyAddress">Ustaw adres obiektu!</span>
             </div>
           </div>
           <br />

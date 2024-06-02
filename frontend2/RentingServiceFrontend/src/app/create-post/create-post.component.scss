@@ -114,6 +114,7 @@ mat-button-toggle-group {
     0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
+
 .cdk-drag-placeholder {
   opacity: 0;
 }
@@ -128,4 +129,15 @@ mat-button-toggle-group {
 
 .list.cdk-drop-list-dragging .image-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+button {
+  margin-right: 30px;
+  border: 2px solid rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+.errorMessage{
+  color:red;
+}
+::ng-deep .leaflet-pane.leaflet-shadow-pane {
+  display: none !important;
 }
