@@ -45,13 +45,9 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnprocessableEntityException("Wrong image format");
             }
-            string? dirname;
-            string? path;
-            do
-            {
-                dirname = Path.GetRandomFileName();
-                path = Path.Combine(userPostPicturesPath, $"{user.UserId}user_{dirname}\\");
-            } while (Directory.Exists(path));
+            var userPosts = await _context.Users.Include(x => x.OwnedPosts).Where(x => x.UserId == userId).SelectMany(x => x.OwnedPosts).ToListAsync();
+            var userPostCounter = userPosts.Count();
+            var path = Path.Combine(userPostPicturesPath, $"{user.UserId}_user_{userPostCounter}_post\\");
             Directory.CreateDirectory(path);
             int iter = 0;
             foreach (var picture in dto.Pictures)
@@ -64,7 +60,7 @@ namespace RentingServiceBackend.Services
                 }
                 iter++;
             }
-            return $"{user.UserId}user_{dirname}";
+            return $"{user.UserId}user_{userPostCounter}";
         }
         public async Task AddRentPost(CreateForRentPostDto dto)
         {
@@ -83,19 +79,25 @@ namespace RentingServiceBackend.Services
             {
                 throw new NotFoundException("Features not found");
             }
-            var categories = await _context.Categories.Where(x => dto.Categories.Contains(x.CategoryName)).ToListAsync();
-            if (categories.IsNullOrEmpty())
+            var mainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+            if (mainCategory is null)
             {
-                throw new NotFoundException("Categories not found");
+                throw new NotFoundException("Main category not found");
             }
+            //var categories = await _context.Categories.Where(x => dto.Categories.Contains(x.CategoryName)).ToListAsync();
+            //if (categories.IsNullOrEmpty())
+            //{
+            //    throw new NotFoundException("Categories not found");
+            //}
 
             var postToBeAdded = new ForRentPost()
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                PicturesPath = "",
+                PicturesPath = dto.PicturesPath,
                 SleepingPlaceCount = dto.SleepingPlaceCount,
                 BuildingNumber = dto.BuildingNumber,
+                MainCategoryId = mainCategory.MainCategoryId,
                 Street = dto.Street,
                 District = dto.District,
                 City = dto.City,
@@ -106,7 +108,7 @@ namespace RentingServiceBackend.Services
                 FollowedBy = new List<User>(),
                 Reservations = new List<Reservation>(),
                 Features = features,
-                Categories = categories,
+                Categories = new List<Category>(),
                 Comments = new List<Comment>(),
                 User = user
             };

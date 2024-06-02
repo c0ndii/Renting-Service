@@ -33,13 +33,19 @@
                   <strong>20 znaków!</strong></mat-error
                 >
                 }
+                @if (title.hasError('minlength')) {
+                  <mat-error
+                    >Tytuł musi mieć przynajmniej
+                    <strong>8 znaków!</strong></mat-error
+                  >
+                  }
               </mat-form-field>
               <br />
               <br />
               <mat-form-field>
                 <mat-label>Główna kategoria</mat-label>
                 <mat-select
-                  [(ngModel)]="selectedMainCategory"
+                  [(ngModel)]="selectedRentMainCategory"
                   name="mainCategory"
                 >
                   @for (mainRentCategory of mainRentCategories; track
@@ -81,7 +87,7 @@
                 <mat-label
                   >Cena
                   {{
-                    selectedMainCategory == "Wypoczynek"
+                    selectedRentMainCategory == "Wypoczynek"
                       ? "za dobę"
                       : "za miesiąc"
                   }}</mat-label
@@ -130,6 +136,13 @@
                 ></mat-error
               >
               }
+              @if (description.hasError('minlength')) {
+                <mat-error
+                  >Opis musi mieć przynajmniej<strong>
+                    20 znaków</strong
+                  ></mat-error
+                >
+                }
             </mat-form-field>
           </div>
           <br />
@@ -147,7 +160,7 @@
               (cdkDropListDropped)="drop($event)"
             >
               @for (image of topImages; track image) {
-                <img class="image-box" cdkDrag [src]="image || '/assets/1avatar.png'" alt="placeholder">
+                <img class="image-box" cdkDrag [src]="image">
               }
             </div>
             <div
@@ -160,7 +173,7 @@
               (cdkDropListDropped)="drop($event)"
             >
               @for (image of bottomImages; track image) {
-                <img class="image-box" cdkDrag [src]="image || '/assets/1avatar.png'" alt="placeholder">
+                <img class="image-box" cdkDrag [src]="image">
               }
             </div>
             <br>

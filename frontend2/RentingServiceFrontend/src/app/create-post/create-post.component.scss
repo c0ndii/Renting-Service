@@ -73,8 +73,10 @@ mat-button-toggle-group {
 }
 .list {
     outline: solid 1px #ccc;
-    min-height: 60px;
+    min-height: 200px;
+    max-height: 200px;
     max-width: 600px;
+    min-width: 600px;
     display: flex;
     flex-direction: row;
     background: white;
@@ -90,8 +92,10 @@ mat-button-toggle-group {
     outline: solid 1px #ccc;
     color: rgba(0, 0, 0, 0.87);
     display: flex;
-    width: 200px;
-    height: 200px;
+    max-width: 200px;
+    min-width: 200px;
+    max-height: 200px;
+    min-height: 200px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
