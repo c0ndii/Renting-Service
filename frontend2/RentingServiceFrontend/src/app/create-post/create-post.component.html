@@ -47,6 +47,7 @@
                 <mat-select
                   [(ngModel)]="selectedRentMainCategory"
                   name="mainCategory"
+                  matInput
                 >
                   @for (mainRentCategory of mainRentCategories; track
                   mainRentCategory) {
@@ -55,11 +56,6 @@
                   }}</mat-option>
                   }
                 </mat-select>
-                @if (mainCategory.hasError('required')) {
-                <mat-error
-                  >Główna kategoria jest <strong>wymagana!</strong></mat-error
-                >
-                }
               </mat-form-field>
               <br />
               <br />

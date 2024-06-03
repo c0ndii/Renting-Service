@@ -37,7 +37,7 @@ import { getLayers } from '../map-layout/map-layout.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
-import { GeoSearchControl, OpenStreetMapProvider} from 'leaflet-geosearch';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
   CdkDragDrop,
   CdkDrag,
@@ -46,7 +46,13 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
-import { Observable, firstValueFrom, lastValueFrom, take, forkJoin } from 'rxjs';
+import {
+  Observable,
+  firstValueFrom,
+  lastValueFrom,
+  take,
+  forkJoin,
+} from 'rxjs';
 
 @Component({
   selector: 'app-create-post',
@@ -84,18 +90,21 @@ export class CreatePostComponent {
     autoCompleteDelay: 250,
     searchLabel: 'Wpisz adres',
   });
-  title = new FormControl('', [Validators.required, Validators.maxLength(20), Validators.minLength(8)]);
+  title = new FormControl('', [
+    Validators.required,
+    Validators.maxLength(20),
+    Validators.minLength(8),
+  ]);
   description = new FormControl('', [
     Validators.required,
-    Validators.maxLength(500)
-    , Validators.minLength(20)
+    Validators.maxLength(500),
+    Validators.minLength(20),
   ]);
-  mainCategory = new FormControl('', [Validators.required]);
-  sleepingPlaceCount = new FormControl('', [
+  sleepingPlaceCount = new FormControl(0, [
     Validators.required,
     Validators.min(1),
   ]);
-  price = new FormControl('', [Validators.required, Validators.min(1)]);
+  price = new FormControl(0, [Validators.required, Validators.min(1)]);
   features = new FormControl('', [Validators.required]);
   categories = new FormControl('', [Validators.required]);
   topImages: string[] = [];
@@ -105,6 +114,7 @@ export class CreatePostComponent {
   selectedRentMainCategory: string = '';
   selectedValue: string = 'rent';
   errorMessage: string = '';
+  parsedAddress: string[] = [];
   status: string = '';
   marker: Leaflet.Marker = new Leaflet.Marker(new Leaflet.LatLng(52.13, 21.0));
   map!: Leaflet.Map;
@@ -129,9 +139,9 @@ export class CreatePostComponent {
       .subscribe((res) => {
         this.mainRentCategories = res;
       });
-      this.selectedRentMainCategory = 'Mieszkanie'
+    this.selectedRentMainCategory = 'Mieszkanie';
   }
-  
+
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
@@ -163,10 +173,7 @@ export class CreatePostComponent {
     return false;
   }
 
-  bindAddress(){
-    
-  }
-  
+
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
@@ -174,12 +181,36 @@ export class CreatePostComponent {
       navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
     }
     this.searchBar.onSubmit = (query: any) => {
-      //console.log(query);
-      this.map.setView([query.data.y, query.data.x], 15);
-      this.marker.setLatLng([query.data.y, query.data.x]);
-      this.marker.addTo(this.map);
-      this.searchBar.close();
-    }
+      if (
+        query.data.raw.addresstype == 'building' ||
+        query.data.raw.addresstype == 'place'
+      ) {
+        this.emptyAddress = false;
+        this.map.setView([query.data.y, query.data.x], 15);
+        this.marker.setLatLng([query.data.y, query.data.x]);
+        this.marker.addTo(this.map);
+        this.postDto.Lat = query.data.y+"";
+        this.postDto.Lng = query.data.x+"";
+        this.parsedAddress = query.data.raw.display_name.split(', ');
+        if (this.parsedAddress.length == 7) {
+          this.postDto.BuildingNumber = this.parsedAddress[0];
+          this.postDto.Street = this.parsedAddress[1];
+          this.postDto.District = this.parsedAddress[2];
+          this.postDto.City = this.parsedAddress[3];
+          this.postDto.Country = this.parsedAddress[6];
+        } else {
+          this.postDto.BuildingNumber = this.parsedAddress[0];
+          this.postDto.Street = this.parsedAddress[1];
+          this.postDto.District = this.parsedAddress[3];
+          this.postDto.City = this.parsedAddress[4];
+          this.postDto.Country = this.parsedAddress[7];
+        }
+        this.searchBar.close();
+      } else {
+        this.emptyAddress = true;
+        this.searchBar.clearResults();
+      }
+    };
     this.map.addControl(this.searchBar);
     //this.map.on('click', <LeafletMouseEvent>(e: any) => { console.log(e.latlng) });
   }
@@ -218,47 +249,56 @@ export class CreatePostComponent {
     }
   }
 
-  createPost(path:string) {
+  createPost(path: string) {
     this.postDto.PicturesPath = path;
     this.http
       .post(backendUrlBase + 'post/addrentpost/', this.postDto)
-      .subscribe((res) => {
-        console.log(res);
-        this.snackbarService.openSnackbar("Ogłoszenie zostało stworzone","Success");
-        this.router.navigate(['']);
-      }, (error: HttpErrorResponse)=>{
-        switch (error.status) {
-          case 401:
-            this.errorMessage = 'Nie udało się zautentykować użytkownika';
-            this.status = 'Error';
-            break;
-          default:
-            this.errorMessage = 'Nie można połączyć się z serwerem';
-            this.status = 'Error';
-            break;
+      .subscribe(
+        (res) => {
+          this.snackbarService.openSnackbar(
+            'Ogłoszenie zostało stworzone',
+            'Success'
+          );
+          this.router.navigate(['']);
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error);
+          switch (error.status) {
+            case 401:
+              this.errorMessage = 'Nie udało się zautentykować użytkownika';
+              this.status = 'Error';
+              break;
+            default:
+              this.errorMessage = 'Nie można połączyć się z serwerem';
+              this.status = 'Error';
+              break;
+          }
+          this.snackbarService.openSnackbar(this.errorMessage, this.status);
         }
-        this.snackbarService.openSnackbar(this.errorMessage,this.status);
-      });
+      );
   }
 
   sendFileInput() {
-    if(this.title.errors && this.description.errors && this.mainCategory.errors && this.sleepingPlaceCount.errors && this.price.errors){
+    if(this.parsedAddress.length <= 0){
+      this.emptyAddress = true;
+      return;
+    }
+    this.emptyAddress = false;
+    if (
+      this.title.errors ||
+      this.description.errors ||
+      this.sleepingPlaceCount.errors ||
+      this.price.errors
+    ) {
       return;
     }
     this.postDto.Title = this.title.value!;
     this.postDto.Description = this.description.value!;
     this.postDto.MainCategory = this.selectedRentMainCategory;
-    this.postDto.SleepingPlaceCount = parseInt(this.sleepingPlaceCount.value!);
-    this.postDto.Price = parseFloat(this.price.value!);
-    this.postDto.Lat = ' es';
-    this.postDto.Lng = ' es';
+    this.postDto.SleepingPlaceCount = this.sleepingPlaceCount.value!;
+    this.postDto.Price = this.price.value!;
     this.postDto.Features = ['Klimatyzacja'];
     this.postDto.Categories = ['es'];
-    this.postDto.BuildingNumber = 'es';
-    this.postDto.Street = 'es';
-    this.postDto.District = 'es';
-    this.postDto.City = 'es';
-    this.postDto.Country = 'es';
     this.data = new FormData();
     if (this.topImages.length < 1) {
       this.snackbarService.openSnackbar('Nie wybrano zdjęcia', 'Error');
@@ -274,21 +314,19 @@ export class CreatePostComponent {
     for (let i = 0; i < this.bottomImages.length; i++) {
       this.data.append('Pictures', this.urlToFile(this.bottomImages[i]));
     }
-    this.http.post(
-      backendUrlBase + 'post/addpicturestopost/',
-      this.data,
-      {
+    this.http
+      .post(backendUrlBase + 'post/addpicturestopost/', this.data, {
         headers: headers,
         responseType: 'text',
-      }
-    ).subscribe({
-      next: (response : string) => {
-        this.createPost(response);
-      }
-    });
-    return "";
+      })
+      .subscribe({
+        next: (response: string) => {
+          this.createPost(response);
+        },
+      });
+    return '';
   }
-  
+
   resizeImage(imageURL: any): Promise<any> {
     return new Promise((resolve) => {
       const image = new Image();
