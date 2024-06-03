@@ -62,7 +62,12 @@
 
     <div class="navbar-menu-right" *ngIf="authService.isUserLoggedIn()">
       <div class="user-panel-section">
-        <button class="add-post-button-holder" (click)="navigateToCreatePost()" mat-menu-item><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
+        <button mat-button class="user-menu-button" [matMenuTriggerFor]="addMenu" ><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
+        <mat-menu #addMenu="matMenu">
+          <button (click)="navigateToCreateRentPost()" mat-menu-item>Wynajmu</button>
+          <button (click)="navigateToCreateSalePost()" mat-menu-item>Sprzedaży</button>
+        </mat-menu>
+        
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
           <div class="user-panel-holder">
             <div class="login-name-holder">

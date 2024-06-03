@@ -1,0 +1,195 @@
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+/>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+@defer {
+<div class="background-holder">
+  <div class="form-container-outer">
+    <div class="form-container">
+      <div class="title-holder">
+        <p>Dodaj ogłoszenie wynajmu</p>
+      </div>
+      <div>
+        <form>
+          <div class="inner-form">
+            <div class="txt-content">
+              <mat-form-field>
+                <mat-label>Tytuł</mat-label>
+                <input matInput type="text" [formControl]="title" />
+                @if (title.hasError('required')) {
+                <mat-error>Tytuł jest <strong>wymagany!</strong></mat-error>
+                } @if (title.hasError('maxlength')) {
+                <mat-error
+                  >Tytuł może mieć maksymalnie
+                  <strong>20 znaków!</strong></mat-error
+                >
+                }
+                @if (title.hasError('minlength')) {
+                  <mat-error
+                    >Tytuł musi mieć przynajmniej
+                    <strong>8 znaków!</strong></mat-error
+                  >
+                  }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Główna kategoria</mat-label>
+                <mat-select
+                  [(ngModel)]="selectedRentMainCategory"
+                  name="mainCategory"
+                  matInput
+                >
+                  @for (mainRentCategory of mainRentCategories; track
+                  mainRentCategory) {
+                  <mat-option [value]="mainRentCategory">{{
+                    mainRentCategory
+                  }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Maksymalna ilość osób</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [formControl]="sleepingPlaceCount"
+                />
+                @if (sleepingPlaceCount.hasError('required')) {
+                <mat-error
+                  >Liczba osób jest <strong>wymagana!</strong></mat-error
+                >
+                } @if (sleepingPlaceCount.hasError('min')) {
+                <mat-error
+                  >Liczba osób musi wynosić
+                  <strong>przynajmniej 1!</strong></mat-error
+                >
+                }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label
+                  >Cena
+                  {{
+                    selectedRentMainCategory == "Wypoczynek"
+                      ? "za dobę"
+                      : "za miesiąc"
+                  }}  (pln)</mat-label
+                >
+                <input matInput type="number" [formControl]="price" />
+                @if (price.hasError('required')) {
+                <mat-error>Cena jest <strong>wymagana!</strong></mat-error>
+                } @if (price.hasError('min')) {
+                <mat-error
+                  >Cena musi wynosić
+                  <strong>przynajmniej 1zł!</strong></mat-error
+                >
+                }
+              </mat-form-field>
+              <br />
+              <br />
+            </div>
+            <div class="map-content">
+              <div
+                class="dialog-map-holder"
+                id="map"
+                leaflet
+                [leafletOptions]="options"
+                (leafletMapReady)="readyUpMap($event)"
+              ></div>
+              <span class="errorMessage" *ngIf="emptyAddress">Ustaw adres obiektu!</span>
+            </div>
+          </div>
+          <br />
+          <br />
+          <div class="desc-content">
+            <mat-form-field class="description">
+              <mat-label>Opis</mat-label>
+              <textarea
+                matInput
+                cdkTextareaAutosize
+                cdkAutosizeMaxRows="9"
+                type="text"
+                [formControl]="description"
+              ></textarea>
+              @if (description.hasError('required')) {
+              <mat-error>Opis jest <strong>wymagany!</strong></mat-error>
+              } @if (description.hasError('maxlength')) {
+              <mat-error
+                >Opis może mieć maksymalnie<strong>
+                  500 znaków</strong
+                ></mat-error
+              >
+              }
+              @if (description.hasError('minlength')) {
+                <mat-error
+                  >Opis musi mieć przynajmniej<strong>
+                    20 znaków</strong
+                  ></mat-error
+                >
+                }
+            </mat-form-field>
+          </div>
+          <br />
+
+          <div class="image-content">
+            <h2>Zdjęcia</h2>
+
+            <div
+              cdkDropList
+              #topList="cdkDropList"
+              [cdkDropListData]="topImages"
+              cdkDropListOrientation="horizontal"
+              [cdkDropListConnectedTo]="[bottomList]"
+              class="list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              @for (image of topImages; track image) {
+                <img class="image-box" cdkDrag [src]="image">
+              }
+            </div>
+            <div
+              cdkDropList
+              #bottomList="cdkDropList"
+              cdkDropListOrientation="horizontal"
+              [cdkDropListData]="bottomImages"
+              [cdkDropListConnectedTo]="[topList]"
+              class="list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              @for (image of bottomImages; track image) {
+                <img class="image-box" cdkDrag [src]="image">
+              }
+            </div>
+            <br>
+            <div>
+                <label for="picture">Załaduj zdjęcia: </label><br />
+      <input
+        type="file"
+        multiple="true"
+        required
+        (change)="handleFileInput($event.target)"
+        [formControl]="picture"
+        accept="image/png image/jpeg"
+      />
+            </div>
+          </div>
+          <div class="button-holder">
+            <button (click)="sendFileInput()" mat-stroked-button>Dodaj ogłoszenie</button>
+          </div>
+        </form>
+
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+} @loading (; minimum 1.5s) {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
+}

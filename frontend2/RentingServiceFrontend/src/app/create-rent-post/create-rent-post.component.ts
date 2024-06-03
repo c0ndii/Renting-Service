@@ -1,27 +1,15 @@
 import { Component } from '@angular/core';
-import {
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogTitle,
-  MatDialogContent,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import {
   FormControl,
-  FormGroupDirective,
-  NgForm,
   Validators,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { SnackbarService } from '../services/snackbar.service';
-import { AuthService } from '../services/auth.service';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -46,13 +34,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
-import {
-  Observable,
-  firstValueFrom,
-  lastValueFrom,
-  take,
-  forkJoin,
-} from 'rxjs';
+
 
 @Component({
   selector: 'app-create-post',
@@ -60,10 +42,6 @@ import {
   imports: [
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatDialogActions,
-    MatDialogClose,
-    MatDialogTitle,
-    MatDialogContent,
     MatInputModule,
     ReactiveFormsModule,
     FormsModule,
@@ -76,10 +54,10 @@ import {
     CdkDropList,
     CdkDrag,
   ],
-  templateUrl: './create-post.component.html',
-  styleUrl: './create-post.component.scss',
+  templateUrl: './create-rent-post.component.html',
+  styleUrl: './create-rent-post.component.scss',
 })
-export class CreatePostComponent {
+export class CreateRentPostComponent {
   mapSearchProvider = new OpenStreetMapProvider();
   searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSearchProvider,
@@ -100,7 +78,7 @@ export class CreatePostComponent {
     Validators.maxLength(500),
     Validators.minLength(20),
   ]);
-  sleepingPlaceCount = new FormControl(0, [
+  sleepingPlaceCount = new FormControl(1, [
     Validators.required,
     Validators.min(1),
   ]);
@@ -112,7 +90,6 @@ export class CreatePostComponent {
   postDto = {} as createForRentPostDto;
   mainRentCategories: string[] = [];
   selectedRentMainCategory: string = '';
-  selectedValue: string = 'rent';
   errorMessage: string = '';
   parsedAddress: string[] = [];
   status: string = '';
@@ -130,7 +107,6 @@ export class CreatePostComponent {
 
   constructor(
     private snackbarService: SnackbarService,
-    private authService: AuthService,
     private router: Router,
     private http: HttpClient
   ) {
@@ -165,14 +141,6 @@ export class CreatePostComponent {
       );
     }
   }
-
-  checkPostType(): boolean {
-    if (this.selectedValue == 'rent') {
-      return true;
-    }
-    return false;
-  }
-
 
   readyUpMap(map: Leaflet.Map) {
     this.map = map;

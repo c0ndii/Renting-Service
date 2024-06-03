@@ -15,11 +15,17 @@ namespace RentingServiceBackend.Controllers
             _postService = postService;
         }
         [HttpPost("addrentpost")]
-        [DisableRequestSizeLimit]
         [Authorize]
         public async Task<IActionResult> AddRentPost([FromBody] CreateForRentPostDto dto)
         {
             await _postService.AddRentPost(dto);
+            return Created();
+        }
+        [HttpPost("addsalepost")]
+        [Authorize]
+        public async Task<IActionResult> AddSalePost([FromBody] CreateForSalePostDto dto)
+        {
+            await _postService.AddSalePost(dto);
             return Created();
         }
         [HttpGet("rentpost/{postId}")]

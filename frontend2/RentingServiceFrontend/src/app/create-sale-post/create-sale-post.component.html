@@ -8,17 +8,9 @@
   <div class="form-container-outer">
     <div class="form-container">
       <div class="title-holder">
-        <p>Dodaj post</p>
+        <p>Dodaj ogłoszenie sprzedaży</p>
       </div>
-      <mat-button-toggle-group
-        name="fontStyle"
-        aria-label="Font Style"
-        [(ngModel)]="selectedValue"
-      >
-        <mat-button-toggle value="rent">Pod wynajem</mat-button-toggle>
-        <mat-button-toggle value="sell">Na sprzedaż</mat-button-toggle>
-      </mat-button-toggle-group>
-      <mat-dialog-actions *ngIf="this.checkPostType()">
+      <div>
         <form>
           <div class="inner-form">
             <div class="txt-content">
@@ -45,11 +37,11 @@
               <mat-form-field>
                 <mat-label>Główna kategoria</mat-label>
                 <mat-select
-                  [(ngModel)]="selectedRentMainCategory"
+                  [(ngModel)]="selectedSaleMainCategory"
                   name="mainCategory"
                   matInput
                 >
-                  @for (mainRentCategory of mainRentCategories; track
+                  @for (mainRentCategory of mainSaleCategories; track
                   mainRentCategory) {
                   <mat-option [value]="mainRentCategory">{{
                     mainRentCategory
@@ -60,33 +52,9 @@
               <br />
               <br />
               <mat-form-field>
-                <mat-label>Maksymalna ilość osób</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [formControl]="sleepingPlaceCount"
-                />
-                @if (sleepingPlaceCount.hasError('required')) {
-                <mat-error
-                  >Liczba osób jest <strong>wymagana!</strong></mat-error
-                >
-                } @if (sleepingPlaceCount.hasError('min')) {
-                <mat-error
-                  >Liczba osób musi wynosić
-                  <strong>przynajmniej 1!</strong></mat-error
-                >
-                }
-              </mat-form-field>
-              <br />
-              <br />
-              <mat-form-field>
                 <mat-label
                   >Cena
-                  {{
-                    selectedRentMainCategory == "Wypoczynek"
-                      ? "za dobę"
-                      : "za miesiąc"
-                  }}</mat-label
+                  (pln)</mat-label
                 >
                 <input matInput type="number" [formControl]="price" />
                 @if (price.hasError('required')) {
@@ -192,7 +160,7 @@
         </form>
 
         <br />
-      </mat-dialog-actions>
+      </div>
     </div>
   </div>
 </div>

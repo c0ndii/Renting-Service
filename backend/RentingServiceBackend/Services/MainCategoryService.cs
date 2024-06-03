@@ -7,6 +7,7 @@ namespace RentingServiceBackend.Services
     public interface IMainCategoryService
     {
         Task<IEnumerable<string>> GetRentMainCategories();
+        Task<IEnumerable<string>> GetSaleMainCategories();
     }
 
     public class MainCategoryService : IMainCategoryService
@@ -25,5 +26,15 @@ namespace RentingServiceBackend.Services
             }
             return result;
         }
+        public async Task<IEnumerable<string>> GetSaleMainCategories()
+        {
+            var result = await _context.ForSaleMainCategories.Select(x => x.MainCategoryName).ToListAsync();
+            if (result is null)
+            {
+                throw new NotFoundException("Main categories not found");
+            }
+            return result;
+        }
+        
     }
 }

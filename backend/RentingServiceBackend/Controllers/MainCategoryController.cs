@@ -18,5 +18,11 @@ namespace RentingServiceBackend.Controllers
             var result = await _mainCategoryService.GetRentMainCategories();
             return Ok(result);
         }
+        [HttpGet("sale")]
+        public async Task<IActionResult> GetSaleMainCategories()
+        {
+            var result = await _mainCategoryService.GetSaleMainCategories();
+            return Ok(result);
+        }
     }
 }

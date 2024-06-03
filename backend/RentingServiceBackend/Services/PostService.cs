@@ -10,6 +10,7 @@ namespace RentingServiceBackend.Services
     public interface IPostService
     {
         Task AddRentPost(CreateForRentPostDto dto);
+        Task AddSalePost(CreateForSalePostDto dto);
         Task<ForRentPostDto> GetRentPostById(int postId);
         Task<string> AddPicturesToPost(EditPostPicturesDto dto);
     }
@@ -89,7 +90,6 @@ namespace RentingServiceBackend.Services
             //{
             //    throw new NotFoundException("Categories not found");
             //}
-
             var postToBeAdded = new ForRentPost()
             {
                 Title = dto.Title,
@@ -113,6 +113,43 @@ namespace RentingServiceBackend.Services
                 User = user
             };
             await _context.ForRentPosts.AddAsync(postToBeAdded);
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddSalePost(CreateForSalePostDto dto)
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var mainCategory = await _context.ForSaleMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+            if (mainCategory is null)
+            {
+                throw new NotFoundException("Main category not found");
+            }
+            var postToBeAdded = new ForSalePost()
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                PicturesPath = dto.PicturesPath,
+                BuildingNumber = dto.BuildingNumber,
+                MainCategoryId = mainCategory.MainCategoryId,
+                Street = dto.Street,
+                District = dto.District,
+                City = dto.City,
+                Country = dto.Country,
+                Lat = dto.Lat,
+                Lng = dto.Lng,
+                AddDate = DateTime.Now,
+                FollowedBy = new List<User>(),
+                User = user
+            };
+            await _context.ForSalePosts.AddAsync(postToBeAdded);
             await _context.SaveChangesAsync();
         }
         public async Task<ForRentPostDto> GetRentPostById(int postId)
