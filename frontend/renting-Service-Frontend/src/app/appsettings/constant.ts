@@ -1,1 +1,0 @@
-export const backendUrlBase: string = "https://localhost:7112/api/";
