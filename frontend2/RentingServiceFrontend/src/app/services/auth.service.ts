@@ -43,8 +43,10 @@ export class AuthService {
     if(this.isUserLoggedIn()){
       var username = this.getUserName();
       var picture = this.getUserPicture();
-      if(username && picture) {
+      if(username) {
         this.UserName = username;
+      }
+      if(picture){
         this.Picture = picture;
       }
     }
