@@ -64,8 +64,8 @@
       <div class="user-panel-section">
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="addMenu" ><span class="add-post-holder">Dodaj ogłoszenie &nbsp; <mat-icon class="add-post-icon">add</mat-icon></span></button>
         <mat-menu #addMenu="matMenu">
-          <button (click)="navigateToCreateRentPost()" mat-menu-item>Wynajmu</button>
-          <button (click)="navigateToCreateSalePost()" mat-menu-item>Sprzedaży</button>
+          <button (click)="this.navbar.navigateToCreateRentPost()" mat-menu-item>Wynajmu</button>
+          <button (click)="this.navbar.navigateToCreateSalePost()" mat-menu-item>Sprzedaży</button>
         </mat-menu>
         
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
@@ -77,8 +77,8 @@
           </div>
         </button>
         <mat-menu #menu="matMenu">
-          <button (click)="this.navbar.profile()" mat-menu-item>Profil</button>
-          <button mat-menu-item>Moje ogłoszenia</button>
+          <button (click)="this.navbar.navigateToProfile()" mat-menu-item>Profil</button>
+          <button (click)="this.navbar.navigateToMyPosts()" mat-menu-item>Moje ogłoszenia</button>
           <button mat-menu-item>Śledzone ogłoszenia</button>
           <button mat-menu-item>Rezerwacje</button>
           <button mat-menu-item>Komentarze</button>

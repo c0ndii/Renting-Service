@@ -32,7 +32,16 @@ export class NavbarService{
     this.authService.logout();
     this.snackbar.openSnackbar("Wylogowano", "Info");
   }
-  profile(){
+  navigateToProfile(){
     this.router.navigate(['profile']);
+  }
+  navigateToCreateRentPost(){
+    this.router.navigate(['addrentpost']);
+  }
+  navigateToCreateSalePost(){
+    this.router.navigate(['addsalepost']);
+  }
+  navigateToMyPosts(){
+    this.router.navigate(['myposts']);
   }
 }

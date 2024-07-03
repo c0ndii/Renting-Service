@@ -40,10 +40,4 @@ export class NavbarComponent implements OnInit{
   onChange(){
     this.navbar.SelectedValue = this.selectedValue;
   }
-  navigateToCreateRentPost(){
-    this.router.navigate(['addrentpost']);
-  }
-  navigateToCreateSalePost(){
-    this.router.navigate(['addsalepost']);
-  }
 }

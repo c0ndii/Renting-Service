@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
@@ -35,6 +35,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { createForSalePostDto } from '../interfaces/createForSalePostDto';
+import { NavbarService } from '../services/navbar.service';
 
 @Component({
   selector: 'app-create-sale-post',
@@ -57,7 +58,7 @@ import { createForSalePostDto } from '../interfaces/createForSalePostDto';
   templateUrl: './create-sale-post.component.html',
   styleUrl: './create-sale-post.component.scss'
 })
-export class CreateSalePostComponent {
+export class CreateSalePostComponent implements OnInit {
   mapSearchProvider = new OpenStreetMapProvider();
   searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSearchProvider,
@@ -102,7 +103,8 @@ export class CreateSalePostComponent {
   constructor(
     private snackbarService: SnackbarService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private navbar: NavbarService
   ) {
     this.http
       .get<string[]>(backendUrlBase + 'maincategory/sale')
@@ -112,6 +114,9 @@ export class CreateSalePostComponent {
     this.selectedSaleMainCategory = 'Mieszkanie';
   }
 
+  ngOnInit(): void {
+    this.navbar.disableInputs();
+}
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(

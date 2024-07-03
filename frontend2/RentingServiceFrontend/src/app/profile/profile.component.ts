@@ -56,6 +56,7 @@ export class ProfileComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    this.navbar.disableInputs();
     if(this.authService.getJwtToken() === null) {
       this.router.navigate(['']);
     }

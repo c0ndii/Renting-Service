@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
@@ -34,6 +34,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
+import { NavbarService } from '../services/navbar.service';
 
 
 @Component({
@@ -57,7 +58,7 @@ import { createForRentPostDto } from '../interfaces/createForRentPostDto';
   templateUrl: './create-rent-post.component.html',
   styleUrl: './create-rent-post.component.scss',
 })
-export class CreateRentPostComponent {
+export class CreateRentPostComponent implements OnInit{
   mapSearchProvider = new OpenStreetMapProvider();
   searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSearchProvider,
@@ -108,7 +109,8 @@ export class CreateRentPostComponent {
   constructor(
     private snackbarService: SnackbarService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private navbar: NavbarService
   ) {
     this.http
       .get<string[]>(backendUrlBase + 'maincategory/rent')
@@ -118,6 +120,9 @@ export class CreateRentPostComponent {
     this.selectedRentMainCategory = 'Mieszkanie';
   }
 
+  ngOnInit(): void {
+      this.navbar.disableInputs();
+  }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
