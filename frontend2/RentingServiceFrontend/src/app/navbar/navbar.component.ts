@@ -12,7 +12,6 @@ import { NavbarService } from '../services/navbar.service';
 import { CommonModule } from '@angular/common';
 import {MatMenuModule} from '@angular/material/menu';
 import { AuthService } from '../services/auth.service';
-import { CreatePostDialogComponent } from '../dialogs/create-post-dialog/create-post-dialog.component';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 
 @Component({
