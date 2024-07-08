@@ -13,6 +13,10 @@ namespace RentingServiceBackend.Services
         Task AddSalePost(CreateForSalePostDto dto);
         Task<ForRentPostDto> GetRentPostById(int postId);
         Task<string> AddPicturesToPost(EditPostPicturesDto dto);
+        Task<List<ForRentPostDto>> GetAllUserRentPosts();
+        Task<List<ForRentPostDto>> GetAllUserRentPosts(int userId);
+        Task<List<ForSalePostDto>> GetAllUserSalePosts();
+        Task<List<ForSalePostDto>> GetAllUserSalePosts(int userId);
     }
 
     public class PostService : IPostService
@@ -61,7 +65,7 @@ namespace RentingServiceBackend.Services
                 }
                 iter++;
             }
-            return $"{user.UserId}user_{userPostCounter}";
+            return $"{user.UserId}_user_{userPostCounter}_post";
         }
         public async Task AddRentPost(CreateForRentPostDto dto)
         {
@@ -154,7 +158,7 @@ namespace RentingServiceBackend.Services
         }
         public async Task<ForRentPostDto> GetRentPostById(int postId)
         {
-            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.Features).Include(x => x.Categories).SingleOrDefaultAsync(x => x.PostId == postId);
+            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).SingleOrDefaultAsync(x => x.PostId == postId);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
@@ -165,14 +169,117 @@ namespace RentingServiceBackend.Services
             //    throw new NotFoundException("User not found");
             //}
             var user = _mapper.Map<UserDto>(post.User);
-            List<string> features = post.Features.Select(x => x.FeatureName).ToList();
+            //List<string> features = post.Features.Select(x => x.FeatureName).ToList();
             List<string> categories = post.Categories.Select(x => x.CategoryName).ToList();
-            var comments = _mapper.Map<List<CommentDto>>(post.Comments);
+            //var comments = _mapper.Map<List<CommentDto>>(post.Comments);
             var result = _mapper.Map<ForRentPostDto>(post);
-            result.Features = features;
+            //result.Features = features;
+            //result.Comments = comments;
             result.Categories = categories;
-            result.Comments = comments;
             result.User = user;
+            int iter = 0;
+            var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
+            while (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                string image = Convert.ToBase64String(bytes);
+                result.Pictures.Add(image);
+                path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{++iter}.png");
+            }
+            return result;
+        }
+        public async Task<List<ForRentPostDto>> GetAllUserRentPosts()
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
+            var result = _mapper.Map<List<ForRentPostDto>>(posts);
+            foreach(var post in result)
+            {
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }   
+            }
+            return result;
+        }
+        public async Task<List<ForRentPostDto>> GetAllUserRentPosts(int userId)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
+            var result = _mapper.Map<List<ForRentPostDto>>(posts);
+            foreach (var post in result)
+            {
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+        public async Task<List<ForSalePostDto>> GetAllUserSalePosts()
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory).Where(x => x.UserId == userId).ToListAsync();
+            var result = _mapper.Map<List<ForSalePostDto>>(posts);
+            foreach (var post in result)
+            {
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+        public async Task<List<ForSalePostDto>> GetAllUserSalePosts(int userId)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory).Where(x => x.UserId == userId).ToListAsync();
+            var result = _mapper.Map<List<ForSalePostDto>>(posts);
+            foreach (var post in result)
+            {
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
             return result;
         }
     }

@@ -9,6 +9,7 @@ namespace RentingServiceBackend.Models
         public string MainCategory { get; set; }
         public int SleepingPlaceCount { get; set; }
         public float Price { get; set; }
+        public float SquareFootage { get; set; }
         public string PicturesPath { get; set; }
         public string Lat { get; set; }
         public string Lng { get; set; }

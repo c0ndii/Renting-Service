@@ -6,6 +6,7 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }
+        public float SquareFootage { get; set; }
         public string PicturesPath { get; set; }
         public string Lat { get; set; }
         public string Lng {  get; set; }

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
@@ -13,23 +12,44 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { forRentPostDto } from '../interfaces/forRentPostDto';
+import { HttpClient } from '@angular/common/http';
+import { backendUrlBase } from '../appsettings/constant';
+import { Observable } from 'rxjs';
+import { forSalePostDto } from '../interfaces/forSalePostDto';
+import { CommonModule, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-my-posts',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatDialogModule, FormsModule, MatInputModule, MatFormFieldModule, MatTooltipModule, CommonModule],
+  imports: [NgFor, MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatDialogModule, FormsModule, MatInputModule, MatFormFieldModule, MatTooltipModule, CommonModule],
   templateUrl: './my-posts.component.html',
   styleUrl: './my-posts.component.scss'
 })
 export class MyPostsComponent implements OnInit{
-  constructor(private authService: AuthService, private router: Router, public dialog: MatDialog, private navbar: NavbarService) {
+  constructor(private authService: AuthService, private router: Router, public dialog: MatDialog, private navbar: NavbarService, private http: HttpClient) {
   }
-  rentPosts = {} as forRentPostDto[];
+  rentPosts: forRentPostDto[] = [];
+  salePosts: forSalePostDto[] = [];
   selectedValue: string = 'rent';
   ngOnInit(): void {
     this.navbar.disableInputs();
     if(!this.authService.isUserLoggedIn()){
       this.router.navigate(['/login']);
     }
+    this.preparePosts();
+  }
+  preparePosts(){
+    this.getRentPosts().subscribe((response) => {
+      this.rentPosts = response;
+    })
+    this.getSalePosts().subscribe((response) => {
+      this.salePosts = response;
+    });
+  }
+  getRentPosts() : Observable<forRentPostDto[]> {
+    return this.http.get<forRentPostDto[]>(backendUrlBase + "post/userrentposts");
+  }
+  getSalePosts() : Observable<forSalePostDto[]> {
+    return this.http.get<forSalePostDto[]>(backendUrlBase + "post/usersaleposts");
   }
 }

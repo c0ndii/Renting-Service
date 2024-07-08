@@ -26,8 +26,13 @@ namespace RentingServiceBackend
                 .ForMember(x => x.Rate, y => y.MapFrom(z => z.RateScore / z.RateIterator))
                 .ForMember(x => x.FollowCount, y => y.MapFrom(z => z.FollowedBy.Count))
                 .ForMember(x => x.MainCategory, y => y.MapFrom(z => z.MainCategory.MainCategoryName))
-                .ForMember(x => x.Comments, y => y.MapFrom(z => z))
-                .ForMember(x => x.Features, y=> y.MapFrom(z => z));
+                .IncludeMembers();
+                //.ForMember(x => x.Comments, y => y.MapFrom(z => z))
+                //.ForMember(x => x.Features, y=> y.MapFrom(z => z))
+            CreateMap<ForSalePost, ForSalePostDto>()
+                .ForMember(x => x.FollowCount, y => y.MapFrom(z => z.FollowedBy.Count))
+                .ForMember(x => x.MainCategory, y => y.MapFrom(z => z.MainCategory.MainCategoryName))
+                .IncludeMembers();
         }
     }
 }

@@ -34,6 +34,34 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.GetRentPostById(postId);
             return Ok(result);
         }
+        [HttpGet("userrentposts/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUserRentPosts([FromRoute] int userId)
+        {
+            var result = await _postService.GetAllUserRentPosts(userId);
+            return Ok(result);
+        }
+        [HttpGet("usersaleposts/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUserSalePosts([FromRoute] int userId)
+        {
+            var result = await _postService.GetAllUserSalePosts(userId);
+            return Ok(result);
+        }
+        [HttpGet("userrentposts")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUserRentPosts()
+        {
+            var result = await _postService.GetAllUserRentPosts();
+            return Ok(result);
+        }
+        [HttpGet("usersaleposts")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUserSalePosts()
+        {
+            var result = await _postService.GetAllUserSalePosts();
+            return Ok(result);
+        }
         [HttpPost("addpicturestopost")]
         [DisableRequestSizeLimit]
         [Authorize]

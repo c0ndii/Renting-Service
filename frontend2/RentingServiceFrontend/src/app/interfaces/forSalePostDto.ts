@@ -1,12 +1,10 @@
-import { commentDto } from "./commentDto";
 import { userDto } from "./userDto";
 
-export interface forRentPostDto {
+export interface forSalePostDto {
     postId: number;
     title: string;
     description: string;
     mainCategory: string;
-    sleepingPlaceCount: number;
     price: number;
     picturesPath: string;
     pictures: string[];
@@ -19,8 +17,5 @@ export interface forRentPostDto {
     country: string;
     addDate: Date;
     followCount: number;
-    features: string[];
-    comments: commentDto[];
-    rate: number;
     user: userDto;
 }

@@ -17,10 +17,94 @@
             >Sprzedaży</mat-button-toggle
           >
         </mat-button-toggle-group>
-      <div class="post-list-holder" *ngIf="selectedValue === 'rent'">rent
-        <ul *ngFor="let elem in rentPosts"></ul>
+      <div class="post-list-holder" *ngIf="selectedValue === 'rent' && rentPosts[0]">
+        <ul *ngFor="let post of rentPosts">
+          <li>
+            <div class="single-post-holder">
+              <div class="single-post-top">
+                <div class="single-post-top-title">
+                  <span class="subtitle">Tytuł</span>
+                  &nbsp;
+                  {{post.title}}
+                </div>
+                <div class="single-post-top-category">
+                  <span class="subtitle">Kategoria</span>
+                  &nbsp;
+                  {{post.mainCategory}}
+                </div>
+                <div class="single-post-top-place">
+                  <span class="subtitle">Lokalizacja</span>
+                  &nbsp;
+                  {{post.street + ", " + post.city}}
+                </div>
+                <div class="single-post-top-price">
+                  <span class="subtitle">Cena</span>
+                  &nbsp;
+                  {{post.price +" pln"}}
+                </div>
+              </div>
+              <div class="single-post-bottom">
+                <div class="single-post-bottom-image">
+                  <div class="img-holder">
+                    <img [src]="'data:image/png;base64,' +post.pictures[0]">
+                  </div>
+                </div>
+                <div class="single-post-bottom-features">
+                  <span class="subtitle">Dogodnienia</span>
+                  <ul *ngFor="let feature of post.features">
+                    <li>
+                      <span class="feature">
+                        {{feature}}
+                      </span>
+                    </li>
+                    
+                  </ul>
+                </div>
+                <div class="single-post-bottom-square-footage">
+                  <span class="subtitle">Metraż</span>
+                  &nbsp;
+                  essa
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
-      <div class="post-list-holder" *ngIf="selectedValue === 'sell'">sell</div>
+      <div class="post-list-holder" *ngIf="selectedValue === 'sell' && salePosts[0]">
+        <ul *ngFor="let post of salePosts">
+          <li>
+            <div class="single-post-holder">
+              <div class="single-post-top">
+                <div class="single-post-top-title">
+                  {{post.title}}
+                </div>
+                <div class="single-post-top-category">
+                  {{post.mainCategory}}
+                </div>
+                <div class="single-post-top-place">
+                  {{post.street + ", " + post.city}}
+                </div>
+                <div class="single-post-top-price">
+                  {{post.price +" pln"}}
+                </div>
+              </div>
+              <div class="single-post-bottom">
+                <div class="single-post-bottom-image">
+                  <div class="img-holder">
+                    <img [src]="'data:image/png;base64,' +post.pictures[0]">
+                  </div>
+                </div>
+                <div class="single-post-bottom-features">
+                  <span>essa</span>
+                </div>
+                <div class="single-post-bottom-square-footage">
+                  <span>essa</span>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

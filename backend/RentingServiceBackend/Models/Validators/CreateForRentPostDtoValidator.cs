@@ -36,6 +36,8 @@ namespace RentingServiceBackend.Models.Validators
                 .NotEmpty();
             RuleFor(x => x.Country)
                 .NotEmpty();
+            RuleFor(x => x.SquareFootage)
+                .NotEmpty();
     }
     }
 }
