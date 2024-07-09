@@ -17,11 +17,12 @@ import { backendUrlBase } from '../appsettings/constant';
 import { Observable } from 'rxjs';
 import { forSalePostDto } from '../interfaces/forSalePostDto';
 import { CommonModule, NgFor } from '@angular/common';
+import {MatChipsModule} from '@angular/material/chips';
 
 @Component({
   selector: 'app-my-posts',
   standalone: true,
-  imports: [NgFor, MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatDialogModule, FormsModule, MatInputModule, MatFormFieldModule, MatTooltipModule, CommonModule],
+  imports: [NgFor, MatProgressSpinnerModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatDialogModule, FormsModule, MatInputModule, MatFormFieldModule, MatTooltipModule, CommonModule, MatChipsModule],
   templateUrl: './my-posts.component.html',
   styleUrl: './my-posts.component.scss'
 })
@@ -51,5 +52,11 @@ export class MyPostsComponent implements OnInit{
   }
   getSalePosts() : Observable<forSalePostDto[]> {
     return this.http.get<forSalePostDto[]>(backendUrlBase + "post/usersaleposts");
+  }
+  redirectToRentPost(postId: number){
+    this.router.navigate(['rentpost', postId]);
+  }
+  redirectToSalePost(postId: number){
+    this.router.navigate(['salepost', postId]);
   }
 }

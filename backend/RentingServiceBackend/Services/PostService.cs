@@ -12,6 +12,7 @@ namespace RentingServiceBackend.Services
         Task AddRentPost(CreateForRentPostDto dto);
         Task AddSalePost(CreateForSalePostDto dto);
         Task<ForRentPostDto> GetRentPostById(int postId);
+        Task<ForSalePostDto> GetSalePostById(int postId);
         Task<string> AddPicturesToPost(EditPostPicturesDto dto);
         Task<List<ForRentPostDto>> GetAllUserRentPosts();
         Task<List<ForRentPostDto>> GetAllUserRentPosts(int userId);
@@ -158,7 +159,7 @@ namespace RentingServiceBackend.Services
         }
         public async Task<ForRentPostDto> GetRentPostById(int postId)
         {
-            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).SingleOrDefaultAsync(x => x.PostId == postId);
+            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Comments).SingleOrDefaultAsync(x => x.PostId == postId);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
@@ -168,15 +169,43 @@ namespace RentingServiceBackend.Services
             //{
             //    throw new NotFoundException("User not found");
             //}
-            var user = _mapper.Map<UserDto>(post.User);
+            //var user = _mapper.Map<UserDto>(post.User);
             //List<string> features = post.Features.Select(x => x.FeatureName).ToList();
-            List<string> categories = post.Categories.Select(x => x.CategoryName).ToList();
             //var comments = _mapper.Map<List<CommentDto>>(post.Comments);
             var result = _mapper.Map<ForRentPostDto>(post);
             //result.Features = features;
             //result.Comments = comments;
-            result.Categories = categories;
-            result.User = user;
+            //result.User = user;
+            int iter = 0;
+            var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
+            while (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                string image = Convert.ToBase64String(bytes);
+                result.Pictures.Add(image);
+                path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{++iter}.png");
+            }
+            return result;
+        }
+        public async Task<ForSalePostDto> GetSalePostById(int postId)
+        {
+            var post = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory).SingleOrDefaultAsync(x => x.PostId == postId);
+            if (post == null)
+            {
+                throw new NotFoundException("Post not found");
+            }
+            //var postOwner = await _context.Users.SingleOrDefaultAsync(x => x.UserId == post.UserId);
+            //if (post == null)
+            //{
+            //    throw new NotFoundException("User not found");
+            //}
+            //var user = _mapper.Map<UserDto>(post.User);
+            //List<string> features = post.Features.Select(x => x.FeatureName).ToList();
+            //var comments = _mapper.Map<List<CommentDto>>(post.Comments);
+            var result = _mapper.Map<ForSalePostDto>(post);
+            //result.Features = features;
+            //result.Comments = comments;
+            //result.User = user;
             int iter = 0;
             var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
             while (File.Exists(path))

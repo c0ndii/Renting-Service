@@ -19,7 +19,7 @@
         </mat-button-toggle-group>
       <div class="post-list-holder" *ngIf="selectedValue === 'rent' && rentPosts[0]">
         <ul *ngFor="let post of rentPosts">
-          <li>
+          <li (click)="redirectToRentPost(post.postId)">
             <div class="single-post-holder">
               <div class="single-post-top">
                 <div class="single-post-top-title">
@@ -53,9 +53,9 @@
                   <span class="subtitle">Dogodnienia</span>
                   <ul *ngFor="let feature of post.features">
                     <li>
-                      <span class="feature">
+                      <mat-chip>
                         {{feature}}
-                      </span>
+                      </mat-chip>
                     </li>
                     
                   </ul>
@@ -72,7 +72,7 @@
       </div>
       <div class="post-list-holder" *ngIf="selectedValue === 'sell' && salePosts[0]">
         <ul *ngFor="let post of salePosts">
-          <li>
+          <li (click)="redirectToSalePost(post.postId)">
             <div class="single-post-holder">
               <div class="single-post-top">
                 <div class="single-post-top-title">

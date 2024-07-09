@@ -29,9 +29,17 @@ namespace RentingServiceBackend.Controllers
             return Created();
         }
         [HttpGet("rentpost/{postId}")]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> GetRentPostById([FromRoute] int postId)
         {
             var result = await _postService.GetRentPostById(postId);
+            return Ok(result);
+        }
+        [HttpGet("salepost/{postId}")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> GetSalePostById([FromRoute] int postId)
+        {
+            var result = await _postService.GetSalePostById(postId);
             return Ok(result);
         }
         [HttpGet("userrentposts/{userId}")]

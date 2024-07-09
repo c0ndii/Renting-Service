@@ -52,7 +52,10 @@ button {
 }
 li {
   margin-top: 15px;
-  text-decoration: none;
+  text-decoration: none !important;
+}
+li:hover {
+  cursor: pointer;
 }
 .single-post-holder {
   display: flex;
