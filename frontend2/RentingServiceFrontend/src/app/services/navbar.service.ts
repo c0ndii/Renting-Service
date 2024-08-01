@@ -1,4 +1,4 @@
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
@@ -6,42 +6,48 @@ import { Router } from '@angular/router';
 import { userDto } from '../interfaces/userDto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class NavbarService{
+export class NavbarService {
   private selectedValue = new BehaviorSubject<string>('map');
-  constructor(protected authService: AuthService, protected snackbar: SnackbarService, protected router: Router) { 
-  }
-  
+  constructor(
+    protected authService: AuthService,
+    protected snackbar: SnackbarService,
+    protected router: Router
+  ) {}
+
   inputsDisabled: boolean = false;
   search_value = '';
-  disableInputs(){
+  disableInputs() {
     this.inputsDisabled = true;
   }
-  enableInputs(){
+  enableInputs() {
     this.inputsDisabled = false;
   }
   public set SelectedValue(selectedValue: string) {
     this.selectedValue.next(selectedValue);
   }
-  public get SelectedValue() : Observable<string> {
+  public get SelectedValue(): Observable<string> {
     return this.selectedValue.asObservable();
   }
-  
-  logout(){
+
+  logout() {
     this.authService.logout();
-    this.snackbar.openSnackbar("Wylogowano", "Info");
+    this.snackbar.openSnackbar('Wylogowano', 'Info');
   }
-  navigateToProfile(){
+  navigateToProfile() {
     this.router.navigate(['profile']);
   }
-  navigateToCreateRentPost(){
+  navigateToCreateRentPost() {
     this.router.navigate(['addrentpost']);
   }
-  navigateToCreateSalePost(){
+  navigateToCreateSalePost() {
     this.router.navigate(['addsalepost']);
   }
-  navigateToMyPosts(){
+  navigateToMyPosts() {
     this.router.navigate(['myposts']);
+  }
+  navigateToFollowedPosts() {
+    this.router.navigate(['followedposts']);
   }
 }

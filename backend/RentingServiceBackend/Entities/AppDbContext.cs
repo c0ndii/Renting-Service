@@ -6,11 +6,9 @@ namespace RentingServiceBackend.Entities
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Feature> Features { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<PostCategoryLinkEnitity> PostCategory { get; set; }
         public DbSet<PostFeatureLinkEntity> PostFeature { get; set; }
         public DbSet<PostUserFollowLinkEntity> PostUser { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
@@ -27,18 +25,6 @@ namespace RentingServiceBackend.Entities
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>()
-                .HasKey(x => x.CategoryId);
-            modelBuilder.Entity<Category>()
-                .Property(x => x.CategoryName)
-                .IsRequired()
-                .HasMaxLength(25);
-            modelBuilder.Entity<Category>()
-                .HasMany(x => x.Posts)
-                .WithMany(x => x.Categories)
-                .UsingEntity<PostCategoryLinkEnitity>(l => l.HasOne<ForRentPost>().WithMany().HasForeignKey(y => y.PostId).OnDelete(DeleteBehavior.Cascade),
-                r => r.HasOne<Category>().WithMany().HasForeignKey(y => y.CategoryId).OnDelete(DeleteBehavior.Cascade));
-
             modelBuilder.Entity<Comment>()
                 .HasKey(x => x.CommentId);
             modelBuilder.Entity<Comment>()

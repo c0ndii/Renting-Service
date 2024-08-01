@@ -22,6 +22,7 @@ namespace RentingServiceBackend.Models
         public bool Confirmed { get; set; }
         public DateTime AddDate { get; set; }
         public int FollowCount { get; set; }
+        public bool? isFollowedByUser { get; set; } = null;
         public UserDto User { get; set; }
     }
 }

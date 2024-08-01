@@ -1,4 +1,9 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  DEFAULT_CURRENCY_CODE,
+  importProvidersFrom,
+  LOCALE_ID,
+} from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
@@ -15,29 +20,45 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { AuthService } from './services/auth.service';
 import { NavbarService } from './services/navbar.service';
 import { SnackbarService } from './services/snackbar.service';
+import { GalleryModule } from 'ng-gallery';
+import { NgImageSliderModule } from 'ng-image-slider';
+import localePl from '@angular/common/locales/pl';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localePl);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withViewTransitions()), 
+    provideRouter(routes, withViewTransitions()),
     provideHttpClient(withFetch()),
     provideAnimations(),
-    importProvidersFrom(MatNativeDateModule), 
-    provideAnimationsAsync(), 
+    importProvidersFrom(MatNativeDateModule),
+    provideAnimationsAsync(),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: jwtInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: MatDialogRef,
-      useValue: {}
+      useValue: {},
     },
     {
       provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: {showError: true},
+      useValue: { showError: true },
     },
     AuthService,
     NavbarService,
     SnackbarService,
-    ]
+    GalleryModule,
+    NgImageSliderModule,
+    {
+      provide: LOCALE_ID,
+      useValue: 'pl-PL',
+    },
+    {
+      provide: DEFAULT_CURRENCY_CODE,
+      useValue: 'PLN',
+    },
+  ],
 };

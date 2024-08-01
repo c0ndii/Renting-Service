@@ -24,13 +24,12 @@
                   >Tytuł może mieć maksymalnie
                   <strong>20 znaków!</strong></mat-error
                 >
+                } @if (title.hasError('minlength')) {
+                <mat-error
+                  >Tytuł musi mieć przynajmniej
+                  <strong>8 znaków!</strong></mat-error
+                >
                 }
-                @if (title.hasError('minlength')) {
-                  <mat-error
-                    >Tytuł musi mieć przynajmniej
-                    <strong>8 znaków!</strong></mat-error
-                  >
-                  }
               </mat-form-field>
               <br />
               <br />
@@ -52,10 +51,7 @@
               <br />
               <br />
               <mat-form-field>
-                <mat-label
-                  >Cena
-                  (pln)</mat-label
-                >
+                <mat-label>Cena (pln)</mat-label>
                 <input matInput type="number" [formControl]="price" />
                 @if (price.hasError('required')) {
                 <mat-error>Cena jest <strong>wymagana!</strong></mat-error>
@@ -63,6 +59,20 @@
                 <mat-error
                   >Cena musi wynosić
                   <strong>przynajmniej 1zł!</strong></mat-error
+                >
+                }
+              </mat-form-field>
+              <br />
+              <br />
+              <mat-form-field>
+                <mat-label>Metraż (m2)</mat-label>
+                <input matInput type="number" [formControl]="squareFootage" />
+                @if (price.hasError('required')) {
+                <mat-error>Metraż jest <strong>wymagany!</strong></mat-error>
+                } @if (price.hasError('min')) {
+                <mat-error
+                  >Metraż musi wynosić
+                  <strong>przynajmniej 1m2!</strong></mat-error
                 >
                 }
               </mat-form-field>
@@ -77,7 +87,9 @@
                 [leafletOptions]="options"
                 (leafletMapReady)="readyUpMap($event)"
               ></div>
-              <span class="errorMessage" *ngIf="emptyAddress">Ustaw adres obiektu!</span>
+              <span class="errorMessage" *ngIf="emptyAddress"
+                >Ustaw adres obiektu!</span
+              >
             </div>
           </div>
           <br />
@@ -100,14 +112,13 @@
                   500 znaków</strong
                 ></mat-error
               >
+              } @if (description.hasError('minlength')) {
+              <mat-error
+                >Opis musi mieć przynajmniej<strong>
+                  20 znaków</strong
+                ></mat-error
+              >
               }
-              @if (description.hasError('minlength')) {
-                <mat-error
-                  >Opis musi mieć przynajmniej<strong>
-                    20 znaków</strong
-                  ></mat-error
-                >
-                }
             </mat-form-field>
           </div>
           <br />
@@ -125,7 +136,7 @@
               (cdkDropListDropped)="drop($event)"
             >
               @for (image of topImages; track image) {
-                <img class="image-box" cdkDrag [src]="image">
+              <img class="image-box" cdkDrag [src]="image" />
               }
             </div>
             <div
@@ -138,24 +149,26 @@
               (cdkDropListDropped)="drop($event)"
             >
               @for (image of bottomImages; track image) {
-                <img class="image-box" cdkDrag [src]="image">
+              <img class="image-box" cdkDrag [src]="image" />
               }
             </div>
-            <br>
+            <br />
             <div>
-                <label for="picture">Załaduj zdjęcia: </label><br />
-      <input
-        type="file"
-        multiple="true"
-        required
-        (change)="handleFileInput($event.target)"
-        [formControl]="picture"
-        accept="image/png image/jpeg"
-      />
+              <label for="picture">Załaduj zdjęcia: </label><br />
+              <input
+                type="file"
+                multiple="true"
+                required
+                (change)="handleFileInput($event.target)"
+                [formControl]="picture"
+                accept="image/png image/jpeg"
+              />
             </div>
           </div>
           <div class="button-holder">
-            <button (click)="sendFileInput()" mat-stroked-button>Dodaj ogłoszenie</button>
+            <button (click)="sendFileInput()" mat-stroked-button>
+              Dodaj ogłoszenie
+            </button>
           </div>
         </form>
 

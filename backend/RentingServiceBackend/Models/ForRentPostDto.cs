@@ -22,9 +22,9 @@
         public DateTime AddDate { get; set; }
         public int FollowCount { get; set; }
         public List<string> Features { get; set; }
-        public List<string> Categories { get; set; }
         public List<CommentDto> Comments { get; set; }
         public double Rate { get; set; }
+        public bool? isFollowedByUser { get; set; } = null;
         public UserDto User { get; set; }
     }
 }

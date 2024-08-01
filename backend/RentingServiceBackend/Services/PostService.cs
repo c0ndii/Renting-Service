@@ -18,6 +18,14 @@ namespace RentingServiceBackend.Services
         Task<List<ForRentPostDto>> GetAllUserRentPosts(int userId);
         Task<List<ForSalePostDto>> GetAllUserSalePosts();
         Task<List<ForSalePostDto>> GetAllUserSalePosts(int userId);
+        Task DeletePost(int postId);
+        Task<bool> IsOwner(int postId);
+        Task EditSalePost(int postId, CreateForSalePostDto dto);
+        Task EditRentPost(int postId, CreateForRentPostDto dto);
+        Task<List<ForRentPostDto>> GetUserFollowedRentPosts();
+        Task<List<ForSalePostDto>> GetUserFollowedSalePosts();
+        Task<bool> ToggleRentFollow(int postId);
+        Task<bool> ToggleSaleFollow(int postId);
     }
 
     public class PostService : IPostService
@@ -113,7 +121,6 @@ namespace RentingServiceBackend.Services
                 FollowedBy = new List<User>(),
                 Reservations = new List<Reservation>(),
                 Features = features,
-                Categories = new List<Category>(),
                 Comments = new List<Comment>(),
                 User = user
             };
@@ -159,23 +166,19 @@ namespace RentingServiceBackend.Services
         }
         public async Task<ForRentPostDto> GetRentPostById(int postId)
         {
-            var post = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Comments).SingleOrDefaultAsync(x => x.PostId == postId);
+            var post = await _context.ForRentPosts
+                .Include(x => x.User)
+                .Include(x => x.MainCategory)
+                .Include(x => x.Features)
+                .Include(x => x.Comments)
+                .Include(x => x.FollowedBy)
+                .SingleOrDefaultAsync(x => x.PostId == postId);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
             }
-            //var postOwner = await _context.Users.SingleOrDefaultAsync(x => x.UserId == post.UserId);
-            //if (post == null)
-            //{
-            //    throw new NotFoundException("User not found");
-            //}
-            //var user = _mapper.Map<UserDto>(post.User);
-            //List<string> features = post.Features.Select(x => x.FeatureName).ToList();
-            //var comments = _mapper.Map<List<CommentDto>>(post.Comments);
             var result = _mapper.Map<ForRentPostDto>(post);
-            //result.Features = features;
-            //result.Comments = comments;
-            //result.User = user;
+            result.isFollowedByUser = await CheckIfUserFollowsRentPost(postId);
             int iter = 0;
             var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
             while (File.Exists(path))
@@ -194,18 +197,8 @@ namespace RentingServiceBackend.Services
             {
                 throw new NotFoundException("Post not found");
             }
-            //var postOwner = await _context.Users.SingleOrDefaultAsync(x => x.UserId == post.UserId);
-            //if (post == null)
-            //{
-            //    throw new NotFoundException("User not found");
-            //}
-            //var user = _mapper.Map<UserDto>(post.User);
-            //List<string> features = post.Features.Select(x => x.FeatureName).ToList();
-            //var comments = _mapper.Map<List<CommentDto>>(post.Comments);
             var result = _mapper.Map<ForSalePostDto>(post);
-            //result.Features = features;
-            //result.Comments = comments;
-            //result.User = user;
+            result.isFollowedByUser = await CheckIfUserFollowsSalePost(postId);
             int iter = 0;
             var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
             while (File.Exists(path))
@@ -229,7 +222,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authorize user");
             }
-            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach(var post in result)
             {
@@ -250,10 +243,11 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authorize user");
             }
-            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Categories).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.Comments).Where(x => x.UserId == userId).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
+                post.isFollowedByUser = await CheckIfUserFollowsRentPost(post.PostId);
                 var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
                 if (File.Exists(path))
                 {
@@ -301,6 +295,7 @@ namespace RentingServiceBackend.Services
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
+                post.isFollowedByUser = await CheckIfUserFollowsSalePost(post.PostId);
                 var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
                 if (File.Exists(path))
                 {
@@ -309,6 +304,199 @@ namespace RentingServiceBackend.Services
                     post.Pictures.Add(image);
                 }
             }
+            return result;
+        }
+        public async Task DeletePost(int postId)
+        {
+            var userId = _userContextService.GetUserId;
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            if(post == null)
+            {
+                throw new NotFoundException("Post not found");
+            }
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<bool> IsOwner(int postId)
+        {
+            var userId = _userContextService.GetUserId;
+            if(userId is null)
+            {
+                return false;
+            }
+            var result = await _context.Posts.AnyAsync(x => x.PostId == postId && x.UserId == userId);
+            return result;
+        }
+        public async Task EditRentPost(int postId, CreateForRentPostDto dto)
+        {
+            var userId = _userContextService.GetUserId;
+            var post = await _context.ForRentPosts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            if (post is not null)
+            {
+                post.Title = dto.Title;
+                post.Description = dto.Description;
+                post.MainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+                post.SleepingPlaceCount = dto.SleepingPlaceCount;
+                post.Price = dto.Price;
+                post.SquareFootage = dto.SquareFootage;
+                post.PicturesPath = dto.PicturesPath;
+                post.Lat = dto.Lat;
+                post.Lng = dto.Lng;
+                post.Features = await _context.Features.Where(x => dto.Features.Contains(x.FeatureName)).ToListAsync();
+                post.BuildingNumber = dto.BuildingNumber;
+                post.Street = dto.Street;
+                post.District = dto.District;
+                post.City = dto.City;
+                post.Country = dto.Country;
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task EditSalePost(int postId, CreateForSalePostDto dto)
+        {
+            var userId = _userContextService.GetUserId;
+            var post = await _context.ForRentPosts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            if (post is not null)
+            {
+                post.Title = dto.Title;
+                post.Description = dto.Description;
+                post.MainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+                post.Price = dto.Price;
+                post.SquareFootage = dto.SquareFootage;
+                post.PicturesPath = dto.PicturesPath;
+                post.Lat = dto.Lat;
+                post.Lng = dto.Lng;
+                post.BuildingNumber = dto.BuildingNumber;
+                post.Street = dto.Street;
+                post.District = dto.District;
+                post.City = dto.City;
+                post.Country = dto.Country;
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task<List<ForRentPostDto>> GetUserFollowedRentPosts()
+        {
+            var userId = _userContextService.GetUserId;
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory).Where(x => x.FollowedBy.Contains(user)).ToListAsync();
+            var result = _mapper.Map<List<ForRentPostDto>>(posts);
+            foreach (var post in result)
+            {
+                post.isFollowedByUser = true;
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+        public async Task<List<ForSalePostDto>> GetUserFollowedSalePosts()
+        {
+            var userId = _userContextService.GetUserId;
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory).Where(x => x.FollowedBy.Contains(user)).ToListAsync();
+            var result = _mapper.Map<List<ForSalePostDto>>(posts);
+            foreach (var post in result)
+            {
+                post.isFollowedByUser = true;
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+        public async Task<bool> ToggleRentFollow(int postId)
+        {
+            var userId = _userContextService.GetUserId;
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var post = await _context.Posts.Include(x => x.User).Include(x => x.FollowedBy).SingleOrDefaultAsync(x => x.PostId == postId && x.User != user);
+            if (post.FollowedBy.Contains(user))
+            {
+                post.FollowedBy.Remove(user);
+                await _context.SaveChangesAsync();
+                return false;
+            } else
+            {
+                post.FollowedBy.Add(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            
+        }
+        public async Task<bool> ToggleSaleFollow(int postId)
+        {
+            var userId = _userContextService.GetUserId;
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Could not authorize user");
+            }
+            var post = await _context.Posts.Include(x => x.User).Include(x => x.FollowedBy).SingleOrDefaultAsync(x => x.PostId == postId && x.User != user);
+            if (post.FollowedBy.Contains(user))
+            {
+                post.FollowedBy.Remove(user);
+                await _context.SaveChangesAsync();
+                return false;
+            }
+            else
+            {
+                post.FollowedBy.Add(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+        }
+        private async Task<bool?> CheckIfUserFollowsRentPost(int postId)
+        {
+            int? userId = _userContextService.GetUserId;
+            if (userId is null)
+            {
+                return null;
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user is null)
+            {
+                return null;
+            }
+            var result = await _context.ForRentPosts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
+            return result;
+        }
+        private async Task<bool?> CheckIfUserFollowsSalePost(int postId)
+        {
+            int? userId = _userContextService.GetUserId;
+            if (userId is null)
+            {
+                return null;
+            }
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user is null)
+            {
+                return null;
+            }
+            var result = await _context.ForSalePosts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
             return result;
         }
     }

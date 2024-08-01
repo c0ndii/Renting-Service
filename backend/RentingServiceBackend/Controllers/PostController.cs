@@ -78,5 +78,60 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.AddPicturesToPost(dto);
             return Ok(result);
         }
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeletePost([FromRoute] int id)
+        {
+            await _postService.DeletePost(id);
+            return Ok();
+        }
+        [HttpGet("isowner/{postId}")]
+        public async Task<IActionResult> IsOwner([FromRoute] int postId)
+        {
+            var result = await _postService.IsOwner(postId);
+            return Ok(result);
+        }
+        [HttpPut("editrentpost/{postId}")]
+        [Authorize]
+        public async Task<IActionResult> EditRentPost([FromRoute] int postId, [FromBody] CreateForRentPostDto dto)
+        {
+            await _postService.EditRentPost(postId, dto);
+            return Ok();
+        }
+        [HttpPut("editsalepost/{postId}")]
+        [Authorize]
+        public async Task<IActionResult> EditSalePost([FromRoute] int postId, [FromBody] CreateForSalePostDto dto)
+        {
+            await _postService.EditSalePost(postId, dto);
+            return Ok();
+        }
+        [HttpGet("followedrentposts")]
+        [Authorize]
+        public async Task<IActionResult> GetUserFollowedRentPosts()
+        {
+            var result = await _postService.GetUserFollowedRentPosts();
+            return Ok(result);
+        }
+        [HttpGet("followedsaleposts")]
+        [Authorize]
+        public async Task<IActionResult> GetUserFollowedSalePosts()
+        {
+            var result = await _postService.GetUserFollowedSalePosts();
+            return Ok(result);
+        }
+        [HttpGet("togglerentfollow/{postId}")]
+        [Authorize]
+        public async Task<IActionResult> ToggleRentFollow([FromRoute] int postId)
+        {
+            var result = await _postService.ToggleRentFollow(postId);
+            return Ok(result);
+        }
+        [HttpGet("togglesalefollow/{postId}")]
+        [Authorize]
+        public async Task<IActionResult> ToggleSaleFollow([FromRoute] int postId)
+        {
+            var result = await _postService.ToggleSaleFollow(postId);
+            return Ok(result);
+        }
     }
 }

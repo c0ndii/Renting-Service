@@ -14,8 +14,6 @@ namespace RentingServiceBackend
                 .ForMember(x => x.User, y => y.MapFrom(z => new UserDto() { Name = z.User.Name, UserId = z.User.UserId }));
             CreateMap<Feature, string>()
                 .ConvertUsing(x => x.FeatureName);
-            CreateMap<Category, string>()
-                .ConvertUsing(x => x.CategoryName);
             CreateMap<RegisterUserDto, User>()
                 //.ForMember(x => x.RoleId, y => y.MapFrom(z => 1))
                 .ForMember(x => x.FollowedPosts, y => y.MapFrom(z => new List<Post>()))

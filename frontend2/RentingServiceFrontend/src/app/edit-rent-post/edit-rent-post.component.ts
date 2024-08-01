@@ -15,7 +15,7 @@ import {
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule } from '@angular/common';
@@ -34,11 +34,12 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
-import { createForSalePostDto } from '../interfaces/createForSalePostDto';
 import { NavbarService } from '../services/navbar.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { forRentPostDto } from '../interfaces/forRentPostDto';
 
 @Component({
-  selector: 'app-create-sale-post',
+  selector: 'app-edit-rent-post',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -55,11 +56,13 @@ import { NavbarService } from '../services/navbar.service';
     CdkDropList,
     CdkDrag,
   ],
-  templateUrl: './create-sale-post.component.html',
-  styleUrl: './create-sale-post.component.scss',
+  templateUrl: './edit-rent-post.component.html',
+  styleUrl: './edit-rent-post.component.scss',
 })
-export class CreateSalePostComponent implements OnInit {
+export class EditRentPostComponent {
   mapSearchProvider = new OpenStreetMapProvider();
+  private sub: any;
+  postId?: number;
   searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSearchProvider,
 
@@ -79,13 +82,18 @@ export class CreateSalePostComponent implements OnInit {
     Validators.maxLength(500),
     Validators.minLength(20),
   ]);
+  sleepingPlaceCount = new FormControl(1, [
+    Validators.required,
+    Validators.min(1),
+  ]);
   squareFootage = new FormControl(1, [Validators.required, Validators.min(1)]);
-  price = new FormControl(1, [Validators.required, Validators.min(1)]);
+  price = new FormControl(0, [Validators.required, Validators.min(1)]);
+  features = new FormControl('', [Validators.required]);
   topImages: string[] = [];
   bottomImages: string[] = [];
-  postDto = {} as createForSalePostDto;
-  mainSaleCategories: string[] = [];
-  selectedSaleMainCategory: string = '';
+  postDto = {} as createForRentPostDto;
+  mainRentCategories: string[] = [];
+  selectedRentMainCategory: string = '';
   errorMessage: string = '';
   parsedAddress: string[] = [];
   status: string = '';
@@ -100,23 +108,83 @@ export class CreateSalePostComponent implements OnInit {
   picture = new FormControl('', [Validators.required]);
   data = new FormData();
   emptyAddress: boolean = false;
+  post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
+  private mapLoaded = new BehaviorSubject<boolean>(false);
 
   constructor(
     private snackbarService: SnackbarService,
     private router: Router,
     private http: HttpClient,
-    private navbar: NavbarService
+    private navbar: NavbarService,
+    private route: ActivatedRoute
   ) {
     this.http
-      .get<string[]>(backendUrlBase + 'maincategory/sale')
+      .get<string[]>(backendUrlBase + 'maincategory/rent')
       .subscribe((res) => {
-        this.mainSaleCategories = res;
+        this.mainRentCategories = res;
       });
-    this.selectedSaleMainCategory = 'Mieszkanie';
+    this.selectedRentMainCategory = 'Mieszkanie';
   }
 
   ngOnInit(): void {
     this.navbar.disableInputs();
+    this.sub = this.route.params.subscribe((params) => {
+      this.postId = +params['id'];
+    });
+    this.preparePostData();
+    this.mapLoaded.subscribe((loaded) => {
+      if (loaded) {
+        this.post.asObservable().subscribe((data) => {
+          this.map.setView([Number(data.lat), Number(data.lng)], 16);
+          let marker = new Leaflet.Marker(
+            new Leaflet.LatLng(Number(data.lat), Number(data.lng))
+          );
+          this.parsedAddress[0] = 'test';
+          this.emptyAddress = false;
+          marker.addTo(this.map);
+        });
+      }
+    });
+  }
+  preparePostData() {
+    this.getPostData().subscribe((response: forRentPostDto) => {
+      let i = 0;
+      this.title.setValue(response.title);
+      this.description.setValue(response.description);
+      this.sleepingPlaceCount.setValue(response.sleepingPlaceCount);
+      this.squareFootage.setValue(response.squareFootage);
+      this.price.setValue(response.price);
+      this.features.setValue(response.features.join(','));
+      this.postDto.Title = response.title;
+      this.postDto.Description = response.description;
+      this.postDto.MainCategory = response.mainCategory;
+      this.postDto.SquareFootage = response.squareFootage;
+      this.postDto.SleepingPlaceCount = response.sleepingPlaceCount;
+      this.postDto.Price = response.price;
+      this.postDto.PicturesPath = response.picturesPath;
+      this.postDto.Features = response.features;
+      this.postDto.BuildingNumber = response.buildingNumber;
+      this.postDto.Street = response.street;
+      this.postDto.District = response.district;
+      this.postDto.City = response.city;
+      this.postDto.Country = response.country;
+      this.postDto.Lat = response.lat;
+      this.postDto.Lng = response.lng;
+      response.pictures.forEach((picture) => {
+        if (i > 2) {
+          this.bottomImages[i - 3] = 'data:image/png;base64,' + picture;
+        } else {
+          this.topImages[i] = 'data:image/png;base64,' + picture;
+        }
+        i++;
+      });
+      this.post.next(response);
+    });
+  }
+  getPostData(): Observable<forRentPostDto> {
+    return this.http.get<forRentPostDto>(
+      backendUrlBase + 'post/rentpost/' + this.postId
+    );
   }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -145,9 +213,6 @@ export class CreateSalePostComponent implements OnInit {
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));
-    }
     this.searchBar.onSubmit = (query: any) => {
       if (
         query.data.raw.addresstype == 'building' ||
@@ -180,6 +245,7 @@ export class CreateSalePostComponent implements OnInit {
       }
     };
     this.map.addControl(this.searchBar);
+    this.mapLoaded.next(true);
     //this.map.on('click', <LeafletMouseEvent>(e: any) => { console.log(e.latlng) });
   }
 
@@ -207,6 +273,7 @@ export class CreateSalePostComponent implements OnInit {
       await reader.readAsDataURL(image);
       reader.onload = async () => {
         await this.resizeImage(reader.result as string).then((resolve: any) => {
+          console.log(resolve);
           if (i > 2) {
             this.bottomImages[j++] = resolve;
           } else {
@@ -220,11 +287,11 @@ export class CreateSalePostComponent implements OnInit {
   createPost(path: string) {
     this.postDto.PicturesPath = path;
     this.http
-      .post(backendUrlBase + 'post/addsalepost/', this.postDto)
+      .put(backendUrlBase + 'post/editrentpost/' + this.postId, this.postDto)
       .subscribe(
         (res) => {
           this.snackbarService.openSnackbar(
-            'Ogłoszenie zostało stworzone',
+            'Ogłoszenie zostało zaktualizowane',
             'Success'
           );
           this.router.navigate(['']);
@@ -252,13 +319,23 @@ export class CreateSalePostComponent implements OnInit {
       return;
     }
     this.emptyAddress = false;
-    if (this.title.errors || this.description.errors || this.price.errors) {
+    if (
+      this.title.errors ||
+      this.description.errors ||
+      this.sleepingPlaceCount.errors ||
+      this.price.errors ||
+      this.squareFootage.errors
+    ) {
       return;
     }
     this.postDto.Title = this.title.value!;
     this.postDto.Description = this.description.value!;
-    this.postDto.MainCategory = this.selectedSaleMainCategory;
+    this.postDto.MainCategory = this.selectedRentMainCategory;
+    this.postDto.SleepingPlaceCount = this.sleepingPlaceCount.value!;
     this.postDto.Price = this.price.value!;
+    this.postDto.SquareFootage = this.squareFootage.value!;
+    this.postDto.Features = ['Klimatyzacja'];
+    this.postDto.Categories = ['es'];
     this.data = new FormData();
     if (this.topImages.length < 1) {
       this.snackbarService.openSnackbar('Nie wybrano zdjęcia', 'Error');

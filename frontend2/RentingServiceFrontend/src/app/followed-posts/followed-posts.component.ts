@@ -21,7 +21,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
-  selector: 'app-my-posts',
+  selector: 'app-followed-posts',
   standalone: true,
   imports: [
     NgFor,
@@ -37,10 +37,10 @@ import { SnackbarService } from '../services/snackbar.service';
     CommonModule,
     MatChipsModule,
   ],
-  templateUrl: './my-posts.component.html',
-  styleUrl: './my-posts.component.scss',
+  templateUrl: './followed-posts.component.html',
+  styleUrl: './followed-posts.component.scss',
 })
-export class MyPostsComponent implements OnInit {
+export class FollowedPostsComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -60,21 +60,21 @@ export class MyPostsComponent implements OnInit {
     this.preparePosts();
   }
   preparePosts() {
-    this.getRentPosts().subscribe((response) => {
+    this.getFollowedRentPosts().subscribe((response) => {
       this.rentPosts.next(response);
     });
-    this.getSalePosts().subscribe((response) => {
+    this.getFollowedSalePosts().subscribe((response) => {
       this.salePosts.next(response);
     });
   }
-  getRentPosts(): Observable<forRentPostDto[]> {
+  getFollowedRentPosts(): Observable<forRentPostDto[]> {
     return this.http.get<forRentPostDto[]>(
-      backendUrlBase + 'post/userrentposts'
+      backendUrlBase + 'post/followedrentposts'
     );
   }
-  getSalePosts(): Observable<forSalePostDto[]> {
+  getFollowedSalePosts(): Observable<forSalePostDto[]> {
     return this.http.get<forSalePostDto[]>(
-      backendUrlBase + 'post/usersaleposts'
+      backendUrlBase + 'post/followedsaleposts'
     );
   }
   redirectToRentPost(postId: number) {
@@ -83,19 +83,24 @@ export class MyPostsComponent implements OnInit {
   redirectToSalePost(postId: number) {
     this.router.navigate(['salepost', postId]);
   }
-  deleteRentPost(postId: number) {
+  followRentPost(postId: number) {
     let tmpList = this.rentPosts.value;
     this.http
-      .delete(backendUrlBase + 'post/' + postId)
+      .get(backendUrlBase + 'post/togglerentfollow/' + postId)
       .pipe(
-        map(() => {
-          tmpList = tmpList.filter((item) => item.postId !== postId);
-          this.rentPosts.next(tmpList);
-          this.snackbar.openSnackbar('Post został usunięty', 'success');
+        map((result) => {
+          if (result !== true) {
+            tmpList = tmpList.filter((item) => item.postId !== postId);
+            this.rentPosts.next(tmpList);
+            this.snackbar.openSnackbar(
+              'Post przestał być obserwowany',
+              'success'
+            );
+          }
         }),
         catchError(() => {
           this.snackbar.openSnackbar(
-            'Wystąpił błąd podczas usuwania posta',
+            'Wystąpił błąd podczas usuwania posta z obserwowanych',
             'error'
           );
           throw new Error();
@@ -103,7 +108,29 @@ export class MyPostsComponent implements OnInit {
       )
       .subscribe();
   }
-  editRentPost(postId: number) {
-    this.router.navigate(['myposts/rentpost', postId]);
+  followSalePost(postId: number) {
+    let tmpList = this.rentPosts.value;
+    this.http
+      .get(backendUrlBase + 'post/togglerentfollow/' + postId)
+      .pipe(
+        map((result) => {
+          if (result !== true) {
+            tmpList = tmpList.filter((item) => item.postId !== postId);
+            this.rentPosts.next(tmpList);
+            this.snackbar.openSnackbar(
+              'Post przestał być obserwowany',
+              'success'
+            );
+          }
+        }),
+        catchError(() => {
+          this.snackbar.openSnackbar(
+            'Wystąpił błąd podczas usuwania posta z obserwowanych',
+            'error'
+          );
+          throw new Error();
+        })
+      )
+      .subscribe();
   }
 }

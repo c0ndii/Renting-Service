@@ -36,9 +36,8 @@ import {
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { NavbarService } from '../services/navbar.service';
 
-
 @Component({
-  selector: 'app-create-post',
+  selector: 'app-create-rent-post',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -58,7 +57,7 @@ import { NavbarService } from '../services/navbar.service';
   templateUrl: './create-rent-post.component.html',
   styleUrl: './create-rent-post.component.scss',
 })
-export class CreateRentPostComponent implements OnInit{
+export class CreateRentPostComponent implements OnInit {
   mapSearchProvider = new OpenStreetMapProvider();
   searchBar = GeoSearch.GeoSearchControl({
     provider: this.mapSearchProvider,
@@ -83,6 +82,7 @@ export class CreateRentPostComponent implements OnInit{
     Validators.required,
     Validators.min(1),
   ]);
+  squareFootage = new FormControl(1, [Validators.required, Validators.min(1)]);
   price = new FormControl(0, [Validators.required, Validators.min(1)]);
   features = new FormControl('', [Validators.required]);
   categories = new FormControl('', [Validators.required]);
@@ -121,7 +121,7 @@ export class CreateRentPostComponent implements OnInit{
   }
 
   ngOnInit(): void {
-      this.navbar.disableInputs();
+    this.navbar.disableInputs();
   }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -162,8 +162,8 @@ export class CreateRentPostComponent implements OnInit{
         this.map.setView([query.data.y, query.data.x], 15);
         this.marker.setLatLng([query.data.y, query.data.x]);
         this.marker.addTo(this.map);
-        this.postDto.Lat = query.data.y+"";
-        this.postDto.Lng = query.data.x+"";
+        this.postDto.Lat = query.data.y + '';
+        this.postDto.Lng = query.data.x + '';
         this.parsedAddress = query.data.raw.display_name.split(', ');
         if (this.parsedAddress.length == 7) {
           this.postDto.BuildingNumber = this.parsedAddress[0];
@@ -252,7 +252,7 @@ export class CreateRentPostComponent implements OnInit{
   }
 
   sendFileInput() {
-    if(this.parsedAddress.length <= 0){
+    if (this.parsedAddress.length <= 0) {
       this.emptyAddress = true;
       return;
     }
@@ -261,7 +261,8 @@ export class CreateRentPostComponent implements OnInit{
       this.title.errors ||
       this.description.errors ||
       this.sleepingPlaceCount.errors ||
-      this.price.errors
+      this.price.errors ||
+      this.squareFootage.errors
     ) {
       return;
     }
@@ -270,6 +271,7 @@ export class CreateRentPostComponent implements OnInit{
     this.postDto.MainCategory = this.selectedRentMainCategory;
     this.postDto.SleepingPlaceCount = this.sleepingPlaceCount.value!;
     this.postDto.Price = this.price.value!;
+    this.postDto.SquareFootage = this.squareFootage.value!;
     this.postDto.Features = ['Klimatyzacja'];
     this.postDto.Categories = ['es'];
     this.data = new FormData();

@@ -1,40 +1,152 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { forRentPostDto } from '../interfaces/forRentPostDto';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { backendUrlBase } from '../appsettings/constant';
 import { CommonModule, NgFor } from '@angular/common';
+import { userDto } from '../interfaces/userDto';
+import { Gallery } from 'ng-gallery';
+import { NgImageSliderModule } from 'ng-image-slider';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../services/auth.service';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import * as Leaflet from 'leaflet';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
   selector: 'app-rentpost',
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [
+    CommonModule,
+    NgFor,
+    NgImageSliderModule,
+    MatIconModule,
+    LeafletModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+  ],
   templateUrl: './rentpost.component.html',
-  styleUrl: './rentpost.component.scss'
+  styleUrl: './rentpost.component.scss',
 })
 export class RentpostComponent implements OnInit, OnDestroy {
+  pictures: Array<object> = [];
+  isOwner: boolean = false;
   postId?: number;
-  post?: forRentPostDto;
+  post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
+  private mapLoaded = new BehaviorSubject<boolean>(false);
   private sub: any;
-  constructor(private route: ActivatedRoute, private http: HttpClient) {
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    public gallery: Gallery,
+    private authService: AuthService,
+    private router: Router,
+    private snackbar: SnackbarService
+  ) {}
 
-  }
   ngOnInit(): void {
-      this.sub = this.route.params.subscribe(params => {
-        this.postId = +params['id']; 
-      });
-      this.preparePostData();
+    this.sub = this.route.params.subscribe((params) => {
+      this.postId = +params['id'];
+    });
+    this.preparePostData();
+    this.isUserOwner();
+    this.mapLoaded.subscribe((loaded) => {
+      if (loaded) {
+        this.post.asObservable().subscribe((data) => {
+          this.map.setView([Number(data.lat), Number(data.lng)], 16);
+          let marker = new Leaflet.Marker(
+            new Leaflet.LatLng(Number(data.lat), Number(data.lng))
+          );
+          marker.addTo(this.map);
+        });
+      }
+    });
   }
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
-  preparePostData(){
-    this.getPostData().subscribe((response : forRentPostDto) => {
-      this.post = response;
-    })
+
+  map!: Leaflet.Map;
+  options: Leaflet.MapOptions = {
+    layers: getLayers(),
+    zoom: 12,
+    zoomControl: false,
+    center: new Leaflet.LatLng(52.13, 21.0),
+  };
+
+  readyUpMap(map: Leaflet.Map) {
+    this.map = map;
+    this.mapLoaded.next(true);
+  }
+
+  isUserOwner() {
+    return this.http
+      .get<boolean>(backendUrlBase + 'post/isowner/' + this.postId)
+      .subscribe((res) => {
+        this.isOwner = res;
+      });
+  }
+  preparePostData() {
+    this.getPostData().subscribe((response: forRentPostDto) => {
+      response.pictures.forEach((picture) => {
+        this.pictures.push({
+          image: 'data:image/png;base64,' + picture,
+          thumbImage: 'data:image/png;base64,' + picture,
+        });
+      });
+      this.post.next(response);
+    });
   }
   getPostData(): Observable<forRentPostDto> {
-    return this.http.get<forRentPostDto>(backendUrlBase + "post/rentpost/"+this.postId);
+    return this.http.get<forRentPostDto>(
+      backendUrlBase + 'post/rentpost/' + this.postId
+    );
+  }
+  editPost(postId: number) {
+    this.router.navigate(['myposts/rentpost', postId]);
+  }
+  deletePost(postId: number) {
+    this.http.delete(backendUrlBase + 'post/' + postId).subscribe(() => {
+      this.router.navigate(['myposts']);
+    });
+  }
+  followPost(postId: number) {
+    this.http
+      .get(backendUrlBase + 'post/togglerentfollow/' + postId)
+      .pipe(
+        map((result) => {
+          if (result !== true) {
+            this.post.value.isFollowedByUser = false;
+            this.snackbar.openSnackbar(
+              'Post przestał być obserwowany',
+              'success'
+            );
+          } else {
+            this.post.value.isFollowedByUser = true;
+            this.snackbar.openSnackbar('Post został zaobserwowany', 'success');
+          }
+        }),
+        catchError(() => {
+          this.snackbar.openSnackbar(
+            'Wystąpił błąd podczas próby obserwacji posta',
+            'error'
+          );
+          throw new Error();
+        })
+      )
+      .subscribe();
   }
 }
+export const getLayers = (): Leaflet.Layer[] => {
+  return [
+    new Leaflet.TileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution: '&copy; OpenStreetMap contributors',
+      } as Leaflet.TileLayerOptions
+    ),
+  ] as Leaflet.Layer[];
+};

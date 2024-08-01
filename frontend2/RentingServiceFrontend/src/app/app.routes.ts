@@ -8,16 +8,19 @@ import { CreateSalePostComponent } from './create-sale-post/create-sale-post.com
 import { MyPostsComponent } from './my-posts/my-posts.component';
 import { RentpostComponent } from './rentpost/rentpost.component';
 import { SalepostComponent } from './salepost/salepost.component';
-
+import { EditRentPostComponent } from './edit-rent-post/edit-rent-post.component';
+import { FollowedPostsComponent } from './followed-posts/followed-posts.component';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent},
-    { path: '', component: SidenavbarComponent },
-    { path: 'register', component: RegisterComponent},
-    { path: 'profile', component: ProfileComponent},
-    { path: 'addrentpost', component: CreateRentPostComponent},
-    { path: 'addsalepost', component: CreateSalePostComponent},
-    { path: 'myposts', component: MyPostsComponent},
-    { path: 'rentpost/:id', component: RentpostComponent},
-    { path: 'salepost/:id', component: SalepostComponent}
+  { path: 'login', component: LoginComponent },
+  { path: '', component: SidenavbarComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'addrentpost', component: CreateRentPostComponent },
+  { path: 'addsalepost', component: CreateSalePostComponent },
+  { path: 'myposts', component: MyPostsComponent },
+  { path: 'rentpost/:id', component: RentpostComponent },
+  { path: 'salepost/:id', component: SalepostComponent },
+  { path: 'myposts/rentpost/:id', component: EditRentPostComponent },
+  { path: 'followedposts', component: FollowedPostsComponent },
 ];

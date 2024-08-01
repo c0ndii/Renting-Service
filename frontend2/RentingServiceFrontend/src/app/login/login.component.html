@@ -2,9 +2,7 @@
 <div class="background-holder">
   <div class="login-form-container-outer">
     <div class="login-form-container">
-      <div class="login-text-holder">
-        Zaloguj się
-      </div>
+      <div class="login-text-holder">Zaloguj się</div>
       <form class="login-form" (ngSubmit)="onSubmit()">
         <mat-form-field>
           <mat-label>Email</mat-label>
@@ -40,15 +38,16 @@
         <br />
         <div class="button-form-container">
           <button type="submit" mat-stroked-button>Zaloguj</button>
-          <button (click)="openDialog('300ms', '150ms')" mat-stroked-button>Resetuj hasło</button>
+          <button (click)="openDialog('300ms', '150ms')" mat-stroked-button>
+            Resetuj hasło
+          </button>
         </div>
       </form>
     </div>
   </div>
-  
 </div>
-} @loading () { 
-  <div class="spinner-holder">
-    <mat-spinner></mat-spinner>
-  </div>
+} @loading (; minimum 1.5s) {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
 }
