@@ -30,14 +30,29 @@ import { NavbarService } from '../../services/navbar.service';
 @Component({
   selector: 'app-change-name-dialog',
   standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, MatInputModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatDividerModule, ],
+  imports: [
+    MatButtonModule,
+    MatDialogActions,
+    MatDialogClose,
+    MatDialogTitle,
+    MatDialogContent,
+    MatInputModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatDividerModule,
+  ],
   templateUrl: './change-name-dialog.component.html',
-  styleUrl: './change-name-dialog.component.scss'
+  styleUrl: './change-name-dialog.component.scss',
 })
 export class ChangeNameDialogComponent {
-  constructor(private snackbarService: SnackbarService, private authService: AuthService, public dialog: MatDialogRef<ChangeNameDialogComponent>, private http: HttpClient, private navbar: NavbarService) {
-    
-  }
+  constructor(
+    private snackbarService: SnackbarService,
+    private authService: AuthService,
+    public dialog: MatDialogRef<ChangeNameDialogComponent>,
+    private http: HttpClient,
+    private navbar: NavbarService
+  ) {}
   name = new FormControl('', [
     Validators.required,
     Validators.maxLength(20),
@@ -46,27 +61,35 @@ export class ChangeNameDialogComponent {
   errorMessage: string = '';
   status: string = '';
   changeName = () => {
-    if(!this.name.errors){
-      this.http.patch(backendUrlBase + 'user/editname/'+this.name.value,null).subscribe((response) => {
-        if(response === null){
-          this.snackbarService.openSnackbar("Imię zostało zmienione", "Success");
-          this.authService.changeName(this.name.value!);
-          this.authService.UserName = this.name.value!;
-        }
-        this.dialog.close();
-      }, (error: HttpErrorResponse) => {
-        switch (error.status) {
-          case 401:
-            this.errorMessage = 'Nie można zmienić imienia innego użytkownika';
-            this.status = 'Error';
-            break;
-          default:
-            this.errorMessage = 'Nie można połączyć się z serwerem';
-            this.status = 'Error';
-            break;
-        }
-        this.snackbarService.openSnackbar(this.errorMessage,this.status);
-      });
+    if (!this.name.errors) {
+      this.http
+        .patch(backendUrlBase + 'user/editname/' + this.name.value, null)
+        .subscribe(
+          (response) => {
+            if (response === null) {
+              this.snackbarService.openSnackbar(
+                'Imię zostało zmienione',
+                'Success'
+              );
+              this.authService.changeName(this.name.value!);
+            }
+            this.dialog.close();
+          },
+          (error: HttpErrorResponse) => {
+            switch (error.status) {
+              case 401:
+                this.errorMessage =
+                  'Nie można zmienić imienia innego użytkownika';
+                this.status = 'Error';
+                break;
+              default:
+                this.errorMessage = 'Nie można połączyć się z serwerem';
+                this.status = 'Error';
+                break;
+            }
+            this.snackbarService.openSnackbar(this.errorMessage, this.status);
+          }
+        );
     }
-  }
+  };
 }

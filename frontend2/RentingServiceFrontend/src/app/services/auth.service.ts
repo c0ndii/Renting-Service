@@ -6,7 +6,7 @@ import { registerDto } from '../interfaces/registerDto';
 import { userDto } from '../interfaces/userDto';
 import { tokenDto } from '../interfaces/tokenDto';
 import { refreshTokenDto } from '../interfaces/refreshTokenDto';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, delay, finalize, Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { resetPasswordDto } from '../interfaces/resetPasswordDto';
 import { Router } from '@angular/router';
@@ -18,43 +18,59 @@ export class AuthService {
   localStorage: Storage | undefined;
   constructor(
     private http: HttpClient,
+    private router: Router,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.localStorage = document.defaultView?.localStorage;
   }
-  private user = new BehaviorSubject<userDto>({} as userDto);
-  private username = new BehaviorSubject<string>('');
-  private picture = new BehaviorSubject<string>('');
-  public set UserName(username: string) {
-    this.username.next(username);
+  public user = new BehaviorSubject<userDto>({} as userDto);
+  public role = new BehaviorSubject<string>('');
+
+  getUserFromStorage() {
+    var user = this.localStorage!.getItem('User');
+    if (user) {
+      return JSON.parse(user) as userDto;
+    }
+    return {} as userDto;
   }
-  public get UserName(): Observable<string> {
-    return this.username.asObservable();
+
+  getUserFromFetch() {
+    return this.http.get<userDto>(backendUrlBase + 'user/getuser');
   }
-  public set Picture(picture: string) {
-    this.picture.next(picture);
-  }
-  public get Picture(): Observable<string> {
-    return this.picture.asObservable();
-  }
-  isUserLoggedIn(): boolean {
-    if (this.getRole() != null) {
+
+  userLogged(): boolean {
+    if (this.user.value.userId > 0) {
       return true;
     }
     return false;
   }
-  public userOnReload() {
-    if (this.isUserLoggedIn()) {
-      var username = this.getUserName();
-      var picture = this.getUserPicture();
-      if (username) {
-        this.UserName = username;
-      }
-      if (picture) {
-        this.Picture = picture;
-      }
+
+  setUser(user: userDto) {
+    if (this.localStorage) {
+      return this.localStorage.setItem('User', JSON.stringify(user));
     }
   }
+
+  removeUser() {
+    if (this.localStorage) {
+      return this.localStorage.removeItem('User');
+    }
+  }
+
+  changePicture(image: string) {
+    const user = this.user.value;
+    user.picture = image;
+    this.setUser(user);
+    this.user.next(user);
+  }
+
+  changeName(name: string) {
+    const user = this.user.value;
+    user.name = name;
+    this.setUser(user);
+    this.user.next(user);
+  }
+
   //JWT
   getJwtToken() {
     if (this.localStorage) {
@@ -89,68 +105,7 @@ export class AuthService {
       return this.localStorage.removeItem('RefreshToken');
     }
   }
-  //USER
-  getUserFetch(): Observable<userDto> {
-    return this.http.get<userDto>(backendUrlBase + 'user/getuser');
-  }
-  setUser(user: userDto) {
-    if (this.localStorage) {
-      return this.localStorage.setItem('User', JSON.stringify(user));
-    }
-  }
-  removeUser() {
-    if (this.localStorage) {
-      return this.localStorage.removeItem('User');
-    }
-  }
-  getUserFromLocalStorage() {
-    if (this.localStorage) {
-      var user = this.localStorage.getItem('User');
-      if (user) {
-        return JSON.parse(user);
-      }
-    }
-  }
-  getUserName(): string | undefined {
-    if (this.localStorage) {
-      var user = this.localStorage.getItem('User');
-      if (user) {
-        var userDto = JSON.parse(user) as userDto;
-        return userDto.name;
-      }
-    }
-    return undefined;
-  }
-  getUserPicture(): string | undefined {
-    if (this.localStorage) {
-      var user = this.localStorage.getItem('User');
-      if (user) {
-        var userDto = JSON.parse(user) as userDto;
-        return userDto.picture;
-      }
-    }
-    return undefined;
-  }
-  changeName(name: string) {
-    if (this.localStorage) {
-      var user = this.localStorage.getItem('User');
-      if (user) {
-        var userDto = JSON.parse(user) as userDto;
-        userDto.name = name;
-        this.setUser(userDto);
-      }
-    }
-  }
-  changePicture(picture: string) {
-    if (this.localStorage) {
-      var user = this.localStorage.getItem('User');
-      if (user) {
-        var userDto = JSON.parse(user) as userDto;
-        userDto.picture = picture;
-        this.setUser(userDto);
-      }
-    }
-  }
+
   //ROLE
   getRole(): string | null {
     var token = this.getJwtToken()?.split(' ', 2);
@@ -165,7 +120,7 @@ export class AuthService {
   }
 
   //AUTH
-  loginUser(userDto: loginDto) {
+  public loginUser(userDto: loginDto) {
     return this.http.post<tokenDto>(backendUrlBase + 'auth/login', userDto);
   }
   registerUser(userDto: registerDto) {
@@ -196,14 +151,23 @@ export class AuthService {
   login(token: tokenDto) {
     this.setJwtToken(token.jwtToken);
     this.setRefreshToken(token.refreshToken);
-    this.getUserFetch().subscribe((response) => {
+    this.getUserFromFetch().subscribe((response: userDto) => {
       this.setUser(response);
+      this.user.next(response);
+      window.location.reload();
     });
   }
   logout() {
     this.removeJwtToken();
     this.removeRefreshToken();
     this.removeUser();
-    //this.router.navigate(['']);
+    this.user.next({} as userDto);
+    this.router.navigate(['']);
+  }
+  logoutInterceptor() {
+    this.removeJwtToken();
+    this.removeRefreshToken();
+    this.removeUser();
+    this.user.next({} as userDto);
   }
 }

@@ -54,7 +54,7 @@ export class MyPostsComponent implements OnInit {
   selectedValue: string = 'rent';
   ngOnInit(): void {
     this.navbar.disableInputs();
-    if (!this.authService.isUserLoggedIn()) {
+    if (!this.authService.userLogged()) {
       this.router.navigate(['/login']);
     }
     this.preparePosts();

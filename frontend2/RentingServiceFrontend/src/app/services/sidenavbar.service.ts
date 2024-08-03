@@ -8,4 +8,6 @@ export class SidenavbarService {
   filterType = new BehaviorSubject<string>('');
 
   constructor() {}
+
+  toggleRentPostFilters() {}
 }

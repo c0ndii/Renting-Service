@@ -4,11 +4,11 @@
     <div class="title-holder">
       <p>Mój profil</p>
     </div>
-    <div class="profile-details">
+    <div class="profile-details" *ngIf="authService.user | async as user">
       <div class="subtitle">Imię</div>
       <div class="changable-property-holder">
         <div class="login-name-holder">
-          {{ this.username }}
+          {{ user.name }}
         </div>
         <br />
         <button
@@ -23,7 +23,7 @@
       <div class="subtitle">Awatar</div>
       <div class="changable-property-holder">
         <div class="avatar-holder">
-          <img [src]="'data:image/png;base64,' + this.picture" />
+          <img [src]="'data:image/png;base64,' + user.picture" />
         </div>
         <br />
         <button

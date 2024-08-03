@@ -47,7 +47,7 @@
         >
       </mat-button-toggle-group>
     </div>
-    <div class="navbar-menu-right" *ngIf="!authService.isUserLoggedIn()">
+    <div class="navbar-menu-right" *ngIf="!(logged | async)">
       <div class="user-panel-section">
         <div class="login-button">
           <button mat-stroked-button [routerLink]="['login']">Logowanie</button>
@@ -60,7 +60,10 @@
       </div>
     </div>
 
-    <div class="navbar-menu-right" *ngIf="authService.isUserLoggedIn()">
+    <div
+      class="navbar-menu-right"
+      *ngIf="(logged | async) && (authService.user | async) as user"
+    >
       <div class="user-panel-section">
         <button
           mat-button
@@ -90,10 +93,10 @@
         <button mat-button class="user-menu-button" [matMenuTriggerFor]="menu">
           <div class="user-panel-holder">
             <div class="login-name-holder">
-              {{ this.username }}
+              {{ user.name }}
             </div>
             <div class="login-avatar-holder">
-              <img [src]="'data:image/png;base64,' + this.picture" />
+              <img [src]="'data:image/png;base64,' + user.picture" />
             </div>
           </div>
         </button>

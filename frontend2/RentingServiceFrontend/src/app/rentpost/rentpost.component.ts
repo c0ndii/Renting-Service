@@ -33,7 +33,6 @@ import { SnackbarService } from '../services/snackbar.service';
 })
 export class RentpostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
-  isOwner: boolean = false;
   postId?: number;
   post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
   private mapLoaded = new BehaviorSubject<boolean>(false);
@@ -42,7 +41,7 @@ export class RentpostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     public gallery: Gallery,
-    private authService: AuthService,
+    protected authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService
   ) {}
@@ -52,7 +51,6 @@ export class RentpostComponent implements OnInit, OnDestroy {
       this.postId = +params['id'];
     });
     this.preparePostData();
-    this.isUserOwner();
     this.mapLoaded.subscribe((loaded) => {
       if (loaded) {
         this.post.asObservable().subscribe((data) => {
@@ -82,13 +80,6 @@ export class RentpostComponent implements OnInit, OnDestroy {
     this.mapLoaded.next(true);
   }
 
-  isUserOwner() {
-    this.http
-      .get<boolean>(backendUrlBase + 'post/isowner/' + this.postId)
-      .subscribe((res) => {
-        this.isOwner = res;
-      });
-  }
   preparePostData() {
     this.getPostData().subscribe((response: forRentPostDto) => {
       response.pictures.forEach((picture) => {

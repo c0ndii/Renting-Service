@@ -34,7 +34,6 @@ import { forSalePostDto } from '../interfaces/forSalePostDto';
 })
 export class SalepostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
-  isOwner: boolean = false;
   postId?: number;
   post = new BehaviorSubject<forSalePostDto>({} as forSalePostDto);
   private mapLoaded = new BehaviorSubject<boolean>(false);
@@ -43,7 +42,7 @@ export class SalepostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     public gallery: Gallery,
-    private authService: AuthService,
+    protected authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService
   ) {}
@@ -53,7 +52,6 @@ export class SalepostComponent implements OnInit, OnDestroy {
       this.postId = +params['id'];
     });
     this.preparePostData();
-    this.isUserOwner();
     this.mapLoaded.subscribe((loaded) => {
       if (loaded) {
         this.post.asObservable().subscribe((data) => {
@@ -83,13 +81,6 @@ export class SalepostComponent implements OnInit, OnDestroy {
     this.mapLoaded.next(true);
   }
 
-  isUserOwner() {
-    this.http
-      .get<boolean>(backendUrlBase + 'post/isowner/' + this.postId)
-      .subscribe((res) => {
-        this.isOwner = res;
-      });
-  }
   preparePostData() {
     this.getPostData().subscribe((response: forSalePostDto) => {
       response.pictures.forEach((picture) => {

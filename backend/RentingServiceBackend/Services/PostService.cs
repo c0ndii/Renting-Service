@@ -26,6 +26,8 @@ namespace RentingServiceBackend.Services
         Task<List<ForSalePostDto>> GetUserFollowedSalePosts();
         Task<bool> ToggleRentFollow(int postId);
         Task<bool> ToggleSaleFollow(int postId);
+        Task<IEnumerable<ForRentPostDto>> GetAllRentPosts();
+        Task<IEnumerable<ForSalePostDto>> GetAllSalePosts();
     }
 
     public class PostService : IPostService

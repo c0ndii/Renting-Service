@@ -27,15 +27,23 @@ export class jwtInterceptor implements HttpInterceptor {
     const refreshToken = this.authService.getRefreshToken();
     if (token && refreshToken) {
       let decodedToken = jwtDecode(token);
-      const tokenExpired = decodedToken && decodedToken.exp ? decodedToken.exp < Date.now() / 1000 : false;
-      if(tokenExpired) {
+      const tokenExpired =
+        decodedToken && decodedToken.exp
+          ? decodedToken.exp < Date.now() / 1000
+          : false;
+      if (tokenExpired) {
         this.refreshTokenDto.accessToken = this.authService.getJwtToken();
         this.refreshTokenDto.refreshToken = this.authService.getRefreshToken();
-        this.authService.refreshToken(this.refreshTokenDto).subscribe((token) =>{
-          this.tokenDto = token;
-        });
-        if(this.tokenDto.refreshToken !== undefined && this.tokenDto.refreshToken !== undefined){
-          this.authService.setJwtToken("Bearer "+this.tokenDto.jwtToken);
+        this.authService
+          .refreshToken(this.refreshTokenDto)
+          .subscribe((token) => {
+            this.tokenDto = token;
+          });
+        if (
+          this.tokenDto.refreshToken !== undefined &&
+          this.tokenDto.refreshToken !== undefined
+        ) {
+          this.authService.setJwtToken('Bearer ' + this.tokenDto.jwtToken);
         } else {
           this.authService.logout();
           this.router.navigate(['login']);
@@ -49,11 +57,11 @@ export class jwtInterceptor implements HttpInterceptor {
         }),
       });
       return next.handle(reqWithToken).pipe(
-        map(res => {
+        map((res) => {
           return res;
         }),
         catchError((error: HttpErrorResponse) => {
-          if(error.status == 401) {
+          if (error.status == 401) {
             this.authService.logout();
             return next.handle(req);
           }
@@ -61,7 +69,7 @@ export class jwtInterceptor implements HttpInterceptor {
         })
       );
     }
-    this.authService.logout();
+    this.authService.logoutInterceptor();
     return next.handle(req);
   }
 }

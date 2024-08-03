@@ -136,7 +136,7 @@ export class EditRentPostComponent {
 
   ngOnInit(): void {
     this.navbar.disableInputs();
-    if (!this.authService.isUserLoggedIn()) {
+    if (!this.authService.userLogged()) {
       this.router.navigate(['/login']);
     }
     if (!this.isUserOwner()) {

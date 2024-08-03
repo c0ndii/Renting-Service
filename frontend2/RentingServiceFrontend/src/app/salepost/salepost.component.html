@@ -7,19 +7,29 @@
           <h1>{{ post.title }}</h1>
         </div>
         <div class="buttons">
-          <mat-icon *ngIf="isOwner" (click)="editPost(post.postId)"
+          <mat-icon
+            *ngIf="post.user.userId === authService.user.value.userId"
+            (click)="editPost(post.postId)"
             >edit</mat-icon
           >
-          <mat-icon *ngIf="isOwner" (click)="deletePost(post.postId)"
+          <mat-icon
+            *ngIf="post.user.userId === authService.user.value.userId"
+            (click)="deletePost(post.postId)"
             >delete</mat-icon
           >
           <mat-icon
-            *ngIf="!isOwner && post.isFollowedByUser === true"
+            *ngIf="
+              post.user.userId !== authService.user.value.userId &&
+              post.isFollowedByUser === true
+            "
             (click)="followPost(post.postId)"
             >visibility_off</mat-icon
           >
           <mat-icon
-            *ngIf="!isOwner && post.isFollowedByUser === false"
+            *ngIf="
+              post.user.userId !== authService.user.value.userId &&
+              post.isFollowedByUser === false
+            "
             (click)="followPost(post.postId)"
             >visibility</mat-icon
           >

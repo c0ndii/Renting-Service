@@ -10,6 +10,7 @@ import { ChangeNameDialogComponent } from '../dialogs/change-name-dialog/change-
 import { NavbarService } from '../services/navbar.service';
 import { ChangePasswordDialogComponent } from '../dialogs/change-password-dialog/change-password-dialog.component';
 import { ChangePictureDialogComponent } from '../dialogs/change-picture-dialog/change-picture-dialog.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -20,26 +21,18 @@ import { ChangePictureDialogComponent } from '../dialogs/change-picture-dialog/c
     MatButtonToggleModule,
     MatIconModule,
     MatDialogModule,
+    CommonModule,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {
-  username: string | undefined = '';
-  picture: string | undefined = '';
   constructor(
-    private authService: AuthService,
+    protected authService: AuthService,
     private router: Router,
     public dialog: MatDialog,
     private navbar: NavbarService
-  ) {
-    this.authService.UserName.subscribe((result: string) => {
-      this.username = result;
-    });
-    this.authService.Picture.subscribe((result: string) => {
-      this.picture = result;
-    });
-  }
+  ) {}
 
   openChangeNameDialog(
     enterAnimationDuration: string,
@@ -77,7 +70,7 @@ export class ProfileComponent implements OnInit {
   }
   ngOnInit(): void {
     this.navbar.disableInputs();
-    if (!this.authService.isUserLoggedIn()) {
+    if (!this.authService.userLogged()) {
       this.router.navigate(['/login']);
     }
   }

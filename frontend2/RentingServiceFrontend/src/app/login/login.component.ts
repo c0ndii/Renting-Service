@@ -9,7 +9,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,7 @@ import { RouterModule } from '@angular/router';
 import { NavbarService } from '../services/navbar.service';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../services/snackbar.service';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { VerifyAccountDialogComponent } from '../dialogs/verify-account-dialog/verify-account-dialog.component';
 import { RemindPasswordDialogComponent } from '../dialogs/remind-password-dialog/remind-password-dialog.component';
 
@@ -57,19 +57,19 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatProgressSpinnerModule,
     NgOptimizedImage,
     MatInputModule,
-    RemindPasswordDialogComponent
+    RemindPasswordDialogComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   providers: [AuthService],
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private navbar: NavbarService,
     private router: Router,
     private snackbarService: SnackbarService,
-    public dialog: MatDialog,
+    public dialog: MatDialog
   ) {
     this.navbar.disableInputs();
   }
@@ -77,12 +77,15 @@ export class LoginComponent implements OnInit{
     Validators.required,
     Validators.email,
   ]);
-  openVerifyDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+  openVerifyDialog(
+    enterAnimationDuration: string,
+    exitAnimationDuration: string
+  ) {
     this.dialog.open(VerifyAccountDialogComponent, {
       width: '400px',
       minHeight: '300px',
       enterAnimationDuration,
-      exitAnimationDuration
+      exitAnimationDuration,
     });
   }
   passwordFormControl = new FormControl('', [Validators.required]);
@@ -99,10 +102,6 @@ export class LoginComponent implements OnInit{
         (response) => {
           if (response !== null) {
             this.authService.login(response);
-            this.authService.getUserFetch().subscribe((user) =>{
-              this.authService.UserName = user.name;
-              this.authService.Picture = user.picture;
-            });
             this.router.navigate(['']);
             this.snackbarService.openSnackbar(
               'Pomyślnie zalogowano',
@@ -130,7 +129,7 @@ export class LoginComponent implements OnInit{
               break;
           }
           this.snackbarService.openSnackbar(this.errorMessage, this.status);
-          if(error.status===403){
+          if (error.status === 403) {
             this.router.navigate(['register']);
             this.openVerifyDialog('300ms', '150ms');
           }
@@ -138,19 +137,18 @@ export class LoginComponent implements OnInit{
       );
     }
   };
-  openDialog(enterAnimationDuration: string, exitAnimationDuration: string){
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string) {
     this.dialog.open(RemindPasswordDialogComponent, {
       minWidth: '700px',
       minHeight: '300px',
       enterAnimationDuration,
-      exitAnimationDuration
+      exitAnimationDuration,
     });
   }
   ngOnInit(): void {
-    if(this.authService.getJwtToken() !== null) {
+    if (this.authService.getJwtToken() !== null) {
       this.router.navigate(['']);
     }
   }
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 }

@@ -133,5 +133,19 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.ToggleSaleFollow(postId);
             return Ok(result);
         }
+        [HttpGet("rentposts")]
+        [Authorize]
+        public async Task<IActionResult> GetAllRentPosts()
+        {
+            var result = await _postService.GetAllRentPosts();
+            return Ok(result);
+        }
+        [HttpGet("saleposts")]
+        [Authorize]
+        public async Task<IActionResult> GetAllSalePosts()
+        {
+            var result = await _postService.GetAllSalePosts();
+            return Ok(result);
+        }
     }
 }
