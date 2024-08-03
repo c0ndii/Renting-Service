@@ -1,0 +1,126 @@
+.container-outer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container-full {
+  margin-top: 30px;
+  padding: 15px;
+  display: flex;
+  width: 60vw;
+  height: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.6rem;
+}
+.double-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 60vw;
+  height: 30vh;
+}
+.container-60 {
+  width: 58%;
+  height: 100%;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.6rem;
+}
+.container-40 {
+  width: 40%;
+  height: 100%;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.6rem;
+}
+.subrow-holder {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.title-buttons-holder {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  .title {
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+  }
+  .buttons {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 5px;
+    mat-icon {
+      display: flex;
+      font-size: 32px !important;
+      width: 32px !important;
+      height: 32px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.18);
+      border: 2px solid rgba(0, 0, 0, 0.5);
+      border-radius: 0.2rem;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+      }
+    }
+  }
+}
+h4 {
+  font-size: 28px;
+  overflow-wrap: break-word;
+}
+.spinner-holder {
+  display: flex;
+  height: calc(100vh - 75px);
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+}
+::ng-deep .leaflet-pane.leaflet-shadow-pane {
+  display: none !important;
+}
+.comment {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+}
+.user-section {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.comment-section {
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.map {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

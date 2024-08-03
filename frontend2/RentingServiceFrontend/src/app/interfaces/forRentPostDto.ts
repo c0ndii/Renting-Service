@@ -25,4 +25,5 @@ export interface forRentPostDto {
   rate: number;
   isFollowedByUser: boolean | null;
   user: userDto;
+  confirmed: boolean;
 }

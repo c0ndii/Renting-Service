@@ -35,6 +35,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { NavbarService } from '../services/navbar.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-create-rent-post',
@@ -83,7 +84,7 @@ export class CreateRentPostComponent implements OnInit {
     Validators.min(1),
   ]);
   squareFootage = new FormControl(1, [Validators.required, Validators.min(1)]);
-  price = new FormControl(0, [Validators.required, Validators.min(1)]);
+  price = new FormControl(1, [Validators.required, Validators.min(1)]);
   features = new FormControl('', [Validators.required]);
   categories = new FormControl('', [Validators.required]);
   topImages: string[] = [];
@@ -110,7 +111,8 @@ export class CreateRentPostComponent implements OnInit {
     private snackbarService: SnackbarService,
     private router: Router,
     private http: HttpClient,
-    private navbar: NavbarService
+    private navbar: NavbarService,
+    private authService: AuthService
   ) {
     this.http
       .get<string[]>(backendUrlBase + 'maincategory/rent')
@@ -122,6 +124,9 @@ export class CreateRentPostComponent implements OnInit {
 
   ngOnInit(): void {
     this.navbar.disableInputs();
+    if (!this.authService.isUserLoggedIn()) {
+      this.router.navigate(['/login']);
+    }
   }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -224,6 +229,7 @@ export class CreateRentPostComponent implements OnInit {
 
   createPost(path: string) {
     this.postDto.PicturesPath = path;
+    console.log(this.postDto);
     this.http
       .post(backendUrlBase + 'post/addrentpost/', this.postDto)
       .subscribe(

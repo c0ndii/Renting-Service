@@ -6,6 +6,7 @@ namespace RentingServiceBackend.Services
     {
         int? GetUserId { get; }
         ClaimsPrincipal User { get; }
+        bool? isUserLogged { get; }
     }
 
     public class UserContextService : IUserContextService
@@ -20,5 +21,7 @@ namespace RentingServiceBackend.Services
         public int? GetUserId =>
             User is null ? null : (int?)int.Parse(User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value);
 
+        public bool? isUserLogged =>
+            User is null ? null : User.Identity.IsAuthenticated;
     }
 }

@@ -11,10 +11,11 @@
   border-radius: 1%;
 }
 .posts-container-outer {
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 75px);
 }
 .spinner-holder {
   display: flex;

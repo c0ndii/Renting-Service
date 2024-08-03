@@ -324,8 +324,13 @@ namespace RentingServiceBackend.Services
         }
         public async Task<bool> IsOwner(int postId)
         {
+            var isUserLoggedIn = _userContextService.isUserLogged;
+            if ((isUserLoggedIn is null) || isUserLoggedIn == false)
+            {
+                return false;
+            }
             var userId = _userContextService.GetUserId;
-            if(userId is null)
+            if (userId is null)
             {
                 return false;
             }
@@ -335,19 +340,23 @@ namespace RentingServiceBackend.Services
         public async Task EditRentPost(int postId, CreateForRentPostDto dto)
         {
             var userId = _userContextService.GetUserId;
-            var post = await _context.ForRentPosts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            var post = await _context.ForRentPosts.Include(x => x.MainCategory).Include(x => x.Features).SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
             if (post is not null)
             {
+                if(post.MainCategory != await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory))
+                {
+                    post.MainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+                }
                 post.Title = dto.Title;
                 post.Description = dto.Description;
-                post.MainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
                 post.SleepingPlaceCount = dto.SleepingPlaceCount;
                 post.Price = dto.Price;
                 post.SquareFootage = dto.SquareFootage;
                 post.PicturesPath = dto.PicturesPath;
                 post.Lat = dto.Lat;
                 post.Lng = dto.Lng;
-                post.Features = await _context.Features.Where(x => dto.Features.Contains(x.FeatureName)).ToListAsync();
+                post.Features = await _context.Features.Where(x => dto.Features.Contains(x.FeatureName) && !post.Features.Contains(x)).ToListAsync();
+
                 post.BuildingNumber = dto.BuildingNumber;
                 post.Street = dto.Street;
                 post.District = dto.District;
@@ -359,12 +368,15 @@ namespace RentingServiceBackend.Services
         public async Task EditSalePost(int postId, CreateForSalePostDto dto)
         {
             var userId = _userContextService.GetUserId;
-            var post = await _context.ForRentPosts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            var post = await _context.ForSalePosts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
             if (post is not null)
             {
+                if (post.MainCategory != await _context.ForSaleMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory))
+                {
+                    post.MainCategory = await _context.ForSaleMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
+                }
                 post.Title = dto.Title;
                 post.Description = dto.Description;
-                post.MainCategory = await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory);
                 post.Price = dto.Price;
                 post.SquareFootage = dto.SquareFootage;
                 post.PicturesPath = dto.PicturesPath;
@@ -471,7 +483,12 @@ namespace RentingServiceBackend.Services
         }
         private async Task<bool?> CheckIfUserFollowsRentPost(int postId)
         {
-            int? userId = _userContextService.GetUserId;
+            var isUserLoggedIn = _userContextService.isUserLogged;
+            if ((isUserLoggedIn is null) || isUserLoggedIn == false)
+            {
+                return null;
+            }
+            var userId = _userContextService.GetUserId;
             if (userId is null)
             {
                 return null;
@@ -486,7 +503,12 @@ namespace RentingServiceBackend.Services
         }
         private async Task<bool?> CheckIfUserFollowsSalePost(int postId)
         {
-            int? userId = _userContextService.GetUserId;
+            var isUserLoggedIn = _userContextService.isUserLogged;
+            if ((isUserLoggedIn is null) || isUserLoggedIn == false)
+            {
+                return null;
+            }
+            var userId = _userContextService.GetUserId;
             if (userId is null)
             {
                 return null;

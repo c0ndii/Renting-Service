@@ -1,4 +1,3 @@
-
 .profile-container {
   margin: 40px;
   display: flex;
@@ -12,10 +11,11 @@
   border-radius: 1%;
 }
 .profile-container-outer {
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 75px);
 }
 .spinner-holder {
   display: flex;
@@ -60,7 +60,7 @@ img {
   padding: 20px;
   flex-direction: row;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
   background-color: rgba(0, 0, 0, 0.12);
 }
 button {
@@ -69,8 +69,8 @@ button {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
 .login-name-holder {
-    font-size: 24px;
-    font-weight: bold;
+  font-size: 24px;
+  font-weight: bold;
 }
 .subtitle {
   display: flex;

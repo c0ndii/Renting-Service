@@ -1,1 +1,83 @@
-<p>salepost works!</p>
+@defer {
+<div class="container-outer" *ngIf="this.post | async as post">
+  <div class="container-full">
+    <div class="subrow-holder">
+      <div class="title-buttons-holder">
+        <div class="title">
+          <h1>{{ post.title }}</h1>
+        </div>
+        <div class="buttons">
+          <mat-icon *ngIf="isOwner" (click)="editPost(post.postId)"
+            >edit</mat-icon
+          >
+          <mat-icon *ngIf="isOwner" (click)="deletePost(post.postId)"
+            >delete</mat-icon
+          >
+          <mat-icon
+            *ngIf="!isOwner && post.isFollowedByUser === true"
+            (click)="followPost(post.postId)"
+            >visibility_off</mat-icon
+          >
+          <mat-icon
+            *ngIf="!isOwner && post.isFollowedByUser === false"
+            (click)="followPost(post.postId)"
+            >visibility</mat-icon
+          >
+        </div>
+      </div>
+    </div>
+    <div class="subrow-holder">
+      <div
+        class="gallery-holder"
+        #container
+        [ngStyle]="{ width: 99.8 + '%', height: 60 + '%' }"
+      >
+        <ng-image-slider
+          [images]="this.pictures"
+          [infinite]="false"
+          [imageSize]="{
+            width: container.style.width,
+            height: container.style.height
+          }"
+        ></ng-image-slider>
+      </div>
+    </div>
+  </div>
+  <div class="double-container">
+    <div class="container-60">
+      <div class="subrow-holder">
+        <h4 class="description">{{ post.description }}</h4>
+      </div>
+    </div>
+    <div class="container-40">
+      <div class="subrow-holder">
+        <h4>{{ post.mainCategory }}</h4>
+      </div>
+      <div class="subrow-holder">
+        <h4>Cena: {{ post.price | currency : "zł" }}</h4>
+        <div class="subrow-holder">
+          <h4>Metraż: {{ post.squareFootage | currency : "㎡" }}</h4>
+        </div>
+        <div class="subrow-holder">
+          <h4>Data dodania: {{ post.addDate | date }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="double-container">
+    <div class="container-40">
+      <div
+        class="map"
+        id="map"
+        leaflet
+        (leafletMapReady)="readyUpMap($event)"
+        [leafletOptions]="options"
+      ></div>
+    </div>
+  </div>
+</div>
+} @loading (; minimum 1.5s) {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
+}

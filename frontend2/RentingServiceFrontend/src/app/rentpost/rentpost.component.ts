@@ -83,7 +83,7 @@ export class RentpostComponent implements OnInit, OnDestroy {
   }
 
   isUserOwner() {
-    return this.http
+    this.http
       .get<boolean>(backendUrlBase + 'post/isowner/' + this.postId)
       .subscribe((res) => {
         this.isOwner = res;

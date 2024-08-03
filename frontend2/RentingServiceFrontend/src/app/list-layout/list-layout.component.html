@@ -1,1 +1,83 @@
-<p>list-layout works!</p>
+@defer {
+<div class="posts-container-outer">
+  <div class="posts-container">
+    <div class="title-holder">
+      <p>Wszystkie ogłoszenia</p>
+      <mat-button-toggle-group
+        name="fontStyle"
+        aria-label="Font Style"
+        [(ngModel)]="selectedValue"
+      >
+        <mat-button-toggle value="rent"> Wynajmu</mat-button-toggle>
+        <mat-button-toggle value="sell">Sprzedaży</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="post-list-holder" *ngIf="selectedValue === 'rent'">
+      <ul *ngFor="let post of rentPosts | async">
+        <li (click)="redirectToRentPost(post.postId)">
+          <div
+            class="single-post-holder"
+            [class.unconfirmed-posts]="!post.confirmed"
+          >
+            <div class="left">
+              <div class="img-holder">
+                <img [src]="'data:image/png;base64,' + post.pictures[0]" />
+              </div>
+            </div>
+            <div class="right">
+              <div class="top">
+                <div class="title">{{ post.title }}</div>
+              </div>
+              <div class="bottom">
+                <div class="location">
+                  {{ post.street + ", " + post.city }}
+                </div>
+                <div class="price">
+                  {{
+                    post.mainCategory == "Wypoczynek"
+                      ? (post.price | currency : "zł/doba")
+                      : (post.price | currency : "zł/miesiąc")
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="post-list-holder" *ngIf="selectedValue === 'sell'">
+      <ul *ngFor="let post of salePosts | async">
+        <li (click)="redirectToSalePost(post.postId)">
+          <div
+            class="single-post-holder"
+            [class.unconfirmed-posts]="!post.confirmed"
+          >
+            <div class="left">
+              <div class="img-holder">
+                <img [src]="'data:image/png;base64,' + post.pictures[0]" />
+              </div>
+            </div>
+            <div class="right">
+              <div class="top">
+                <div class="title">{{ post.title }}</div>
+              </div>
+              <div class="bottom">
+                <div class="location">
+                  {{ post.street + ", " + post.city }}
+                </div>
+                <div class="price">
+                  {{ post.price | currency : "zł" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+} @loading (; minimum 1.5s) {
+<div class="spinner-holder">
+  <mat-spinner></mat-spinner>
+</div>
+}

@@ -36,6 +36,7 @@ import {
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { createForSalePostDto } from '../interfaces/createForSalePostDto';
 import { NavbarService } from '../services/navbar.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-create-sale-post',
@@ -105,7 +106,8 @@ export class CreateSalePostComponent implements OnInit {
     private snackbarService: SnackbarService,
     private router: Router,
     private http: HttpClient,
-    private navbar: NavbarService
+    private navbar: NavbarService,
+    private authService: AuthService
   ) {
     this.http
       .get<string[]>(backendUrlBase + 'maincategory/sale')
@@ -117,6 +119,9 @@ export class CreateSalePostComponent implements OnInit {
 
   ngOnInit(): void {
     this.navbar.disableInputs();
+    if (!this.authService.isUserLoggedIn()) {
+      this.router.navigate(['/login']);
+    }
   }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -252,13 +257,19 @@ export class CreateSalePostComponent implements OnInit {
       return;
     }
     this.emptyAddress = false;
-    if (this.title.errors || this.description.errors || this.price.errors) {
+    if (
+      this.title.errors ||
+      this.description.errors ||
+      this.price.errors ||
+      this.squareFootage.errors
+    ) {
       return;
     }
     this.postDto.Title = this.title.value!;
     this.postDto.Description = this.description.value!;
     this.postDto.MainCategory = this.selectedSaleMainCategory;
     this.postDto.Price = this.price.value!;
+    this.postDto.SquareFootage = this.squareFootage.value!;
     this.data = new FormData();
     if (this.topImages.length < 1) {
       this.snackbarService.openSnackbar('Nie wybrano zdjęcia', 'Error');

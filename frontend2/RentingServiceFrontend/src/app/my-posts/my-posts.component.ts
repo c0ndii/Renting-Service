@@ -106,4 +106,27 @@ export class MyPostsComponent implements OnInit {
   editRentPost(postId: number) {
     this.router.navigate(['myposts/rentpost', postId]);
   }
+  editSalePost(postId: number) {
+    this.router.navigate(['myposts/salepost', postId]);
+  }
+  deleteSalePost(postId: number) {
+    let tmpList = this.salePosts.value;
+    this.http
+      .delete(backendUrlBase + 'post/' + postId)
+      .pipe(
+        map(() => {
+          tmpList = tmpList.filter((item) => item.postId !== postId);
+          this.salePosts.next(tmpList);
+          this.snackbar.openSnackbar('Post został usunięty', 'success');
+        }),
+        catchError(() => {
+          this.snackbar.openSnackbar(
+            'Wystąpił błąd podczas usuwania posta',
+            'error'
+          );
+          throw new Error();
+        })
+      )
+      .subscribe();
+  }
 }

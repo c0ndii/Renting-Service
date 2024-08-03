@@ -37,6 +37,7 @@ import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { NavbarService } from '../services/navbar.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { forRentPostDto } from '../interfaces/forRentPostDto';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-edit-rent-post',
@@ -116,7 +117,8 @@ export class EditRentPostComponent {
     private router: Router,
     private http: HttpClient,
     private navbar: NavbarService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {
     this.http
       .get<string[]>(backendUrlBase + 'maincategory/rent')
@@ -126,8 +128,20 @@ export class EditRentPostComponent {
     this.selectedRentMainCategory = 'Mieszkanie';
   }
 
+  isUserOwner() {
+    return this.http
+      .get<boolean>(backendUrlBase + 'post/isowner/' + this.postId)
+      .subscribe();
+  }
+
   ngOnInit(): void {
     this.navbar.disableInputs();
+    if (!this.authService.isUserLoggedIn()) {
+      this.router.navigate(['/login']);
+    }
+    if (!this.isUserOwner()) {
+      this.router.navigate(['myposts']);
+    }
     this.sub = this.route.params.subscribe((params) => {
       this.postId = +params['id'];
     });
@@ -294,7 +308,7 @@ export class EditRentPostComponent {
             'Ogłoszenie zostało zaktualizowane',
             'Success'
           );
-          this.router.navigate(['']);
+          this.router.navigate(['myposts']);
         },
         (error: HttpErrorResponse) => {
           console.log(error);

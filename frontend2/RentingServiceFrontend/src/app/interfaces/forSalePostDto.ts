@@ -20,4 +20,5 @@ export interface forSalePostDto {
   followCount: number;
   isFollowedByUser: boolean | null;
   user: userDto;
+  confirmed: boolean;
 }

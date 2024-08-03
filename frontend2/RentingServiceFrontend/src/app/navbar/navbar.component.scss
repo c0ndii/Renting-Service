@@ -7,6 +7,7 @@
 }
 
 .navbar-menu {
+  width: 100%;
   display: flex;
   min-height: 75px;
   max-height: 75px;
@@ -14,14 +15,13 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  width: 100vw;
   height: fit-content;
   border-bottom: 3px solid rgba(0, 0, 0, 0.12);
 }
 
 .navbar-menu-left {
   float: left;
-  width: 40vw;
+  width: 40%;
   padding-right: 10px;
   padding-top: 10px;
   padding-left: 5px;
@@ -32,7 +32,7 @@
 
 .navbar-menu-middle {
   display: inline-block;
-  width: 19.017vw;
+  width: 20%;
   margin: 0 auto;
   padding: 10px;
   text-align: center;
@@ -41,7 +41,7 @@
 
 .navbar-menu-right {
   float: right;
-  width: 40vw;
+  width: 40%;
   padding: 10px;
   justify-content: right;
   align-items: center;
@@ -68,7 +68,7 @@
   height: fit-content;
   min-height: 50px;
   max-height: 60px;
-  max-width: 20vw;
+  width: 20vw;
 }
 .home-icon {
   font-size: 45px !important;
@@ -106,10 +106,10 @@ img {
   min-height: 50px !important;
   min-width: 150px !important;
 }
-.user-panel-holder{
+.user-panel-holder {
   display: flex;
   align-items: center;
-  justify-content:flex-end;
+  justify-content: flex-end;
   max-width: 400px;
   max-height: 50px;
   min-height: 50px;
@@ -121,7 +121,7 @@ img {
   margin-right: 20px;
   font-size: 20px;
 }
-.add-post-holder{
+.add-post-holder {
   display: flex;
   font-weight: bold;
   flex-direction: columns;
@@ -129,6 +129,6 @@ img {
   justify-content: start;
   justify-self: end;
 }
-.add-post-button-holder{
+.add-post-button-holder {
   max-width: 200px;
 }
