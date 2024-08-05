@@ -585,7 +585,7 @@ namespace RentingServiceBackend.Services
                     || x.SleepingPlaceCount >= query.MinSleepingCount)
                     && (!query.MaxSleepingCount.HasValue
                     || x.SleepingPlaceCount <= query.MaxSleepingCount)
-                    && (!query.MainCategory.IsNullOrEmpty()
+                    && (query.MainCategory.IsNullOrEmpty()
                     || x.MainCategory.MainCategoryName == query.MainCategory)
                     && x.Confirmed == true);
             return rentPosts;
@@ -606,7 +606,7 @@ namespace RentingServiceBackend.Services
                         || x.SquareFootage >= query.MinSquare)
                         && (!query.MaxSquare.HasValue
                         || x.SquareFootage <= query.MaxSquare)
-                        && (!query.MainCategory.IsNullOrEmpty()
+                        && (query.MainCategory.IsNullOrEmpty()
                         || x.MainCategory.MainCategoryName == query.MainCategory)
                         && x.Confirmed == true);
             return salePosts;
