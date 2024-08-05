@@ -106,7 +106,7 @@ export class RentpostComponent implements OnInit, OnDestroy {
   }
   followPost(postId: number) {
     this.http
-      .get(backendUrlBase + 'post/togglerentfollow/' + postId)
+      .get(backendUrlBase + 'post/togglefollow/' + postId)
       .pipe(
         map((result) => {
           if (result !== true) {

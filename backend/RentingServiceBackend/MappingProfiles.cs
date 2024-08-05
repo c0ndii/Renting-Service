@@ -31,6 +31,9 @@ namespace RentingServiceBackend
                 .ForMember(x => x.FollowCount, y => y.MapFrom(z => z.FollowedBy.Count))
                 .ForMember(x => x.MainCategory, y => y.MapFrom(z => z.MainCategory.MainCategoryName))
                 .IncludeMembers();
+            CreateMap<Post, PostDto>()
+                .ForMember(x => x.FollowCount, y => y.MapFrom(z => z.FollowedBy.Count))
+                .IncludeMembers();
         }
     }
 }

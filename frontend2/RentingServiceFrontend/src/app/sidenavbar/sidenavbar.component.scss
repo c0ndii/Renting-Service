@@ -8,7 +8,7 @@
   border-right: 3px solid rgba(0, 0, 0, 0.12);
 }
 .sidenav-toggle-button {
-  position: absolute;
+  position: fixed;
   z-index: 9999;
   float: left;
   width: 50px;

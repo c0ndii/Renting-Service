@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RentingServiceBackend.Entities;
 using RentingServiceBackend.Models;
 using RentingServiceBackend.Services;
+using System.Linq.Expressions;
 
 namespace RentingServiceBackend.Controllers
 {
@@ -85,12 +87,6 @@ namespace RentingServiceBackend.Controllers
             await _postService.DeletePost(id);
             return Ok();
         }
-        [HttpGet("isowner/{postId}")]
-        public async Task<IActionResult> IsOwner([FromRoute] int postId)
-        {
-            var result = await _postService.IsOwner(postId);
-            return Ok(result);
-        }
         [HttpPut("editrentpost/{postId}")]
         [Authorize]
         public async Task<IActionResult> EditRentPost([FromRoute] int postId, [FromBody] CreateForRentPostDto dto)
@@ -119,33 +115,17 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.GetUserFollowedSalePosts();
             return Ok(result);
         }
-        [HttpGet("togglerentfollow/{postId}")]
+        [HttpGet("togglefollow/{postId}")]
         [Authorize]
-        public async Task<IActionResult> ToggleRentFollow([FromRoute] int postId)
+        public async Task<IActionResult> ToggleFollow([FromRoute] int postId)
         {
-            var result = await _postService.ToggleRentFollow(postId);
+            var result = await _postService.ToggleFollow(postId);
             return Ok(result);
         }
-        [HttpGet("togglesalefollow/{postId}")]
-        [Authorize]
-        public async Task<IActionResult> ToggleSaleFollow([FromRoute] int postId)
+        [HttpGet("posts")]
+        public async Task<IActionResult> GetAllPosts([FromQuery] PostQuery query)
         {
-            var result = await _postService.ToggleSaleFollow(postId);
-            return Ok(result);
-        }
-        [HttpGet("rentposts")]
-        [Authorize]
-        public async Task<IActionResult> GetAllRentPosts()
-        {
-            var result = await _postService.GetAllRentPosts();
-            return Ok(result);
-        }
-        [HttpGet("saleposts")]
-        [Authorize]
-        public async Task<IActionResult> GetAllSalePosts()
-        {
-            var result = await _postService.GetAllSalePosts();
-            return Ok(result);
+            
         }
     }
 }

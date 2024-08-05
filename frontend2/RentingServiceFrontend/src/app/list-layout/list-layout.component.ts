@@ -64,14 +64,10 @@ export class ListLayoutComponent implements OnInit {
     });
   }
   getRentPosts(): Observable<forRentPostDto[]> {
-    return this.http.get<forRentPostDto[]>(
-      backendUrlBase + 'post/userrentposts'
-    );
+    return this.http.get<forRentPostDto[]>(backendUrlBase + 'post/rentposts');
   }
   getSalePosts(): Observable<forSalePostDto[]> {
-    return this.http.get<forSalePostDto[]>(
-      backendUrlBase + 'post/usersaleposts'
-    );
+    return this.http.get<forSalePostDto[]>(backendUrlBase + 'post/saleposts');
   }
   redirectToRentPost(postId: number) {
     this.router.navigate(['rentpost', postId]);

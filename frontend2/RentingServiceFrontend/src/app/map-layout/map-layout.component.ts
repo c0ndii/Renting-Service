@@ -7,6 +7,11 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import * as GeoSearch from 'leaflet-geosearch';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { forRentPostDto } from '../interfaces/forRentPostDto';
+import { forSalePostDto } from '../interfaces/forSalePostDto';
+import { HttpClient } from '@angular/common/http';
+import { backendUrlBase } from '../appsettings/constant';
 
 @Component({
   selector: 'app-map-layout',
@@ -17,8 +22,10 @@ import * as GeoSearch from 'leaflet-geosearch';
 })
 export class MapLayoutComponent {
   mapSerachProvider = new OpenStreetMapProvider();
+  rentPosts = new BehaviorSubject<forRentPostDto[]>([]);
+  salePosts = new BehaviorSubject<forSalePostDto[]>([]);
   // mapSearchResult = await this.mapSerachProvider.search({ query: input.value})
-  constructor(private navbar: NavbarService) {
+  constructor(private navbar: NavbarService, private http: HttpClient) {
     this.navbar.enableInputs();
   }
   isLogged: boolean = false;
@@ -29,6 +36,26 @@ export class MapLayoutComponent {
     zoomControl: false,
     center: new Leaflet.LatLng(52.13, 21.0),
   };
+
+  ngOnInit(): void {
+    this.preparePosts();
+  }
+  preparePosts() {
+    this.getRentPosts().subscribe((response) => {
+      this.rentPosts.next(response);
+    });
+    this.getSalePosts().subscribe((response) => {
+      this.salePosts.next(response);
+    });
+  }
+
+  getRentPosts(): Observable<forRentPostDto[]> {
+    return this.http.get<forRentPostDto[]>(backendUrlBase + 'post/rentposts');
+  }
+  getSalePosts(): Observable<forSalePostDto[]> {
+    return this.http.get<forSalePostDto[]>(backendUrlBase + 'post/saleposts');
+  }
+
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));

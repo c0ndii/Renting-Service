@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using RentingServiceBackend.Entities;
 using RentingServiceBackend.Exceptions;
 using RentingServiceBackend.Models;
+using System.Linq.Expressions;
 
 namespace RentingServiceBackend.Services
 {
@@ -19,15 +20,12 @@ namespace RentingServiceBackend.Services
         Task<List<ForSalePostDto>> GetAllUserSalePosts();
         Task<List<ForSalePostDto>> GetAllUserSalePosts(int userId);
         Task DeletePost(int postId);
-        Task<bool> IsOwner(int postId);
         Task EditSalePost(int postId, CreateForSalePostDto dto);
         Task EditRentPost(int postId, CreateForRentPostDto dto);
         Task<List<ForRentPostDto>> GetUserFollowedRentPosts();
         Task<List<ForSalePostDto>> GetUserFollowedSalePosts();
-        Task<bool> ToggleRentFollow(int postId);
-        Task<bool> ToggleSaleFollow(int postId);
-        Task<IEnumerable<ForRentPostDto>> GetAllRentPosts();
-        Task<IEnumerable<ForSalePostDto>> GetAllSalePosts();
+        Task<bool> ToggleFollow(int postId);
+        Task<IEnumerable<PostDto>> GetAllPosts(PostQuery query);
     }
 
     public class PostService : IPostService
@@ -118,6 +116,8 @@ namespace RentingServiceBackend.Services
                 City = dto.City,
                 Country = dto.Country,
                 Lat = dto.Lat,
+                Price = dto.Price,
+                SquareFootage = dto.SquareFootage,
                 Lng = dto.Lng,
                 AddDate = DateTime.Now,
                 FollowedBy = new List<User>(),
@@ -156,6 +156,8 @@ namespace RentingServiceBackend.Services
                 Street = dto.Street,
                 District = dto.District,
                 City = dto.City,
+                Price = dto.Price,
+                SquareFootage = dto.SquareFootage,
                 Country = dto.Country,
                 Lat = dto.Lat,
                 Lng = dto.Lng,
@@ -180,7 +182,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("Post not found");
             }
             var result = _mapper.Map<ForRentPostDto>(post);
-            result.isFollowedByUser = await CheckIfUserFollowsRentPost(postId);
+            result.isFollowedByUser = await CheckIfUserFollowsPost(postId);
             int iter = 0;
             var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
             while (File.Exists(path))
@@ -200,7 +202,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("Post not found");
             }
             var result = _mapper.Map<ForSalePostDto>(post);
-            result.isFollowedByUser = await CheckIfUserFollowsSalePost(postId);
+            result.isFollowedByUser = await CheckIfUserFollowsPost(postId);
             int iter = 0;
             var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{iter}.png");
             while (File.Exists(path))
@@ -249,7 +251,7 @@ namespace RentingServiceBackend.Services
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
-                post.isFollowedByUser = await CheckIfUserFollowsRentPost(post.PostId);
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
                 var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
                 if (File.Exists(path))
                 {
@@ -297,7 +299,7 @@ namespace RentingServiceBackend.Services
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
-                post.isFollowedByUser = await CheckIfUserFollowsSalePost(post.PostId);
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
                 var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
                 if (File.Exists(path))
                 {
@@ -438,29 +440,8 @@ namespace RentingServiceBackend.Services
             }
             return result;
         }
-        public async Task<bool> ToggleRentFollow(int postId)
-        {
-            var userId = _userContextService.GetUserId;
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
-            if (user == null)
-            {
-                throw new UnauthorizedException("Could not authorize user");
-            }
-            var post = await _context.Posts.Include(x => x.User).Include(x => x.FollowedBy).SingleOrDefaultAsync(x => x.PostId == postId && x.User != user);
-            if (post.FollowedBy.Contains(user))
-            {
-                post.FollowedBy.Remove(user);
-                await _context.SaveChangesAsync();
-                return false;
-            } else
-            {
-                post.FollowedBy.Add(user);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            
-        }
-        public async Task<bool> ToggleSaleFollow(int postId)
+
+        public async Task<bool> ToggleFollow(int postId)
         {
             var userId = _userContextService.GetUserId;
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
@@ -483,7 +464,7 @@ namespace RentingServiceBackend.Services
             }
 
         }
-        private async Task<bool?> CheckIfUserFollowsRentPost(int postId)
+        private async Task<bool?> CheckIfUserFollowsPost(int postId)
         {
             var isUserLoggedIn = _userContextService.isUserLogged;
             if ((isUserLoggedIn is null) || isUserLoggedIn == false)
@@ -500,28 +481,33 @@ namespace RentingServiceBackend.Services
             {
                 return null;
             }
-            var result = await _context.ForRentPosts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
+            var result = await _context.Posts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
             return result;
         }
-        private async Task<bool?> CheckIfUserFollowsSalePost(int postId)
+        public async Task<IEnumerable<PostDto>> GetAllPosts(PostQuery query) 
         {
-            var isUserLoggedIn = _userContextService.isUserLogged;
-            if ((isUserLoggedIn is null) || isUserLoggedIn == false)
+            List<Post> baseQuery;
+
+            var columnSelectors = new Dictionary<string, Expression<Func<Post, object>>>
             {
-                return null;
-            }
-            var userId = _userContextService.GetUserId;
-            if (userId is null)
-            {
-                return null;
-            }
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
-            if (user is null)
-            {
-                return null;
-            }
-            var result = await _context.ForSalePosts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
-            return result;
+                { nameof(Post.AddDate), x => x.AddDate },
+                { nameof(Post.Price), x => x.Price },
+                { nameof(Post.SquareFootage), x => x.SquareFootage },
+            };
+            var selectedColumn = columnSelectors[query.SortBy];
+
+
+
+            baseQuery = await _context.Posts.Where(async x => (string.IsNullOrEmpty(query.SearchPhrase)
+                || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                && (query.FeatureFilters.IsNullOrEmpty()
+                || await _context.ForRentPosts.Include().Where(y => y.))
+                && (string.IsNullOrEmpty(query.DateFilter)
+                || string.Compare(query.DateFilter, x.Day) == 0)
+                && x.Confirmed == true))
+            var result = await _postService.GetAllPosts(query);
+            return Ok(result);
         }
     }
 }

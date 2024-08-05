@@ -50,7 +50,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.Feature", b =>
@@ -68,7 +68,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasKey("FeatureId");
 
-                    b.ToTable("Features");
+                    b.ToTable("Features", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.MainCategory", b =>
@@ -90,7 +90,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasKey("MainCategoryId");
 
-                    b.ToTable("MainCategories");
+                    b.ToTable("MainCategories", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("MainCategory");
 
@@ -171,7 +171,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Post");
 
@@ -190,7 +190,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostFeature");
+                    b.ToTable("PostFeature", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.PostUserFollowLinkEntity", b =>
@@ -205,7 +205,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostUser");
+                    b.ToTable("PostUser", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.Reservation", b =>
@@ -237,7 +237,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.Role", b =>
@@ -255,7 +255,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.User", b =>
@@ -305,7 +305,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("RentingServiceBackend.Entities.ForRentMainCategory", b =>
@@ -340,7 +340,7 @@ namespace RentingServiceBackend.Migrations
 
                     b.HasIndex("MainCategoryId");
 
-                    b.ToTable("Posts", t =>
+                    b.ToTable("Posts", null, t =>
                         {
                             t.Property("MainCategoryId")
                                 .HasColumnName("ForRentPost_MainCategoryId");
