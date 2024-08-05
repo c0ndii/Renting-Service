@@ -44,20 +44,20 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.GetSalePostById(postId);
             return Ok(result);
         }
-        [HttpGet("userrentposts/{userId}")]
-        [Authorize]
-        public async Task<IActionResult> GetAllUserRentPosts([FromRoute] int userId)
-        {
-            var result = await _postService.GetAllUserRentPosts(userId);
-            return Ok(result);
-        }
-        [HttpGet("usersaleposts/{userId}")]
-        [Authorize]
-        public async Task<IActionResult> GetAllUserSalePosts([FromRoute] int userId)
-        {
-            var result = await _postService.GetAllUserSalePosts(userId);
-            return Ok(result);
-        }
+        //[HttpGet("userrentposts/{userId}")]
+        //[Authorize]
+        //public async Task<IActionResult> GetAllUserRentPosts([FromRoute] int userId)
+        //{
+        //    var result = await _postService.GetAllUserRentPosts(userId);
+        //    return Ok(result);
+        //}
+        //[HttpGet("usersaleposts/{userId}")]
+        //[Authorize]
+        //public async Task<IActionResult> GetAllUserSalePosts([FromRoute] int userId)
+        //{
+        //    var result = await _postService.GetAllUserSalePosts(userId);
+        //    return Ok(result);
+        //}
         [HttpGet("userrentposts")]
         [Authorize]
         public async Task<IActionResult> GetAllUserRentPosts()
@@ -125,7 +125,8 @@ namespace RentingServiceBackend.Controllers
         [HttpGet("posts")]
         public async Task<IActionResult> GetAllPosts([FromQuery] PostQuery query)
         {
-            
+            var result = await _postService.GetAllPosts(query);
+            return Ok(result);
         }
     }
 }

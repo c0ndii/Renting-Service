@@ -484,10 +484,8 @@ namespace RentingServiceBackend.Services
             var result = await _context.Posts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
             return result;
         }
-        public async Task<IEnumerable<PostDto>> GetAllPosts(PostQuery query) 
+        public async Task<PageResult<PostDto>> GetAllPosts(PostQuery query) 
         {
-            List<Post> baseQuery;
-
             var columnSelectors = new Dictionary<string, Expression<Func<Post, object>>>
             {
                 { nameof(Post.AddDate), x => x.AddDate },
@@ -496,18 +494,122 @@ namespace RentingServiceBackend.Services
             };
             var selectedColumn = columnSelectors[query.SortBy];
 
-
-
-            baseQuery = await _context.Posts.Where(async x => (string.IsNullOrEmpty(query.SearchPhrase)
-                || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
-                || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
-                && (query.FeatureFilters.IsNullOrEmpty()
-                || await _context.ForRentPosts.Include().Where(y => y.))
-                && (string.IsNullOrEmpty(query.DateFilter)
-                || string.Compare(query.DateFilter, x.Day) == 0)
-                && x.Confirmed == true))
-            var result = await _postService.GetAllPosts(query);
-            return Ok(result);
+            if (String.Compare(query.PostType, "rent") == 0)
+            {
+                var rentPosts = await GetRentPosts(query);
+                if(query.SortDirection == SortDirection.ASC)
+                {
+                    rentPosts.OrderBy(selectedColumn);
+                } else
+                {
+                    rentPosts.OrderByDescending(selectedColumn);
+                }
+                var rentPostsList = await rentPosts.ToListAsync();
+                var result = rentPostsList
+                        .Skip(query.PageSize * (query.PageNumber - 1))
+                        .Take(query.PageSize);
+                var totalItemsCount = rentPostsList.Count;
+                var mappedResult = _mapper.Map<List<PostDto>>(result);
+                return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
+            } else
+            {
+                if (String.Compare(query.PostType, "sale") == 0)
+                {
+                    var salePosts = await GetSalePosts(query);
+                    if (query.SortDirection == SortDirection.ASC)
+                    {
+                        salePosts.OrderBy(selectedColumn);
+                    }
+                    else
+                    {
+                        salePosts.OrderByDescending(selectedColumn);
+                    }
+                    var salePostsList = await salePosts.ToListAsync();
+                    var result = salePostsList
+                            .Skip(query.PageSize * (query.PageNumber - 1))
+                            .Take(query.PageSize);
+                    var totalItemsCount = salePostsList.Count;
+                    var mappedResult = _mapper.Map<List<PostDto>>(result);
+                    return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
+                } else
+                {
+                    var columnSelectorsDto = new Dictionary<string, Expression<Func<PostDto, object>>>
+                    {
+                        { nameof(PostDto.AddDate), x => x.AddDate },
+                        { nameof(PostDto.Price), x => x.Price },
+                        { nameof(PostDto.SquareFootage), x => x.SquareFootage },
+                    };
+                    var selectedColumnDto = columnSelectorsDto[query.SortBy];
+                    var rentPosts = await GetRentPosts(query);
+                    var salePosts = await GetSalePosts(query);
+                    var rentPostsMapped = _mapper.Map<IQueryable<PostDto>>(rentPosts);
+                    var salePostsMapped = _mapper.Map<IQueryable<PostDto>>(salePosts);
+                    var posts = rentPostsMapped.Union(salePostsMapped);
+                    if (query.SortDirection == SortDirection.ASC)
+                    {
+                        posts.OrderBy(selectedColumnDto);
+                    }
+                    else
+                    {
+                        posts.OrderByDescending(selectedColumnDto);
+                    }
+                    var postsList = await posts.ToListAsync();
+                    var result = postsList
+                            .Skip(query.PageSize * (query.PageNumber - 1))
+                            .Take(query.PageSize);
+                    var totalItemsCount = postsList.Count;
+                    return new PageResult<PostDto>(result.ToList(), totalItemsCount, query.PageSize, query.PageNumber);
+                }
+            }
+        }
+        private async Task<IQueryable<ForRentPost>> GetRentPosts(PostQuery query)
+        {
+            var rentPosts = _context.ForRentPosts
+                    .Include(x => x.Features)
+                    .Include(x => x.User)
+                    .Include(x => x.MainCategory)
+                    .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                    || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                    || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                    && (query.FeatureFilters.IsNullOrEmpty()
+                    || x.Features.Any(y => query.FeatureFilters.Contains(y.FeatureName)))
+                    && (!query.MinPrice.HasValue
+                    || x.Price >= query.MinPrice)
+                    && (!query.MaxPrice.HasValue
+                    || x.Price <= query.MaxPrice)
+                    && (!query.MinSquare.HasValue
+                    || x.SquareFootage >= query.MinSquare)
+                    && (!query.MaxSquare.HasValue
+                    || x.SquareFootage <= query.MaxSquare)
+                    && (!query.MinSleepingCount.HasValue
+                    || x.SleepingPlaceCount >= query.MinSleepingCount)
+                    && (!query.MaxSleepingCount.HasValue
+                    || x.SleepingPlaceCount <= query.MaxSleepingCount)
+                    && (!query.MainCategory.IsNullOrEmpty()
+                    || x.MainCategory.MainCategoryName == query.MainCategory)
+                    && x.Confirmed == true);
+            return rentPosts;
+        }
+        private async Task<IQueryable<ForSalePost>> GetSalePosts(PostQuery query)
+        {
+            var salePosts = _context.ForSalePosts
+                        .Include(x => x.User)
+                        .Include(x => x.MainCategory)
+                        .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                        || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                        || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                        && (!query.MinPrice.HasValue
+                        || x.Price >= query.MinPrice)
+                        && (!query.MaxPrice.HasValue
+                        || x.Price <= query.MaxPrice)
+                        && (!query.MinSquare.HasValue
+                        || x.SquareFootage >= query.MinSquare)
+                        && (!query.MaxSquare.HasValue
+                        || x.SquareFootage <= query.MaxSquare)
+                        && (!query.MainCategory.IsNullOrEmpty()
+                        || x.MainCategory.MainCategoryName == query.MainCategory)
+                        && x.Confirmed == true);
+            return salePosts;
         }
     }
 }

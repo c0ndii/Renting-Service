@@ -19,6 +19,7 @@ import { forSalePostDto } from '../interfaces/forSalePostDto';
 import { CommonModule, NgFor } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { SnackbarService } from '../services/snackbar.service';
+import { postDto } from '../interfaces/postDto';
 
 @Component({
   selector: 'app-list-layout',
@@ -49,8 +50,7 @@ export class ListLayoutComponent implements OnInit {
     private http: HttpClient,
     private snackbar: SnackbarService
   ) {}
-  rentPosts = new BehaviorSubject<forRentPostDto[]>([]);
-  salePosts = new BehaviorSubject<forSalePostDto[]>([]);
+  posts = new BehaviorSubject<postDto[]>([]);
   selectedValue: string = 'rent';
   ngOnInit(): void {
     this.preparePosts();
