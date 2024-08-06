@@ -8,6 +8,7 @@
           name="fontStyle"
           aria-label="Font Style"
           [(ngModel)]="selectedValue"
+          (change)="switchFilters()"
         >
           <mat-button-toggle value="rent"> Wynajmu</mat-button-toggle>
           <mat-button-toggle value="sell">Sprzedaży</mat-button-toggle>
@@ -75,6 +76,12 @@
           </li>
         </ul>
       </div>
+      <mat-paginator
+        [length]="length | async"
+        [pageSize]="pageSize | async"
+        [pageIndex]="pageNumber | async"
+        (page)="getPostsFilters(this.selectedValue)"
+      ></mat-paginator>
     </div>
   </div>
   } @loading (; minimum 1.5s) {

@@ -20,6 +20,10 @@ import { CommonModule, NgFor } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { SnackbarService } from '../services/snackbar.service';
 import { postDto } from '../interfaces/postDto';
+import { SidenavbarService } from '../services/sidenavbar.service';
+import { postQuery } from '../interfaces/postQuery';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { pageResult } from '../interfaces/pageResult';
 
 @Component({
   selector: 'app-list-layout',
@@ -37,6 +41,7 @@ import { postDto } from '../interfaces/postDto';
     MatTooltipModule,
     CommonModule,
     MatChipsModule,
+    MatPaginatorModule,
   ],
   templateUrl: './list-layout.component.html',
   styleUrl: './list-layout.component.scss',
@@ -48,26 +53,190 @@ export class ListLayoutComponent implements OnInit {
     public dialog: MatDialog,
     private navbar: NavbarService,
     private http: HttpClient,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
+    private sideNavbarService: SidenavbarService
   ) {}
-  posts = new BehaviorSubject<postDto[]>([]);
+  rentPosts = new BehaviorSubject<postDto[]>([]);
+  salePosts = new BehaviorSubject<postDto[]>([]);
+  length = new BehaviorSubject<number>(10);
+
+  pageNumber = new BehaviorSubject<number>(0);
+  pageSize = new BehaviorSubject<number>(10);
+
   selectedValue: string = 'rent';
   ngOnInit(): void {
-    this.preparePosts();
+    this.switchFilters();
   }
-  preparePosts() {
-    this.getRentPosts().subscribe((response) => {
-      this.rentPosts.next(response);
+
+  switchFilters() {
+    this.length.next(1);
+    this.pageNumber.next(0);
+    this.pageSize.next(10);
+    if (this.selectedValue == 'rent') {
+      this.sideNavbarService.resetFilters(this.selectedValue);
+      let filters = {
+        searchPhrase: this.sideNavbarService.searchPhrase.value,
+        pageNumber: this.pageNumber.value,
+        pageSize: this.pageSize.value,
+        postType: this.selectedValue,
+        sortBy: this.sideNavbarService.sortBy.value,
+        sortDirection: this.sideNavbarService.sortDirection.value,
+        minPrice: this.sideNavbarService.minPrice.value,
+        maxPrice: this.sideNavbarService.maxPrice.value,
+        minSquare: this.sideNavbarService.minSquare.value,
+        maxSquare: this.sideNavbarService.maxSquare.value,
+        minSleepingCount: this.sideNavbarService.minSleepingCount.value,
+        maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
+        mainCategory: this.sideNavbarService.mainCategory.value,
+        featureFilters: this.sideNavbarService.featureFilters.value,
+      } as postQuery;
+
+      this.getRentPosts(filters).subscribe((response) => {
+        this.length.next(response.totalPages);
+        this.rentPosts.next(response.items);
+      });
+    } else {
+      this.sideNavbarService.resetFilters(this.selectedValue);
+      let filters = {
+        searchPhrase: this.sideNavbarService.searchPhrase.value,
+        pageNumber: this.pageNumber.value,
+        pageSize: this.pageSize.value,
+        postType: this.selectedValue,
+        sortBy: this.sideNavbarService.sortBy.value,
+        sortDirection: this.sideNavbarService.sortDirection.value,
+        minPrice: this.sideNavbarService.minPrice.value,
+        maxPrice: this.sideNavbarService.maxPrice.value,
+        minSquare: this.sideNavbarService.minSquare.value,
+        maxSquare: this.sideNavbarService.maxSquare.value,
+        minSleepingCount: this.sideNavbarService.minSleepingCount.value,
+        maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
+        mainCategory: this.sideNavbarService.mainCategory.value,
+        featureFilters: this.sideNavbarService.featureFilters.value,
+      } as postQuery;
+
+      this.getSalePosts(filters).subscribe((response) => {
+        this.length.next(response.totalPages);
+        this.salePosts.next(response.items);
+      });
+    }
+  }
+
+  getPostsFilters(e: any) {
+    this.pageNumber.next(e.pageIndex);
+    if (this.selectedValue === 'rent') {
+      this.getRentPostsFilters();
+    } else {
+      this.gerSalePostsFilters();
+    }
+  }
+
+  getRentPostsFilters() {
+    let filters = {
+      searchPhrase: this.sideNavbarService.searchPhrase.value,
+      pageNumber: this.pageNumber.value,
+      pageSize: this.pageSize.value,
+      postType: 'rent',
+      sortBy: this.sideNavbarService.sortBy.value,
+      sortDirection: this.sideNavbarService.sortDirection.value,
+      minPrice: this.sideNavbarService.minPrice.value,
+      maxPrice: this.sideNavbarService.maxPrice.value,
+      minSquare: this.sideNavbarService.minSquare.value,
+      maxSquare: this.sideNavbarService.maxSquare.value,
+      minSleepingCount: this.sideNavbarService.minSleepingCount.value,
+      maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
+      mainCategory: this.sideNavbarService.mainCategory.value,
+      featureFilters: this.sideNavbarService.featureFilters.value,
+    } as postQuery;
+
+    this.getRentPosts(filters).subscribe((response) => {
+      this.length.next(response.totalPages);
+      this.rentPosts.next(response.items);
     });
-    this.getSalePosts().subscribe((response) => {
-      this.salePosts.next(response);
+  }
+
+  gerSalePostsFilters() {
+    let filters = {
+      searchPhrase: this.sideNavbarService.searchPhrase.value,
+      pageNumber: this.pageNumber.value,
+      pageSize: this.pageSize.value,
+      postType: 'sale',
+      sortBy: this.sideNavbarService.sortBy.value,
+      sortDirection: this.sideNavbarService.sortDirection.value,
+      minPrice: this.sideNavbarService.minPrice.value,
+      maxPrice: this.sideNavbarService.maxPrice.value,
+      minSquare: this.sideNavbarService.minSquare.value,
+      maxSquare: this.sideNavbarService.maxSquare.value,
+      minSleepingCount: this.sideNavbarService.minSleepingCount.value,
+      maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
+      mainCategory: this.sideNavbarService.mainCategory.value,
+      featureFilters: this.sideNavbarService.featureFilters.value,
+    } as postQuery;
+
+    this.getSalePosts(filters).subscribe((response) => {
+      this.length.next(response.totalPages);
+      this.salePosts.next(response.items);
     });
   }
-  getRentPosts(): Observable<forRentPostDto[]> {
-    return this.http.get<forRentPostDto[]>(backendUrlBase + 'post/rentposts');
+
+  prepareFilterUrl(filters: postQuery) {
+    let query: string = '';
+    if (filters.searchPhrase !== null && filters.searchPhrase.length >= 0) {
+      query += '?SearchPhrase=' + filters.searchPhrase;
+    }
+    if (query.length <= 0) {
+      query += '?PageNumber=' + filters.pageNumber;
+    } else {
+      query += '&PageSize=' + filters.pageSize;
+    }
+    if (filters.sortBy === null) {
+      query += '&SortBy=AddDate';
+    } else {
+      query += '&SortBy=' + filters.sortBy;
+    }
+    if (filters.sortDirection === null) {
+      query += '&SortDirection=1';
+    } else {
+      query += '&SortDirection=' + filters.sortDirection;
+    }
+    query += '&PostType=' + filters.postType;
+    if (filters.minPrice !== null) {
+      query += '&MinPrice=' + filters.minPrice;
+    }
+    if (filters.maxPrice !== null) {
+      query += '&MaxPrice=' + filters.maxPrice;
+    }
+    if (filters.minSquare !== null) {
+      query += '&MinSquare=' + filters.minSquare;
+    }
+    if (filters.maxSquare !== null) {
+      query += '&MaxSquare=' + filters.maxSquare;
+    }
+    if (filters.minSleepingCount !== null) {
+      query += '&MinSleepingCount=' + filters.minSleepingCount;
+    }
+    if (filters.maxSleepingCount !== null) {
+      query += '&MaxSleepingCount=' + filters.maxSleepingCount;
+    }
+    if (filters.mainCategory !== null) {
+      query += '&MainCategory=' + filters.mainCategory;
+    }
+    if (filters.featureFilters && filters.featureFilters?.length > 0) {
+      let features = '';
+      for (let i = 0; i < filters.featureFilters.length; i++) {
+        features += '&FeatureFilters=' + filters.featureFilters[i];
+      }
+      query += features;
+    }
+    return query;
   }
-  getSalePosts(): Observable<forSalePostDto[]> {
-    return this.http.get<forSalePostDto[]>(backendUrlBase + 'post/saleposts');
+
+  getRentPosts(filters: postQuery): Observable<pageResult> {
+    let query = this.prepareFilterUrl(filters);
+    return this.http.get<pageResult>(backendUrlBase + 'post/posts' + query);
+  }
+  getSalePosts(filters: postQuery): Observable<pageResult> {
+    let query = this.prepareFilterUrl(filters);
+    return this.http.get<pageResult>(backendUrlBase + 'post/posts' + query);
   }
   redirectToRentPost(postId: number) {
     this.router.navigate(['rentpost', postId]);

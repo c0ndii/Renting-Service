@@ -37,25 +37,6 @@ export class MapLayoutComponent {
     center: new Leaflet.LatLng(52.13, 21.0),
   };
 
-  ngOnInit(): void {
-    this.preparePosts();
-  }
-  preparePosts() {
-    this.getRentPosts().subscribe((response) => {
-      this.rentPosts.next(response);
-    });
-    this.getSalePosts().subscribe((response) => {
-      this.salePosts.next(response);
-    });
-  }
-
-  getRentPosts(): Observable<forRentPostDto[]> {
-    return this.http.get<forRentPostDto[]>(backendUrlBase + 'post/rentposts');
-  }
-  getSalePosts(): Observable<forSalePostDto[]> {
-    return this.http.get<forSalePostDto[]>(backendUrlBase + 'post/saleposts');
-  }
-
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
