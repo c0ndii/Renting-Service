@@ -13,6 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../services/auth.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { SidenavbarService } from '../services/sidenavbar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -40,7 +41,8 @@ export class NavbarComponent implements OnInit {
     public navbar: NavbarService,
     protected authService: AuthService,
     public dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    protected sideNavbarService: SidenavbarService
   ) {}
   ngOnInit(): void {
     this.authService.user.subscribe((res) => {

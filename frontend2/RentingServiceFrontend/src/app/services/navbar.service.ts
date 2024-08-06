@@ -17,7 +17,6 @@ export class NavbarService {
   ) {}
 
   inputsDisabled: boolean = false;
-  search_value = '';
   disableInputs() {
     this.inputsDisabled = true;
   }

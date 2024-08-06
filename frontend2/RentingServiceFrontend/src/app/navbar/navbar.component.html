@@ -16,14 +16,16 @@
             type="text"
             disabled="{{ navbar.inputsDisabled }}"
             placeholder="Wyszukaj..."
-            [(ngModel)]="navbar.search_value"
+            [(ngModel)]="sideNavbarService.filters.controls.searchPhrase.value"
           />
-          @if (navbar.search_value) {
+          @if (sideNavbarService.filters.controls.searchPhrase) {
           <button
             matSuffix
             mat-icon-button
             aria-label="Clear"
-            (click)="navbar.search_value = ''"
+            (click)="
+              sideNavbarService.filters.controls.searchPhrase.setValue('')
+            "
           >
             <mat-icon>close</mat-icon>
           </button>
