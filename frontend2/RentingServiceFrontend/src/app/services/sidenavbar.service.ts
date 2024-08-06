@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { postQuery } from '../interfaces/postQuery';
 import { FormControl, FormGroup } from '@angular/forms';
+import { viewValue } from '../interfaces/viewValue';
 
 @Injectable({
   providedIn: 'root',

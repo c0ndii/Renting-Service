@@ -1,5 +1,16 @@
 <mat-drawer-container class="sidenavbar-container" autosize>
-  <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">k </mat-drawer>
+  <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">
+    <mat-form-field>
+      <mat-label>Sortuj po:</mat-label>
+      <mat-select
+        [formControl]="this.sideNavbarService.filters.controls.sortBy"
+      >
+        <mat-option value="AddDate">Data dodania </mat-option>
+        <mat-option value="Price">Cena </mat-option>
+        <mat-option value="SquareFootage">Metraż </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-drawer>
 
   <button
     type="button"
