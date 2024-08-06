@@ -14,6 +14,7 @@ import { AuthService } from '../services/auth.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 import { SidenavbarService } from '../services/sidenavbar.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
@@ -30,6 +31,7 @@ import { SidenavbarService } from '../services/sidenavbar.service';
     CommonModule,
     MatMenuModule,
     MatDialogModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',

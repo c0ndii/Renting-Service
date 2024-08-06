@@ -10,6 +10,8 @@ export class SidenavbarService {
   postQuery = new BehaviorSubject<postQuery>({} as postQuery);
   filters = new FormGroup({
     searchPhrase: new FormControl(''),
+    pageNumber: new FormControl(1),
+    pageSize: new FormControl(10),
     sortBy: new FormControl('AddDate'),
     postType: new FormControl('rent'),
     sortDirection: new FormControl(1),
@@ -23,10 +25,32 @@ export class SidenavbarService {
     featureFilters: new FormControl<string[] | null>(null),
   });
 
-  constructor() {}
+  constructor() {
+    this.filters.valueChanges.subscribe(() => {
+      let queryFilters = {
+        searchPhrase: this.filters.controls.searchPhrase.value,
+        pageNumber: this.filters.controls.pageNumber.value,
+        pageSize: this.filters.controls.pageSize.value,
+        sortBy: this.filters.controls.sortBy.value,
+        postType: this.filters.controls.postType.value,
+        sortDirection: this.filters.controls.sortDirection.value,
+        minPrice: this.filters.controls.minPrice.value,
+        maxPrice: this.filters.controls.maxPrice.value,
+        minSquare: this.filters.controls.minSquare.value,
+        maxSquare: this.filters.controls.maxSquare.value,
+        minSleepingCount: this.filters.controls.minSleepingCount.value,
+        maxSleepingCount: this.filters.controls.maxSleepingCount.value,
+        mainCategory: this.filters.controls.mainCategory.value,
+        featureFilters: this.filters.controls.featureFilters.value,
+      } as postQuery;
+      this.postQuery.next(queryFilters);
+    });
+  }
 
   resetFilters(postType: string) {
     this.filters.controls.searchPhrase.setValue('');
+    this.filters.controls.pageNumber.setValue(1);
+    this.filters.controls.pageSize.setValue(10);
     this.filters.controls.sortBy.setValue('AddDate');
     this.filters.controls.postType.setValue(postType);
     this.filters.controls.sortDirection.setValue(1);

@@ -1,12 +1,13 @@
 <mat-drawer-container class="sidenavbar-container" autosize>
-  <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">
-    <button (click)="onClick()">Test</button>
-  </mat-drawer>
+  <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">k </mat-drawer>
 
-    <button type="button" class="sidenav-toggle-button" mat-button (click)="drawer.toggle()">
-      <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
-    </button>
-    <app-layout>
-      
-    </app-layout>
+  <button
+    type="button"
+    class="sidenav-toggle-button"
+    mat-button
+    (click)="drawer.toggle()"
+  >
+    <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
+  </button>
+  <app-layout> </app-layout>
 </mat-drawer-container>

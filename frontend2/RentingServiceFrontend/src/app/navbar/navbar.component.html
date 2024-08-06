@@ -14,9 +14,9 @@
           <input
             matInput
             type="text"
-            disabled="{{ navbar.inputsDisabled }}"
+            [disabled]="navbar.inputsDisabled"
             placeholder="Wyszukaj..."
-            [(ngModel)]="sideNavbarService.filters.controls.searchPhrase.value"
+            [formControl]="sideNavbarService.filters.controls.searchPhrase"
           />
           @if (sideNavbarService.filters.controls.searchPhrase) {
           <button

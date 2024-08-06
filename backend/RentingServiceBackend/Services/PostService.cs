@@ -510,11 +510,20 @@ namespace RentingServiceBackend.Services
                         .Take(query.PageSize);
                 var totalItemsCount = rentPostsList.Count;
                 var mappedResult = _mapper.Map<List<PostDto>>(result);
+                foreach (var post in mappedResult)
+                {
+                    post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                    var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                    if (File.Exists(path))
+                    {
+                        byte[] bytes = File.ReadAllBytes(path);
+                        string image = Convert.ToBase64String(bytes);
+                        post.Pictures.Add(image);
+                    }
+                }
                 return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
             } else
             {
-                if (String.Compare(query.PostType, "sale") == 0)
-                {
                     var salePosts = await GetSalePosts(query);
                     if (query.SortDirection == SortDirection.ASC)
                     {
@@ -530,36 +539,18 @@ namespace RentingServiceBackend.Services
                             .Take(query.PageSize);
                     var totalItemsCount = salePostsList.Count;
                     var mappedResult = _mapper.Map<List<PostDto>>(result);
-                    return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
-                } else
+                foreach (var post in mappedResult)
                 {
-                    var columnSelectorsDto = new Dictionary<string, Expression<Func<PostDto, object>>>
+                    post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                    var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                    if (File.Exists(path))
                     {
-                        { nameof(PostDto.AddDate), x => x.AddDate },
-                        { nameof(PostDto.Price), x => x.Price },
-                        { nameof(PostDto.SquareFootage), x => x.SquareFootage },
-                    };
-                    var selectedColumnDto = columnSelectorsDto[query.SortBy];
-                    var rentPosts = await GetRentPosts(query);
-                    var salePosts = await GetSalePosts(query);
-                    var rentPostsMapped = _mapper.Map<IQueryable<PostDto>>(rentPosts);
-                    var salePostsMapped = _mapper.Map<IQueryable<PostDto>>(salePosts);
-                    var posts = rentPostsMapped.Union(salePostsMapped);
-                    if (query.SortDirection == SortDirection.ASC)
-                    {
-                        posts.OrderBy(selectedColumnDto);
+                        byte[] bytes = File.ReadAllBytes(path);
+                        string image = Convert.ToBase64String(bytes);
+                        post.Pictures.Add(image);
                     }
-                    else
-                    {
-                        posts.OrderByDescending(selectedColumnDto);
-                    }
-                    var postsList = await posts.ToListAsync();
-                    var result = postsList
-                            .Skip(query.PageSize * (query.PageNumber - 1))
-                            .Take(query.PageSize);
-                    var totalItemsCount = postsList.Count;
-                    return new PageResult<PostDto>(result.ToList(), totalItemsCount, query.PageSize, query.PageNumber);
                 }
+                return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
             }
         }
         private async Task<IQueryable<ForRentPost>> GetRentPosts(PostQuery query)

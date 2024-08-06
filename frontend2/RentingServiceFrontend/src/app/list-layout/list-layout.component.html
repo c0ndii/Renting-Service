@@ -7,14 +7,17 @@
         <mat-button-toggle-group
           name="fontStyle"
           aria-label="Font Style"
-          [(ngModel)]="selectedValue"
+          [formControl]="sideNavbarService.filters.controls.postType"
           (change)="switchFilters()"
         >
           <mat-button-toggle value="rent"> Wynajmu</mat-button-toggle>
           <mat-button-toggle value="sell">Sprzedaży</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
-      <div class="post-list-holder" *ngIf="selectedValue === 'rent'">
+      <div
+        class="post-list-holder"
+        *ngIf="sideNavbarService.filters.controls.postType.value === 'rent'"
+      >
         <ul *ngFor="let post of rentPosts | async">
           <li (click)="redirectToRentPost(post.postId)">
             <div
@@ -47,7 +50,10 @@
           </li>
         </ul>
       </div>
-      <div class="post-list-holder" *ngIf="selectedValue === 'sell'">
+      <div
+        class="post-list-holder"
+        *ngIf="sideNavbarService.filters.controls.postType.value === 'sell'"
+      >
         <ul *ngFor="let post of salePosts | async">
           <li (click)="redirectToSalePost(post.postId)">
             <div
@@ -76,12 +82,15 @@
           </li>
         </ul>
       </div>
-      <mat-paginator
-        [length]="length | async"
-        [pageSize]="pageSize | async"
-        [pageIndex]="pageNumber | async"
-        (page)="getPostsFilters(this.selectedValue)"
-      ></mat-paginator>
+      <div *ngIf="sideNavbarService.postQuery | async as postQuery">
+        <mat-paginator
+          *ngIf="length | async as len"
+          [length]="len"
+          [pageSize]="postQuery.pageSize"
+          [pageIndex]="postQuery.pageNumber - 1"
+          (page)="pageChanged($event)"
+        ></mat-paginator>
+      </div>
     </div>
   </div>
   } @loading (; minimum 1.5s) {

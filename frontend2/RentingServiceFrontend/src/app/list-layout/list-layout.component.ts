@@ -22,8 +22,13 @@ import { SnackbarService } from '../services/snackbar.service';
 import { postDto } from '../interfaces/postDto';
 import { SidenavbarService } from '../services/sidenavbar.service';
 import { postQuery } from '../interfaces/postQuery';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { pageResult } from '../interfaces/pageResult';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-list-layout',
@@ -42,6 +47,7 @@ import { pageResult } from '../interfaces/pageResult';
     CommonModule,
     MatChipsModule,
     MatPaginatorModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './list-layout.component.html',
   styleUrl: './list-layout.component.scss',
@@ -54,140 +60,87 @@ export class ListLayoutComponent implements OnInit {
     private navbar: NavbarService,
     private http: HttpClient,
     private snackbar: SnackbarService,
-    private sideNavbarService: SidenavbarService
+    protected sideNavbarService: SidenavbarService
   ) {}
   rentPosts = new BehaviorSubject<postDto[]>([]);
   salePosts = new BehaviorSubject<postDto[]>([]);
-  length = new BehaviorSubject<number>(10);
 
-  pageNumber = new BehaviorSubject<number>(0);
-  pageSize = new BehaviorSubject<number>(10);
-
-  selectedValue: string = 'rent';
+  length = new BehaviorSubject<number | null>(null);
   ngOnInit(): void {
     this.switchFilters();
+    this.sideNavbarService.postQuery.subscribe(() => {
+      this.getPostsFilters();
+    });
   }
 
   switchFilters() {
     this.length.next(1);
-    this.pageNumber.next(0);
-    this.pageSize.next(10);
-    if (this.selectedValue == 'rent') {
-      this.sideNavbarService.resetFilters(this.selectedValue);
-      let filters = {
-        searchPhrase: this.sideNavbarService.searchPhrase.value,
-        pageNumber: this.pageNumber.value,
-        pageSize: this.pageSize.value,
-        postType: this.selectedValue,
-        sortBy: this.sideNavbarService.sortBy.value,
-        sortDirection: this.sideNavbarService.sortDirection.value,
-        minPrice: this.sideNavbarService.minPrice.value,
-        maxPrice: this.sideNavbarService.maxPrice.value,
-        minSquare: this.sideNavbarService.minSquare.value,
-        maxSquare: this.sideNavbarService.maxSquare.value,
-        minSleepingCount: this.sideNavbarService.minSleepingCount.value,
-        maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
-        mainCategory: this.sideNavbarService.mainCategory.value,
-        featureFilters: this.sideNavbarService.featureFilters.value,
-      } as postQuery;
-
-      this.getRentPosts(filters).subscribe((response) => {
-        this.length.next(response.totalPages);
-        this.rentPosts.next(response.items);
-      });
+    if (this.sideNavbarService.filters.controls.postType.value === 'rent') {
+      this.sideNavbarService.resetFilters(
+        this.sideNavbarService.filters.controls.postType.value
+      );
+      this.getRentPosts(this.sideNavbarService.postQuery.value).subscribe(
+        (response) => {
+          this.length.next(response.totalPages);
+          this.rentPosts.next(response.items);
+        }
+      );
     } else {
-      this.sideNavbarService.resetFilters(this.selectedValue);
-      let filters = {
-        searchPhrase: this.sideNavbarService.searchPhrase.value,
-        pageNumber: this.pageNumber.value,
-        pageSize: this.pageSize.value,
-        postType: this.selectedValue,
-        sortBy: this.sideNavbarService.sortBy.value,
-        sortDirection: this.sideNavbarService.sortDirection.value,
-        minPrice: this.sideNavbarService.minPrice.value,
-        maxPrice: this.sideNavbarService.maxPrice.value,
-        minSquare: this.sideNavbarService.minSquare.value,
-        maxSquare: this.sideNavbarService.maxSquare.value,
-        minSleepingCount: this.sideNavbarService.minSleepingCount.value,
-        maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
-        mainCategory: this.sideNavbarService.mainCategory.value,
-        featureFilters: this.sideNavbarService.featureFilters.value,
-      } as postQuery;
-
-      this.getSalePosts(filters).subscribe((response) => {
-        this.length.next(response.totalPages);
-        this.salePosts.next(response.items);
-      });
+      this.sideNavbarService.resetFilters(
+        this.sideNavbarService.filters.controls.postType.value!
+      );
+      this.getSalePosts(this.sideNavbarService.postQuery.value).subscribe(
+        (response) => {
+          this.length.next(response.totalItemsCount);
+          this.salePosts.next(response.items);
+        }
+      );
     }
   }
 
-  getPostsFilters(e: any) {
-    this.pageNumber.next(e.pageIndex);
-    if (this.selectedValue === 'rent') {
+  pageChanged(event: PageEvent) {
+    this.sideNavbarService.filters.controls.pageNumber.setValue(
+      event.pageIndex + 1
+    );
+  }
+
+  getPostsFilters() {
+    if (this.sideNavbarService.postQuery.value.postType === 'rent') {
       this.getRentPostsFilters();
     } else {
-      this.gerSalePostsFilters();
+      this.getSalePostsFilters();
     }
   }
 
   getRentPostsFilters() {
-    let filters = {
-      searchPhrase: this.sideNavbarService.searchPhrase.value,
-      pageNumber: this.pageNumber.value,
-      pageSize: this.pageSize.value,
-      postType: 'rent',
-      sortBy: this.sideNavbarService.sortBy.value,
-      sortDirection: this.sideNavbarService.sortDirection.value,
-      minPrice: this.sideNavbarService.minPrice.value,
-      maxPrice: this.sideNavbarService.maxPrice.value,
-      minSquare: this.sideNavbarService.minSquare.value,
-      maxSquare: this.sideNavbarService.maxSquare.value,
-      minSleepingCount: this.sideNavbarService.minSleepingCount.value,
-      maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
-      mainCategory: this.sideNavbarService.mainCategory.value,
-      featureFilters: this.sideNavbarService.featureFilters.value,
-    } as postQuery;
-
-    this.getRentPosts(filters).subscribe((response) => {
-      this.length.next(response.totalPages);
-      this.rentPosts.next(response.items);
-    });
+    this.getRentPosts(this.sideNavbarService.postQuery.value).subscribe(
+      (response) => {
+        this.length.next(response.totalItemsCount);
+        this.rentPosts.next(response.items);
+      }
+    );
   }
 
-  gerSalePostsFilters() {
-    let filters = {
-      searchPhrase: this.sideNavbarService.searchPhrase.value,
-      pageNumber: this.pageNumber.value,
-      pageSize: this.pageSize.value,
-      postType: 'sale',
-      sortBy: this.sideNavbarService.sortBy.value,
-      sortDirection: this.sideNavbarService.sortDirection.value,
-      minPrice: this.sideNavbarService.minPrice.value,
-      maxPrice: this.sideNavbarService.maxPrice.value,
-      minSquare: this.sideNavbarService.minSquare.value,
-      maxSquare: this.sideNavbarService.maxSquare.value,
-      minSleepingCount: this.sideNavbarService.minSleepingCount.value,
-      maxSleepingCount: this.sideNavbarService.maxSleepingCount.value,
-      mainCategory: this.sideNavbarService.mainCategory.value,
-      featureFilters: this.sideNavbarService.featureFilters.value,
-    } as postQuery;
-
-    this.getSalePosts(filters).subscribe((response) => {
-      this.length.next(response.totalPages);
-      this.salePosts.next(response.items);
-    });
+  getSalePostsFilters() {
+    this.getSalePosts(this.sideNavbarService.postQuery.value).subscribe(
+      (response) => {
+        this.length.next(response.totalItemsCount);
+        this.salePosts.next(response.items);
+      }
+    );
   }
 
   prepareFilterUrl(filters: postQuery) {
     let query: string = '';
-    if (filters.searchPhrase !== null && filters.searchPhrase.length >= 0) {
+    if (filters.searchPhrase !== null && filters.searchPhrase.length > 0) {
       query += '?SearchPhrase=' + filters.searchPhrase;
     }
     if (query.length <= 0) {
       query += '?PageNumber=' + filters.pageNumber;
     } else {
-      query += '&PageSize=' + filters.pageSize;
+      query += '&PageNumber=' + filters.pageNumber;
     }
+    query += '&PageSize=' + filters.pageSize;
     if (filters.sortBy === null) {
       query += '&SortBy=AddDate';
     } else {
