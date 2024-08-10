@@ -14,7 +14,7 @@ namespace RentingServiceBackend.Models
         public string Lat { get; set; }
         public string Lng { get; set; }
         public List<string> Features { get; set; }
-        public List<string> Categories { get; set; }
+        //public List<string> Categories { get; set; }
         public string BuildingNumber { get; set; }
         public string Street { get; set; }
         public string District { get; set; }

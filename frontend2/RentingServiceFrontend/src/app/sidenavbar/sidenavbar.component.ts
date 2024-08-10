@@ -17,6 +17,7 @@ import { NavbarService } from '../services/navbar.service';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sidenavbar',
@@ -39,11 +40,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 export class SidenavbarComponent implements OnInit {
   constructor(
     protected sideNavbarService: SidenavbarService,
-    private navbarService: NavbarService
+    private navbarService: NavbarService,
+    private http: HttpClient
   ) {}
-  sortBy: string = 'AddDate';
-  ngOnInit(): void {}
-  updateSortBy(value: string) {
-    this.sideNavbarService.filters.controls.sortBy.setValue(value);
+  featureList = new BehaviorSubject<string[]>([]);
+
+  ngOnInit(): void {
+    this.getFeatureFilters().subscribe((res) => {
+      this.featureList.next(res);
+    });
+  }
+
+  getFeatureFilters(): Observable<string[]> {
+    return this.http.get<string[]>(backendUrlBase + 'feature');
   }
 }

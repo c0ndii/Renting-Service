@@ -74,7 +74,6 @@ export class ListLayoutComponent implements OnInit {
   }
 
   switchFilters() {
-    this.length.next(1);
     if (this.sideNavbarService.filters.controls.postType.value === 'rent') {
       this.sideNavbarService.resetFilters(
         this.sideNavbarService.filters.controls.postType.value

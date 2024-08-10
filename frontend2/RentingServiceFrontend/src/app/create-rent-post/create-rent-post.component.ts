@@ -36,6 +36,7 @@ import {
 import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { NavbarService } from '../services/navbar.service';
 import { AuthService } from '../services/auth.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-rent-post',
@@ -85,7 +86,7 @@ export class CreateRentPostComponent implements OnInit {
   ]);
   squareFootage = new FormControl(1, [Validators.required, Validators.min(1)]);
   price = new FormControl(1, [Validators.required, Validators.min(1)]);
-  features = new FormControl('', [Validators.required]);
+  features = new FormControl<string[] | null>(null);
   categories = new FormControl('', [Validators.required]);
   topImages: string[] = [];
   bottomImages: string[] = [];
@@ -122,11 +123,20 @@ export class CreateRentPostComponent implements OnInit {
     this.selectedRentMainCategory = 'Mieszkanie';
   }
 
+  featureList = new BehaviorSubject<string[]>([]);
+
+  getFeatureFilters(): Observable<string[]> {
+    return this.http.get<string[]>(backendUrlBase + 'feature');
+  }
+
   ngOnInit(): void {
     this.navbar.disableInputs();
     if (!this.authService.userLogged()) {
       this.router.navigate(['/login']);
     }
+    this.getFeatureFilters().subscribe((res) => {
+      this.featureList.next(res);
+    });
   }
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -278,8 +288,7 @@ export class CreateRentPostComponent implements OnInit {
     this.postDto.SleepingPlaceCount = this.sleepingPlaceCount.value!;
     this.postDto.Price = this.price.value!;
     this.postDto.SquareFootage = this.squareFootage.value!;
-    this.postDto.Features = ['Klimatyzacja'];
-    this.postDto.Categories = ['es'];
+    this.postDto.Features = this.features.value!;
     this.data = new FormData();
     if (this.topImages.length < 1) {
       this.snackbarService.openSnackbar('Nie wybrano zdjęcia', 'Error');

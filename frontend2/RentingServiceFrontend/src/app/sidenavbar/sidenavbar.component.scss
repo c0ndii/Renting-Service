@@ -22,3 +22,12 @@
   box-sizing: border-box;
   cursor: pointer;
 }
+.double {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+mat-form-field {
+  margin: 10px;
+}

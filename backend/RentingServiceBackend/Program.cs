@@ -81,6 +81,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IMainCategoryService, MainCategoryService>();
+builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 builder.Services.AddCors((options) =>

@@ -102,6 +102,15 @@
             </mat-form-field>
             <br />
             <br />
+            <mat-form-field *ngIf="featureList | async as featuresL">
+              <mat-label>Udogodnienia</mat-label>
+              <mat-select [formControl]="features" multiple>
+                @for (filter of featuresL; track filter) {
+                <mat-option [value]="filter">{{ filter }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <br /><br />
           </div>
           <div class="map-content">
             <div
