@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-sidenavbar',
@@ -35,12 +36,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
     MatInputModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatButtonToggleModule,
   ],
 })
 export class SidenavbarComponent implements OnInit {
   constructor(
     protected sideNavbarService: SidenavbarService,
-    private navbarService: NavbarService,
+    protected navbarService: NavbarService,
     private http: HttpClient
   ) {}
   featureList = new BehaviorSubject<string[]>([]);

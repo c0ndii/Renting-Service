@@ -184,11 +184,15 @@ export class ListLayoutComponent implements OnInit {
 
   getRentPosts(filters: postQuery): Observable<pageResult> {
     let query = this.prepareFilterUrl(filters);
-    return this.http.get<pageResult>(backendUrlBase + 'post/posts' + query);
+    return this.http.get<pageResult>(
+      backendUrlBase + 'post/posts/list' + query
+    );
   }
   getSalePosts(filters: postQuery): Observable<pageResult> {
     let query = this.prepareFilterUrl(filters);
-    return this.http.get<pageResult>(backendUrlBase + 'post/posts' + query);
+    return this.http.get<pageResult>(
+      backendUrlBase + 'post/posts/list' + query
+    );
   }
   redirectToRentPost(postId: number) {
     this.router.navigate(['rentpost', postId]);

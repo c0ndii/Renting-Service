@@ -122,10 +122,16 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.ToggleFollow(postId);
             return Ok(result);
         }
-        [HttpGet("posts")]
-        public async Task<IActionResult> GetAllPosts([FromQuery] PostQuery query)
+        [HttpGet("posts/list")]
+        public async Task<IActionResult> GetAllPostsList([FromQuery] PostQuery query)
         {
-            var result = await _postService.GetAllPosts(query);
+            var result = await _postService.GetAllPostsList(query);
+            return Ok(result);
+        }
+        [HttpGet("posts/map")]
+        public async Task<IActionResult> GetAllPostsMap([FromQuery] PostQueryMap query)
+        {
+            var result = await _postService.GetAllPostsMap(query);
             return Ok(result);
         }
     }

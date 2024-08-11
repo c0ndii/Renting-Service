@@ -8,8 +8,8 @@
         public float Price { get; set; }
         public float SquareFootage { get; set; }
         public string PicturesPath { get; set; }
-        public string Lat { get; set; }
-        public string Lng {  get; set; }
+        public double Lat { get; set; }
+        public double Lng {  get; set; }
         public string BuildingNumber {  get; set; }
         public string Street {  get; set; }
         public string District {  get; set; }

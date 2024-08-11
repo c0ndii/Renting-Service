@@ -1,6 +1,15 @@
 <mat-drawer-container class="sidenavbar-container" autosize>
   <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">
-    <mat-form-field>
+    <mat-button-toggle-group
+      *ngIf="this.navbarService.selectedValue.value === 'map'"
+      name="fontStyle"
+      aria-label="Font Style"
+      [formControl]="sideNavbarService.filters.controls.postType"
+    >
+      <mat-button-toggle value="rent">Wynajem</mat-button-toggle>
+      <mat-button-toggle value="sell">Sprzedaż</mat-button-toggle>
+    </mat-button-toggle-group>
+    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
       <mat-label>Sortuj po:</mat-label>
       <mat-select
         [formControl]="this.sideNavbarService.filters.controls.sortBy"
@@ -10,7 +19,7 @@
         <mat-option value="SquareFootage">Metraż </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field>
+    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
       <mat-label>Kierunek sortowania:</mat-label>
       <mat-select
         [formControl]="this.sideNavbarService.filters.controls.sortDirection"

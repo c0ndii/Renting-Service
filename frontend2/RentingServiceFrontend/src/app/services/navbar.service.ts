@@ -9,7 +9,7 @@ import { userDto } from '../interfaces/userDto';
   providedIn: 'root',
 })
 export class NavbarService {
-  private selectedValue = new BehaviorSubject<string>('map');
+  selectedValue = new BehaviorSubject<string>('map');
   constructor(
     protected authService: AuthService,
     protected snackbar: SnackbarService,

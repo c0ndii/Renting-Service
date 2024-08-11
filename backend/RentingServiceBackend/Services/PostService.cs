@@ -25,7 +25,8 @@ namespace RentingServiceBackend.Services
         Task<List<ForRentPostDto>> GetUserFollowedRentPosts();
         Task<List<ForSalePostDto>> GetUserFollowedSalePosts();
         Task<bool> ToggleFollow(int postId);
-        Task<PageResult<PostDto>> GetAllPosts(PostQuery query);
+        Task<PageResult<PostDto>> GetAllPostsList(PostQuery query);
+        Task<PageResult<PostDto>> GetAllPostsMap(PostQueryMap query);
     }
 
     public class PostService : IPostService
@@ -115,10 +116,10 @@ namespace RentingServiceBackend.Services
                 District = dto.District,
                 City = dto.City,
                 Country = dto.Country,
-                Lat = dto.Lat,
+                Lat = Double.Parse(dto.Lat.Replace(".",",")),
                 Price = dto.Price,
                 SquareFootage = dto.SquareFootage,
-                Lng = dto.Lng,
+                Lng = Double.Parse(dto.Lng.Replace(".", ",")),
                 AddDate = DateTime.Now,
                 FollowedBy = new List<User>(),
                 Reservations = new List<Reservation>(),
@@ -159,8 +160,8 @@ namespace RentingServiceBackend.Services
                 Price = dto.Price,
                 SquareFootage = dto.SquareFootage,
                 Country = dto.Country,
-                Lat = dto.Lat,
-                Lng = dto.Lng,
+                Lat = Double.Parse(dto.Lat.Replace(".", ",")),
+                Lng = Double.Parse(dto.Lng.Replace(".", ",")),
                 AddDate = DateTime.Now,
                 FollowedBy = new List<User>(),
                 User = user
@@ -357,8 +358,8 @@ namespace RentingServiceBackend.Services
                 post.Price = dto.Price;
                 post.SquareFootage = dto.SquareFootage;
                 post.PicturesPath = dto.PicturesPath;
-                post.Lat = dto.Lat;
-                post.Lng = dto.Lng;
+                post.Lat = Double.Parse(dto.Lat.Replace(".", ","));
+                post.Lng = Double.Parse(dto.Lng.Replace(".", ","));
                 post.Features = await _context.Features.Where(x => dto.Features.Contains(x.FeatureName) && !post.Features.Contains(x)).ToListAsync();
 
                 post.BuildingNumber = dto.BuildingNumber;
@@ -384,8 +385,8 @@ namespace RentingServiceBackend.Services
                 post.Price = dto.Price;
                 post.SquareFootage = dto.SquareFootage;
                 post.PicturesPath = dto.PicturesPath;
-                post.Lat = dto.Lat;
-                post.Lng = dto.Lng;
+                post.Lat = Double.Parse(dto.Lat.Replace(".", ","));
+                post.Lng = Double.Parse(dto.Lng.Replace(".", ","));
                 post.BuildingNumber = dto.BuildingNumber;
                 post.Street = dto.Street;
                 post.District = dto.District;
@@ -484,7 +485,7 @@ namespace RentingServiceBackend.Services
             var result = await _context.Posts.Include(x => x.FollowedBy).AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user));
             return result;
         }
-        public async Task<PageResult<PostDto>> GetAllPosts(PostQuery query) 
+        public async Task<PageResult<PostDto>> GetAllPostsList(PostQuery query) 
         {
             if (String.Compare(query.PostType, "rent") == 0)
             {
@@ -646,6 +647,106 @@ namespace RentingServiceBackend.Services
                 }
             }
             return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
+        }
+
+        public async Task<PageResult<PostDto>> GetAllPostsMap(PostQueryMap query)
+        {
+            if (String.Compare(query.PostType, "rent") == 0)
+            {
+                var rentPosts = await GetRentPostsMap(query);
+
+                return rentPosts;
+            }
+            else
+            {
+                var salePosts = await GetSalePostsMap(query);
+                return salePosts;
+            }
+        }
+
+        private async Task<PageResult<PostDto>> GetRentPostsMap(PostQueryMap query)
+        {
+            var rentPosts = await _context.ForRentPosts
+                .Include(x => x.Features)
+                .Include(x => x.User)
+                .Include(x => x.MainCategory)
+                .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                && (query.FeatureFilters.IsNullOrEmpty()
+                || x.Features.Any(y => query.FeatureFilters.Contains(y.FeatureName)))
+                && (!query.MinPrice.HasValue
+                || x.Price >= query.MinPrice)
+                && (!query.MaxPrice.HasValue
+                || x.Price <= query.MaxPrice)
+                && (!query.MinSquare.HasValue
+                || x.SquareFootage >= query.MinSquare)
+                && (!query.MaxSquare.HasValue
+                || x.SquareFootage <= query.MaxSquare)
+                && (!query.MinSleepingCount.HasValue
+                || x.SleepingPlaceCount >= query.MinSleepingCount)
+                && (!query.MaxSleepingCount.HasValue
+                || x.SleepingPlaceCount <= query.MaxSleepingCount)
+                && (query.MainCategory.IsNullOrEmpty()
+                || x.MainCategory.MainCategoryName == query.MainCategory)
+                && x.Confirmed == true
+                && x.Lat <= Double.Parse(query.NorthEastLat.Replace(".", ","))
+                && x.Lat >= Double.Parse(query.SouthWestLat.Replace(".", ","))
+                && x.Lng <= Double.Parse(query.NorthEastLng.Replace(".", ","))
+                && x.Lng >= Double.Parse(query.SouthWestLng.Replace(".", ","))
+                ).ToListAsync();
+            var mappedResult = _mapper.Map<List<PostDto>>(rentPosts);
+            foreach (var post in mappedResult)
+            {
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return new PageResult<PostDto>(mappedResult, 0, 0, 0);
+        }
+        private async Task<PageResult<PostDto>> GetSalePostsMap(PostQueryMap query)
+        {
+            var salePosts = await _context.ForSalePosts
+                .Include(x => x.User)
+                .Include(x => x.MainCategory)
+                .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                && (!query.MinPrice.HasValue
+                || x.Price >= query.MinPrice)
+                && (!query.MaxPrice.HasValue
+                || x.Price <= query.MaxPrice)
+                && (!query.MinSquare.HasValue
+                || x.SquareFootage >= query.MinSquare)
+                && (!query.MaxSquare.HasValue
+                || x.SquareFootage <= query.MaxSquare)
+                && (query.MainCategory.IsNullOrEmpty()
+                || x.MainCategory.MainCategoryName == query.MainCategory)
+                && x.Confirmed == true 
+                && x.Lat <= Double.Parse(query.NorthEastLat.Replace(".", ","))
+                && x.Lat >= Double.Parse(query.SouthWestLat.Replace(".", ","))
+                && x.Lng <= Double.Parse(query.NorthEastLng.Replace(".", ","))
+                && x.Lng >= Double.Parse(query.SouthWestLng.Replace(".", ","))
+                ).ToListAsync();
+
+            var mappedResult = _mapper.Map<List<PostDto>>(salePosts);
+            foreach (var post in mappedResult)
+            {
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return new PageResult<PostDto>(mappedResult, 0, 0, 0);
         }
     }
 }
