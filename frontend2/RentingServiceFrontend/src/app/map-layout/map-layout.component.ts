@@ -17,11 +17,18 @@ import { pageResult } from '../interfaces/pageResult';
 import { SidenavbarService } from '../services/sidenavbar.service';
 import { postDto } from '../interfaces/postDto';
 import { postQueryMap } from '../interfaces/postQueryMap';
+import { LeafletMarkerClusterModule } from '../marker-cluster/leaflet-markercluster.module';
 
 @Component({
   selector: 'app-map-layout',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, CommonModule, LeafletModule],
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    CommonModule,
+    LeafletModule,
+    LeafletMarkerClusterModule,
+  ],
   templateUrl: './map-layout.component.html',
   styleUrl: './map-layout.component.scss',
 })
@@ -47,10 +54,22 @@ export class MapLayoutComponent implements OnInit {
     center: new Leaflet.LatLng(52.13, 21.0),
   };
 
+  markerClusterGroup: Leaflet.MarkerClusterGroup =
+    new Leaflet.MarkerClusterGroup({
+      animate: true,
+      animateAddingMarkers: true,
+    });
+  markerClusterData: Leaflet.Marker[] = [];
+  markerClusterOptions!: Leaflet.MarkerClusterGroupOptions;
+
   ngOnInit(): void {
     this.switchFilters();
     this.boundaries.subscribe((res) => {
-      if (res && res.getNorthEast() && res.getSouthWest()) {
+      if (
+        res &&
+        typeof res.getNorthEast() !== undefined &&
+        res.getSouthWest()
+      ) {
         let tmp = this.sideNavbarService.postQueryMap.value;
         tmp.northEastLat = res.getNorthEast().lat.toString();
         tmp.northEastLng = res.getNorthEast().lng.toString();
@@ -63,7 +82,8 @@ export class MapLayoutComponent implements OnInit {
       this.getPostsFilters();
     });
     this.rentPosts.subscribe((res) => {
-      this.markersLayer.clearLayers();
+      this.markerClusterData = [];
+      this.markerClusterGroup.clearLayers();
       res.forEach((post) => {
         let marker = new Leaflet.Marker(
           new Leaflet.LatLng(
@@ -71,12 +91,14 @@ export class MapLayoutComponent implements OnInit {
             +post.lng.replace(',', '.')
           )
         );
-        this.markersLayer.addLayer(marker);
-        this.map.addLayer(this.markersLayer);
+        this.markerClusterData.push(marker);
+        // this.map.addLayer(this.markersLayer);
       });
+      this.markerClusterGroup.addLayers(this.markerClusterData);
     });
     this.salePosts.subscribe((res) => {
-      this.markersLayer.clearLayers();
+      this.markerClusterData = [];
+      this.markerClusterGroup.clearLayers();
       res.forEach((post) => {
         let marker = new Leaflet.Marker(
           new Leaflet.LatLng(
@@ -84,10 +106,15 @@ export class MapLayoutComponent implements OnInit {
             +post.lng.replace(',', '.')
           )
         );
-        this.markersLayer.addLayer(marker);
-        this.map.addLayer(this.markersLayer);
+        this.markerClusterData.push(marker);
+        //this.map.addLayer(this.markersLayer);
       });
+      this.markerClusterGroup.addLayers(this.markerClusterData);
     });
+  }
+
+  markerClusterReady(group: Leaflet.MarkerClusterGroup) {
+    this.markerClusterGroup = group;
   }
 
   markersLayer = new Leaflet.LayerGroup();
