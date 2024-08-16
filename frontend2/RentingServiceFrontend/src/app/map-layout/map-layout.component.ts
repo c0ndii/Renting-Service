@@ -70,6 +70,7 @@ export class MapLayoutComponent implements OnInit {
         typeof res.getNorthEast() !== undefined &&
         res.getSouthWest()
       ) {
+        this.map.closePopup();
         let tmp = this.sideNavbarService.postQueryMap.value;
         tmp.northEastLat = res.getNorthEast().lat.toString();
         tmp.northEastLng = res.getNorthEast().lng.toString();
@@ -82,7 +83,7 @@ export class MapLayoutComponent implements OnInit {
       this.getPostsFilters();
     });
     this.rentPosts.subscribe((res) => {
-      this.markerClusterData = [];
+      // this.markerClusterData = [];
       this.markerClusterGroup.clearLayers();
       res.forEach((post) => {
         let marker = new Leaflet.Marker(
@@ -91,13 +92,16 @@ export class MapLayoutComponent implements OnInit {
             +post.lng.replace(',', '.')
           )
         );
-        this.markerClusterData.push(marker);
+        // this.markerClusterData.push(marker);
+        this.markerClusterGroup
+          .addLayer(marker)
+          .bindPopup('essa' + post.postId);
         // this.map.addLayer(this.markersLayer);
       });
-      this.markerClusterGroup.addLayers(this.markerClusterData);
+      // this.markerClusterGroup.addLayers(this.markerClusterData);
     });
     this.salePosts.subscribe((res) => {
-      this.markerClusterData = [];
+      // this.markerClusterData = [];
       this.markerClusterGroup.clearLayers();
       res.forEach((post) => {
         let marker = new Leaflet.Marker(
@@ -106,10 +110,13 @@ export class MapLayoutComponent implements OnInit {
             +post.lng.replace(',', '.')
           )
         );
-        this.markerClusterData.push(marker);
+        // this.markerClusterData.push(marker);
+        this.markerClusterGroup
+          .addLayer(marker)
+          .bindPopup('essa' + post.postId);
         //this.map.addLayer(this.markersLayer);
       });
-      this.markerClusterGroup.addLayers(this.markerClusterData);
+      // this.markerClusterGroup.addLayers(this.markerClusterData);
     });
   }
 
