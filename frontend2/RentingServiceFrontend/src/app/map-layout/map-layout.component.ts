@@ -91,11 +91,18 @@ export class MapLayoutComponent implements OnInit {
             +post.lat.replace(',', '.'),
             +post.lng.replace(',', '.')
           )
+        ).bindPopup(
+          '<h1>' +
+            post.title +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden;"><img src="data:image/png;base64,' +
+            post.pictures[0] +
+            '" style="width: 200px; height: 200px;" /></div><a href=http://localhost:4200/rentpost/' +
+            post.postId +
+            '> Klikaj </a>'
         );
         // this.markerClusterData.push(marker);
-        this.markerClusterGroup
-          .addLayer(marker)
-          .bindPopup('essa' + post.postId);
+        this.markerClusterGroup.addLayer(marker);
+
         // this.map.addLayer(this.markersLayer);
       });
       // this.markerClusterGroup.addLayers(this.markerClusterData);
@@ -109,11 +116,18 @@ export class MapLayoutComponent implements OnInit {
             +post.lat.replace(',', '.'),
             +post.lng.replace(',', '.')
           )
+        ).bindPopup(
+          '<h1>' +
+            post.title +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden;"><img src="data:image/png;base64,' +
+            post.pictures[0] +
+            '" style="width: 200px; height: 200px;" /></div><a href=http://localhost:4200/salepost/' +
+            post.postId +
+            '> Klikaj </a>'
         );
         // this.markerClusterData.push(marker);
-        this.markerClusterGroup
-          .addLayer(marker)
-          .bindPopup('essa' + post.postId);
+        this.markerClusterGroup.addLayer(marker);
+
         //this.map.addLayer(this.markersLayer);
       });
       // this.markerClusterGroup.addLayers(this.markerClusterData);

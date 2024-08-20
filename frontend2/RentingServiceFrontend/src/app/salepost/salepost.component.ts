@@ -55,9 +55,15 @@ export class SalepostComponent implements OnInit, OnDestroy {
     this.mapLoaded.subscribe((loaded) => {
       if (loaded) {
         this.post.asObservable().subscribe((data) => {
-          this.map.setView([Number(data.lat), Number(data.lng)], 16);
+          this.map.setView(
+            [+data.lat.replace(',', '.'), +data.lng.replace(',', '.')],
+            16
+          );
           let marker = new Leaflet.Marker(
-            new Leaflet.LatLng(Number(data.lat), Number(data.lng))
+            new Leaflet.LatLng(
+              +data.lat.replace(',', '.'),
+              +data.lng.replace(',', '.')
+            )
           );
           marker.addTo(this.map);
         });
