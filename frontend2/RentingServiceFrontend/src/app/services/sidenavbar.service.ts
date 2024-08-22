@@ -40,21 +40,29 @@ export class SidenavbarService {
     maxSleepingCount: new FormControl<number | null>(null),
     mainCategory: new FormControl<string | null>(null),
     featureFilters: new FormControl<string[] | null>(null),
+    northEastLat: new FormControl<string | null>(null),
+    northEastLng: new FormControl<string | null>(null),
+    southWestLat: new FormControl<string | null>(null),
+    southWestLng: new FormControl<string | null>(null),
   });
 
   constructor() {
     this.filtersMap.valueChanges.subscribe(() => {
       let queryFiltersMap = {
-        searchPhrase: this.filters.controls.searchPhrase.value,
-        postType: this.filters.controls.postType.value,
-        minPrice: this.filters.controls.minPrice.value,
-        maxPrice: this.filters.controls.maxPrice.value,
-        minSquare: this.filters.controls.minSquare.value,
-        maxSquare: this.filters.controls.maxSquare.value,
-        minSleepingCount: this.filters.controls.minSleepingCount.value,
-        maxSleepingCount: this.filters.controls.maxSleepingCount.value,
-        mainCategory: this.filters.controls.mainCategory.value,
-        featureFilters: this.filters.controls.featureFilters.value,
+        searchPhrase: this.filtersMap.controls.searchPhrase.value,
+        postType: this.filtersMap.controls.postType.value,
+        minPrice: this.filtersMap.controls.minPrice.value,
+        maxPrice: this.filtersMap.controls.maxPrice.value,
+        minSquare: this.filtersMap.controls.minSquare.value,
+        maxSquare: this.filtersMap.controls.maxSquare.value,
+        minSleepingCount: this.filtersMap.controls.minSleepingCount.value,
+        maxSleepingCount: this.filtersMap.controls.maxSleepingCount.value,
+        mainCategory: this.filtersMap.controls.mainCategory.value,
+        featureFilters: this.filtersMap.controls.featureFilters.value,
+        northEastLat: this.filtersMap.controls.northEastLat.value,
+        northEastLng: this.filtersMap.controls.northEastLng.value,
+        southWestLat: this.filtersMap.controls.southWestLat.value,
+        southWestLng: this.filtersMap.controls.southWestLng.value,
       } as postQueryMap;
       this.postQueryMap.next(queryFiltersMap);
     });

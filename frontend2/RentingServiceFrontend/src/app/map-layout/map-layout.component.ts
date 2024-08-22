@@ -12,7 +12,6 @@ import { forRentPostDto } from '../interfaces/forRentPostDto';
 import { forSalePostDto } from '../interfaces/forSalePostDto';
 import { HttpClient } from '@angular/common/http';
 import { backendUrlBase } from '../appsettings/constant';
-import { postQuery } from '../interfaces/postQuery';
 import { pageResult } from '../interfaces/pageResult';
 import { SidenavbarService } from '../services/sidenavbar.service';
 import { postDto } from '../interfaces/postDto';
@@ -64,21 +63,6 @@ export class MapLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.switchFilters();
-    this.boundaries.subscribe((res) => {
-      if (
-        res &&
-        typeof res.getNorthEast() !== undefined &&
-        res.getSouthWest()
-      ) {
-        this.map.closePopup();
-        let tmp = this.sideNavbarService.postQueryMap.value;
-        tmp.northEastLat = res.getNorthEast().lat.toString();
-        tmp.northEastLng = res.getNorthEast().lng.toString();
-        tmp.southWestLat = res.getSouthWest().lat.toString();
-        tmp.southWestLng = res.getSouthWest().lng.toString();
-        this.sideNavbarService.postQueryMap.next(tmp);
-      }
-    });
     this.sideNavbarService.postQueryMap.subscribe(() => {
       this.getPostsFilters();
     });
@@ -94,11 +78,15 @@ export class MapLayoutComponent implements OnInit {
         ).bindPopup(
           '<h1>' +
             post.title +
-            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden;"><img src="data:image/png;base64,' +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
             post.pictures[0] +
-            '" style="width: 200px; height: 200px;" /></div><a href=http://localhost:4200/rentpost/' +
+            '" style="width: 200px; height: 200px;" /></div><div style="display: flex; flex-direction: column"><div><h3>Cena: ' +
+            post.price +
+            ' pln</h3></div><div><h3>Metraż: ' +
+            post.squareFootage +
+            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; border-radius: 0.65rem" href=http://localhost:4200/rentpost/' +
             post.postId +
-            '> Klikaj </a>'
+            '> Przejdź do posta </a></h2></div>'
         );
         // this.markerClusterData.push(marker);
         this.markerClusterGroup.addLayer(marker);
@@ -108,8 +96,8 @@ export class MapLayoutComponent implements OnInit {
       // this.markerClusterGroup.addLayers(this.markerClusterData);
     });
     this.salePosts.subscribe((res) => {
-      // this.markerClusterData = [];
       this.markerClusterGroup.clearLayers();
+      // this.markerClusterData = [];
       res.forEach((post) => {
         let marker = new Leaflet.Marker(
           new Leaflet.LatLng(
@@ -119,11 +107,15 @@ export class MapLayoutComponent implements OnInit {
         ).bindPopup(
           '<h1>' +
             post.title +
-            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden;"><img src="data:image/png;base64,' +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
             post.pictures[0] +
-            '" style="width: 200px; height: 200px;" /></div><a href=http://localhost:4200/salepost/' +
+            '" style="width: 200px; height: 200px;" /></div><div style="display: flex; flex-direction: column"><div><h3>Cena: ' +
+            post.price +
+            ' pln</h3></div><div><h3>Metraż: ' +
+            post.squareFootage +
+            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; border-radius: 0.65rem" href=http://localhost:4200/salepost/' +
             post.postId +
-            '> Klikaj </a>'
+            '> Przejdź do posta </a></h2></div>'
         );
         // this.markerClusterData.push(marker);
         this.markerClusterGroup.addLayer(marker);
@@ -139,7 +131,6 @@ export class MapLayoutComponent implements OnInit {
   }
 
   markersLayer = new Leaflet.LayerGroup();
-  boundaries = new BehaviorSubject<Leaflet.LatLngBounds | null>(null);
 
   getPostsFilters() {
     if (this.sideNavbarService.postQueryMap.value.postType === 'rent') {
@@ -202,10 +193,21 @@ export class MapLayoutComponent implements OnInit {
       autoCompleteDelay: 250,
       searchLabel: 'Wpisz adres',
     });
-    var e = this.boundaries;
+    var e = this.sideNavbarService.filtersMap;
     //var b = this.markersLayer;
     function onMove(boundaries: Leaflet.LatLngBounds) {
-      e.next(boundaries);
+      e.controls.northEastLat.setValue(
+        boundaries.getNorthEast().lat.toString()
+      );
+      e.controls.northEastLng.setValue(
+        boundaries.getNorthEast().lng.toString()
+      );
+      e.controls.southWestLat.setValue(
+        boundaries.getSouthWest().lat.toString()
+      );
+      e.controls.southWestLng.setValue(
+        boundaries.getSouthWest().lng.toString()
+      );
     }
 
     var markers = this.map.on('drag', function (e) {
