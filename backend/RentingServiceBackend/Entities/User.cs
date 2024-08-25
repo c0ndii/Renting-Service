@@ -20,5 +20,6 @@ namespace RentingServiceBackend.Entities
         public virtual List<Comment> Comments { get; set; } = new List<Comment>();
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }
+        public bool isDeleted { get; set; } = false;
     }
 }

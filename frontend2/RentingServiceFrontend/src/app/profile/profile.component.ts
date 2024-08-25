@@ -11,6 +11,7 @@ import { NavbarService } from '../services/navbar.service';
 import { ChangePasswordDialogComponent } from '../dialogs/change-password-dialog/change-password-dialog.component';
 import { ChangePictureDialogComponent } from '../dialogs/change-picture-dialog/change-picture-dialog.component';
 import { CommonModule } from '@angular/common';
+import { DeleteAccountDialogComponent } from '../dialogs/delete-account-dialog/delete-account-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -68,6 +69,19 @@ export class ProfileComponent implements OnInit {
       exitAnimationDuration,
     });
   }
+
+  openDeleteAccountDialog(
+    enterAnimationDuration: string,
+    exitAnimationDuration: string
+  ) {
+    this.dialog.open(DeleteAccountDialogComponent, {
+      width: '400px',
+      minHeight: '100px',
+      enterAnimationDuration,
+      exitAnimationDuration,
+    });
+  }
+
   ngOnInit(): void {
     this.navbar.disableInputs();
     if (!this.authService.userLogged()) {

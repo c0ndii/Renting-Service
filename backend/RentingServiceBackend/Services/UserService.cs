@@ -20,6 +20,7 @@ namespace RentingServiceBackend.Services
         Task<UserDto> GetUser(int userId);
         Task EditUserName(string dto);
         Task EditUserPicture(EditUserPictureDto dto);
+        Task DeleteAccount();
     }
 
     public class UserService : IUserService
@@ -41,7 +42,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authorize user");
             }
-            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.UserId == userId && !x.isDeleted);
             if (user == null)
             {
                 throw new UnauthorizedException("Could not authorize user");
@@ -50,7 +51,7 @@ namespace RentingServiceBackend.Services
         }
         private async Task<User> AuthUser(int userId)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId && !x.isDeleted);
             if (user == null)
             {
                 throw new NotFoundException("User not found");
@@ -113,6 +114,15 @@ namespace RentingServiceBackend.Services
                 stream.Close();
             }
             user.Picture = $"{user.UserId}avatar";
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAccount()
+        {
+            var user = await AuthUser();
+            user.isDeleted = true;
+            user.Email = "deleted";
             _context.Update(user);
             await _context.SaveChangesAsync();
         }

@@ -44,6 +44,7 @@ export class MapLayoutComponent implements OnInit {
   ) {
     this.navbar.enableInputs();
   }
+
   isLogged: boolean = false;
   map!: Leaflet.Map;
   options: Leaflet.MapOptions = {
@@ -180,7 +181,6 @@ export class MapLayoutComponent implements OnInit {
 
   readyUpMap(map: Leaflet.Map) {
     this.map = map;
-
     this.map.addControl(Leaflet.control.zoom({ position: 'bottomright' }));
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.setGeoLocation.bind(this));

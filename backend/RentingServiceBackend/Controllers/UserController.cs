@@ -43,5 +43,12 @@ namespace RentingServiceBackend.Controllers
             await _userService.EditUserPicture(dto);
             return Ok();
         }
+        [HttpDelete]
+        [Authorize(Roles = ("Admin, User"))]
+        public async Task<IActionResult> DeleteUserAccount()
+        {
+            await _userService.DeleteAccount();
+            return Ok();
+        }
     }
 }

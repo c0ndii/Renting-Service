@@ -49,7 +49,7 @@ namespace RentingServiceBackend.Services
         }
         private async Task<JwtSecurityToken> GenerateJwtToken(string email)
         {
-            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.Email == email);
+            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.Email == email && !x.isDeleted);
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -115,7 +115,7 @@ namespace RentingServiceBackend.Services
         {
             var user = await _context.Users
                 .Include(x => x.Role)
-                .SingleOrDefaultAsync(x => x.Email == dto.Email);
+                .SingleOrDefaultAsync(x => x.Email == dto.Email && !x.isDeleted);
             if (user is null)
             {
                 throw new UnauthorizedException("Could not authenticate user");
@@ -148,7 +148,8 @@ namespace RentingServiceBackend.Services
         }
         public async Task VerifyAccountAsync(string token)
         {
-            var user = await _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.VerificationToken == token && x.Role.Name == "Unconfirmed");
+            var user = await _context.Users.Include(x => x.Role)
+                .SingleOrDefaultAsync(x => x.VerificationToken == token && x.Role.Name == "Unconfirmed" && !x.isDeleted);
             if (user is null)
             {
                 throw new NotFoundException("Account does not exist");
@@ -160,7 +161,11 @@ namespace RentingServiceBackend.Services
         }
         public async Task ForgotPasswordAsync(string email)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == email.ToLower() && (x.ResetPasswordTimeExpires == null || DateTime.Now > x.ResetPasswordTimeExpires));
+            var user = await _context.Users
+                .SingleOrDefaultAsync(x => x.Email.ToLower() == email.ToLower() 
+                && (x.ResetPasswordTimeExpires == null || DateTime.Now > x.ResetPasswordTimeExpires)
+                && !x.isDeleted
+                );
             if (user is null)
             {
                 throw new NotFoundException("Account does not exist");
@@ -178,7 +183,10 @@ namespace RentingServiceBackend.Services
         }
         public async Task ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.PasswordResetToken == resetPasswordDto.ResetToken && x.ResetPasswordTimeExpires > DateTime.Now);
+            var user = await _context.Users
+                .SingleOrDefaultAsync(x => x.PasswordResetToken == resetPasswordDto.ResetToken 
+                && x.ResetPasswordTimeExpires > DateTime.Now
+                && !x.isDeleted);
             if (user == null)
             {
                 throw new UnprocessableEntityException("Wrong reset code");
@@ -200,7 +208,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("");
             }
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == principal.Identity.Name);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == principal.Identity.Name && !x.isDeleted);
 
             if(user is null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenTimeExpires < DateTime.Now)
             {
@@ -222,7 +230,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authenticate user");
             }
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId && !x.isDeleted);
             if(user is null)
             {
                 throw new UnauthorizedException("Could not authenticate user");
@@ -238,7 +246,7 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authenticate user");
             }
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId && !x.isDeleted);
             if (user is null)
             {
                 throw new UnauthorizedException("Could not authenticate user");

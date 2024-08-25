@@ -35,17 +35,16 @@
       </div>
       <br />
       <br />
-      <div class="subtitle">Motyw i hasło</div>
+      <div class="subtitle">Hasło i usuwanie konta</div>
       <div class="changable-property-holder">
         <div>
-          <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-            <mat-button-toggle value="map"
-              ><mat-icon> map</mat-icon></mat-button-toggle
-            >
-            <mat-button-toggle value="list"
-              ><mat-icon>list</mat-icon></mat-button-toggle
-            >
-          </mat-button-toggle-group>
+          <button
+            (click)="openDeleteAccountDialog('300ms', '150ms')"
+            color="warn"
+            mat-stroked-button
+          >
+            Usuń konto
+          </button>
         </div>
         <div>
           <button
