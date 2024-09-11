@@ -24,6 +24,8 @@ import { GalleryModule } from 'ng-gallery';
 import { NgImageSliderModule } from 'ng-image-slider';
 import localePl from '@angular/common/locales/pl';
 import { registerLocaleData } from '@angular/common';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { CustomPaginator } from './list-layout/custom-paginator';
 
 registerLocaleData(localePl);
 
@@ -59,6 +61,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: DEFAULT_CURRENCY_CODE,
       useValue: 'PLN',
+    },
+    {
+      provide: MatPaginatorIntl,
+      useValue: CustomPaginator(),
     },
   ],
 };

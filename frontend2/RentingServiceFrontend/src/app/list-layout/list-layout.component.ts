@@ -80,7 +80,6 @@ export class ListLayoutComponent implements OnInit {
       );
       this.getRentPosts(this.sideNavbarService.postQuery.value).subscribe(
         (response) => {
-          this.length.next(response.totalPages);
           this.rentPosts.next(response.items);
         }
       );
@@ -90,7 +89,6 @@ export class ListLayoutComponent implements OnInit {
       );
       this.getSalePosts(this.sideNavbarService.postQuery.value).subscribe(
         (response) => {
-          this.length.next(response.totalItemsCount);
           this.salePosts.next(response.items);
         }
       );
