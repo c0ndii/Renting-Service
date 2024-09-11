@@ -134,5 +134,19 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.GetAllPostsMap(query);
             return Ok(result);
         }
+        [HttpPost("{postId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ConfirmPost(int postId)
+        {
+            await _postService.ConfirmPost(postId);
+            return Ok();
+        }
+        [HttpGet("posts/unconfirmed")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUnconfirmedPostsList([FromQuery] PostQuery query)
+        {
+            var result = await _postService.GetAllUnconfirmedPostList(query);
+            return Ok(result);
+        }
     }
 }

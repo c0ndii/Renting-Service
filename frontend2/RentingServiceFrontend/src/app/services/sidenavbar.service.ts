@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { postQuery } from '../interfaces/postQuery';
 import { FormControl, FormGroup } from '@angular/forms';
 import { viewValue } from '../interfaces/viewValue';
 import { postQueryMap } from '../interfaces/postQueryMap';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Injectable({
   providedIn: 'root',

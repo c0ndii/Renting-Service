@@ -6,6 +6,7 @@ import { LayoutComponent } from './layout/layout.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AuthService } from './services/auth.service';
+import { SidenavbarComponent } from './sidenavbar/sidenavbar.component';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ import { AuthService } from './services/auth.service';
     LayoutComponent,
     HttpClientModule,
     NavbarComponent,
+    SidenavbarComponent,
   ],
 })
 export class AppComponent {

@@ -1,268 +1,269 @@
 <mat-drawer-container class="sidenavbar-container" autosize>
   <mat-drawer #drawer class="sidenavbar-sidenav" mode="side">
-    <mat-button-toggle-group
-      *ngIf="this.navbarService.selectedValue.value === 'map'"
-      name="fontStyle"
-      aria-label="Font Style"
-      [formControl]="sideNavbarService.filtersMap.controls.postType"
-    >
-      <mat-button-toggle value="rent">Wynajem</mat-button-toggle>
-      <mat-button-toggle value="sell">Sprzedaż</mat-button-toggle>
-    </mat-button-toggle-group>
-
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <mat-label>Sortuj po:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filters.controls.sortBy"
+    <div *ngIf="this.navbarService.selectedValue.value === 'map'">
+      <mat-button-toggle-group
+        name="fontStyle"
+        aria-label="Font Style"
+        [formControl]="sideNavbarService.filtersMap.controls.postType"
       >
-        <mat-option value="AddDate">Data dodania </mat-option>
-        <mat-option value="Price">Cena </mat-option>
-        <mat-option value="SquareFootage">Metraż </mat-option>
-      </mat-select>
-    </mat-form-field>
+        <mat-button-toggle value="rent">Wynajem</mat-button-toggle>
+        <mat-button-toggle value="sell">Sprzedaż</mat-button-toggle>
+      </mat-button-toggle-group>
 
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <mat-label>Kierunek sortowania:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filters.controls.sortDirection"
-      >
-        <mat-option [value]="0">Rosnąco</mat-option>
-        <mat-option [value]="1">Malejąco </mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filtersMap.controls.minPrice"
+        />
+        <mat-label> Cena minimalna: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.minPrice"
-      />
-      <mat-label> Cena minimalna: </mat-label>
-    </mat-form-field>
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filtersMap.controls.maxPrice"
+        />
+        <mat-label> Cena maksymalna: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'map'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filtersMap.controls.minPrice"
-      />
-      <mat-label> Cena minimalna: </mat-label>
-    </mat-form-field>
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filtersMap.controls.minSquare"
+        />
+        <mat-label> Minimalny metraż: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.maxPrice"
-      />
-      <mat-label> Cena maksymalna: </mat-label>
-    </mat-form-field>
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filtersMap.controls.maxSquare"
+        />
+        <mat-label> Maksymalny metraż: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'map'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filtersMap.controls.maxPrice"
-      />
-      <mat-label> Cena maksymalna: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.minSquare"
-      />
-      <mat-label> Minimalny metraż: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'map'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filtersMap.controls.minSquare"
-      />
-      <mat-label> Minimalny metraż: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'list'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.maxSquare"
-      />
-      <mat-label> Maksymalny metraż: </mat-label>
-    </mat-form-field>
-    <mat-form-field *ngIf="this.navbarService.selectedValue.value === 'map'">
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filtersMap.controls.maxSquare"
-      />
-      <mat-label> Maksymalny metraż: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filters.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'list'
-      "
-    >
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.minSleepingCount"
-      />
-      <mat-label> Minimalna liczba miejsc do spania: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filtersMap.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'map'
-      "
-    >
-      <input
-        type="number"
-        matInput
-        [formControl]="
-          this.sideNavbarService.filtersMap.controls.minSleepingCount
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filtersMap.controls.postType.value === 'rent'
         "
-      />
-      <mat-label> Minimalna liczba miejsc do spania: </mat-label>
-    </mat-form-field>
+      >
+        <input
+          type="number"
+          matInput
+          [formControl]="
+            this.sideNavbarService.filtersMap.controls.minSleepingCount
+          "
+        />
+        <mat-label> Minimalna liczba miejsc do spania: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filters.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'list'
-      "
-    >
-      <input
-        type="number"
-        matInput
-        [formControl]="this.sideNavbarService.filters.controls.maxSleepingCount"
-      />
-      <mat-label> Maksymalna liczba miejsc do spania: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filtersMap.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'map'
-      "
-    >
-      <input
-        type="number"
-        matInput
-        [formControl]="
-          this.sideNavbarService.filtersMap.controls.maxSleepingCount
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filtersMap.controls.postType.value === 'rent'
         "
-      />
-      <mat-label> Maksymalna liczba miejsc do spania: </mat-label>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filters.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'list'
-      "
-    >
-      <mat-label>Główna kategoria:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filters.controls.mainCategory"
       >
-        <mat-option value="Mieszkanie">Mieszkanie</mat-option>
-        <mat-option value="Dom">Dom </mat-option>
-        <mat-option value="Wypoczynek">Wypoczynek</mat-option>
-      </mat-select>
-    </mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="
+            this.sideNavbarService.filtersMap.controls.maxSleepingCount
+          "
+        />
+        <mat-label> Maksymalna liczba miejsc do spania: </mat-label>
+      </mat-form-field>
 
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filtersMap.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'map'
-      "
-    >
-      <mat-label>Główna kategoria:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filtersMap.controls.mainCategory"
-      >
-        <mat-option value="Mieszkanie">Mieszkanie</mat-option>
-        <mat-option value="Dom">Dom </mat-option>
-        <mat-option value="Wypoczynek">Wypoczynek</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filters.controls.postType.value === 'sale' &&
-        this.navbarService.selectedValue.value === 'list'
-      "
-    >
-      <mat-label>Główna kategoria:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filters.controls.mainCategory"
-      >
-        <mat-option value="Mieszkanie">Mieszkanie</mat-option>
-        <mat-option value="Dom">Dom </mat-option>
-        <mat-option value="Działka">Działka</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filtersMap.controls.postType.value === 'sale' &&
-        this.navbarService.selectedValue.value === 'map'
-      "
-    >
-      <mat-label>Główna kategoria:</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filtersMap.controls.mainCategory"
-      >
-        <mat-option value="Mieszkanie">Mieszkanie</mat-option>
-        <mat-option value="Dom">Dom </mat-option>
-        <mat-option value="Działka">Działka</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filters.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'list' &&
-        (featureList | async) as features
-      "
-    >
-      <mat-label>Udogodnienia</mat-label>
-      <mat-select
-        [formControl]="this.sideNavbarService.filters.controls.featureFilters"
-        multiple
-      >
-        @for (filter of features; track filter) {
-        <mat-option [value]="filter">{{ filter }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field
-      *ngIf="
-        this.sideNavbarService.filtersMap.controls.postType.value === 'rent' &&
-        this.navbarService.selectedValue.value === 'map' &&
-        (featureList | async) as features
-      "
-    >
-      <mat-label>Udogodnienia</mat-label>
-      <mat-select
-        [formControl]="
-          this.sideNavbarService.filtersMap.controls.featureFilters
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filtersMap.controls.postType.value === 'rent'
         "
-        multiple
       >
-        @for (filter of features; track filter) {
-        <mat-option [value]="filter">{{ filter }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+        <mat-label>Główna kategoria:</mat-label>
+        <mat-select
+          [formControl]="
+            this.sideNavbarService.filtersMap.controls.mainCategory
+          "
+        >
+          <mat-option value="Mieszkanie">Mieszkanie</mat-option>
+          <mat-option value="Dom">Dom </mat-option>
+          <mat-option value="Wypoczynek">Wypoczynek</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filtersMap.controls.postType.value === 'sale'
+        "
+      >
+        <mat-label>Główna kategoria:</mat-label>
+        <mat-select
+          [formControl]="
+            this.sideNavbarService.filtersMap.controls.mainCategory
+          "
+        >
+          <mat-option value="Mieszkanie">Mieszkanie</mat-option>
+          <mat-option value="Dom">Dom </mat-option>
+          <mat-option value="Działka">Działka</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filtersMap.controls.postType.value ===
+            'rent' && (featureList | async) as features
+        "
+      >
+        <mat-label>Udogodnienia</mat-label>
+        <mat-select
+          [formControl]="
+            this.sideNavbarService.filtersMap.controls.featureFilters
+          "
+          multiple
+        >
+          @for (filter of features; track filter) {
+          <mat-option [value]="filter">{{ filter }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="this.navbarService.selectedValue.value === 'list'">
+      <mat-form-field>
+        <mat-label>Sortuj po:</mat-label>
+        <mat-select
+          [formControl]="this.sideNavbarService.filters.controls.sortBy"
+        >
+          <mat-option value="AddDate">Data dodania </mat-option>
+          <mat-option value="Price">Cena </mat-option>
+          <mat-option value="SquareFootage">Metraż </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Kierunek sortowania:</mat-label>
+        <mat-select
+          [formControl]="this.sideNavbarService.filters.controls.sortDirection"
+        >
+          <mat-option [value]="0">Rosnąco</mat-option>
+          <mat-option [value]="1">Malejąco </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filters.controls.minPrice"
+        />
+        <mat-label> Cena minimalna: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filters.controls.maxPrice"
+        />
+        <mat-label> Cena maksymalna: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filters.controls.minSquare"
+        />
+        <mat-label> Minimalny metraż: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          type="number"
+          matInput
+          [formControl]="this.sideNavbarService.filters.controls.maxSquare"
+        />
+        <mat-label> Maksymalny metraż: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filters.controls.postType.value === 'rent'
+        "
+      >
+        <input
+          type="number"
+          matInput
+          [formControl]="
+            this.sideNavbarService.filters.controls.minSleepingCount
+          "
+        />
+        <mat-label> Minimalna liczba miejsc do spania: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filters.controls.postType.value === 'rent'
+        "
+      >
+        <input
+          type="number"
+          matInput
+          [formControl]="
+            this.sideNavbarService.filters.controls.maxSleepingCount
+          "
+        />
+        <mat-label> Maksymalna liczba miejsc do spania: </mat-label>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filters.controls.postType.value === 'rent'
+        "
+      >
+        <mat-label>Główna kategoria:</mat-label>
+        <mat-select
+          [formControl]="this.sideNavbarService.filters.controls.mainCategory"
+        >
+          <mat-option value="Mieszkanie">Mieszkanie</mat-option>
+          <mat-option value="Dom">Dom </mat-option>
+          <mat-option value="Wypoczynek">Wypoczynek</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filters.controls.postType.value === 'sale'
+        "
+      >
+        <mat-label>Główna kategoria:</mat-label>
+        <mat-select
+          [formControl]="this.sideNavbarService.filters.controls.mainCategory"
+        >
+          <mat-option value="Mieszkanie">Mieszkanie</mat-option>
+          <mat-option value="Dom">Dom </mat-option>
+          <mat-option value="Działka">Działka</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="
+          this.sideNavbarService.filters.controls.postType.value === 'rent' &&
+          (featureList | async) as features
+        "
+      >
+        <mat-label>Udogodnienia</mat-label>
+        <mat-select
+          [formControl]="this.sideNavbarService.filters.controls.featureFilters"
+          multiple
+        >
+          @for (filter of features; track filter) {
+          <mat-option [value]="filter">{{ filter }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
   </mat-drawer>
 
   <button
@@ -273,5 +274,7 @@
   >
     <mat-icon class="sidenav-toggle-button-content">menu</mat-icon>
   </button>
-  <app-layout> </app-layout>
+  <div class="body">
+    <router-outlet (sidenav)="drawer.close()"></router-outlet>
+  </div>
 </mat-drawer-container>

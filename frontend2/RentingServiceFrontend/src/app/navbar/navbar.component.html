@@ -114,6 +114,9 @@
           </button>
           <button mat-menu-item>Rezerwacje</button>
           <button mat-menu-item>Komentarze</button>
+          <button *ngIf="authService.getRole() === 'Admin'" mat-menu-item>
+            Posty do akceptacji
+          </button>
           <button (click)="this.navbar.logout()" mat-menu-item>Wyloguj</button>
         </mat-menu>
       </div>

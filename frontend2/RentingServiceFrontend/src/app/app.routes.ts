@@ -11,10 +11,12 @@ import { SalepostComponent } from './salepost/salepost.component';
 import { EditRentPostComponent } from './edit-rent-post/edit-rent-post.component';
 import { FollowedPostsComponent } from './followed-posts/followed-posts.component';
 import { EditSalePostComponent } from './edit-sale-post/edit-sale-post.component';
+import { AppComponent } from './app.component';
+import { LayoutComponent } from './layout/layout.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: '', component: SidenavbarComponent },
+  { path: '', component: LayoutComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'rentpost/:id', component: RentpostComponent },
   { path: 'salepost/:id', component: SalepostComponent },

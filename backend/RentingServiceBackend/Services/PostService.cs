@@ -5,6 +5,7 @@ using RentingServiceBackend.Entities;
 using RentingServiceBackend.Exceptions;
 using RentingServiceBackend.Models;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RentingServiceBackend.Services
 {
@@ -27,6 +28,8 @@ namespace RentingServiceBackend.Services
         Task<bool> ToggleFollow(int postId);
         Task<PageResult<PostDto>> GetAllPostsList(PostQuery query);
         Task<PageResult<PostDto>> GetAllPostsMap(PostQueryMap query);
+        Task<PageResult<PostDto>> GetAllUnconfirmedPostList(PostQuery query);
+        Task ConfirmPost(int postId);
     }
 
     public class PostService : IPostService
@@ -512,6 +515,22 @@ namespace RentingServiceBackend.Services
                 return salePosts;
             }
         }
+
+        public async Task<PageResult<PostDto>> GetAllUnconfirmedPostList(PostQuery query)
+        {
+            if (String.Compare(query.PostType, "rent") == 0)
+            {
+                var rentPosts = await GetUnconfirmedRentPosts(query);
+
+                return rentPosts;
+            }
+            else
+            {
+                var salePosts = await GetUnconfirmedSalePosts(query);
+                return salePosts;
+            }
+        }
+
         private async Task<PageResult<PostDto>> GetRentPosts(PostQuery query)
         {
             var columnSelectors = new Dictionary<string, Expression<Func<Post, object>>>
@@ -678,6 +697,19 @@ namespace RentingServiceBackend.Services
             }
         }
 
+        public async Task ConfirmPost(int postId)
+        {
+            var post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == postId && x.Confirmed == false);
+
+            if (post is null)
+            {
+                throw new NotFoundException("Post has not been found");
+            }
+
+            post.Confirmed = true;
+            await _context.SaveChangesAsync();
+        }
+
         private async Task<PageResult<PostDto>> GetRentPostsMap(PostQueryMap query)
         {
             var rentPosts = await _context.ForRentPosts
@@ -761,6 +793,158 @@ namespace RentingServiceBackend.Services
                 }
             }
             return new PageResult<PostDto>(mappedResult, 0, 0, 0);
+        }
+
+        private async Task<PageResult<PostDto>> GetUnconfirmedRentPosts(PostQuery query)
+        {
+            var columnSelectors = new Dictionary<string, Expression<Func<Post, object>>>
+            {
+                { nameof(Post.AddDate), x => x.AddDate },
+                { nameof(Post.Price), x => x.Price },
+                { nameof(Post.SquareFootage), x => x.SquareFootage },
+            };
+            var selectedColumn = columnSelectors[query.SortBy];
+            List<Post> rentPosts = new List<Post>();
+            if (query.SortDirection == SortDirection.ASC)
+            {
+                rentPosts = await _context.ForRentPosts
+                    .Include(x => x.Features)
+                    .Include(x => x.User)
+                    .Include(x => x.MainCategory)
+                    .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                    || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                    || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                    && (query.FeatureFilters.IsNullOrEmpty()
+                    || x.Features.Any(y => query.FeatureFilters.Contains(y.FeatureName)))
+                    && (!query.MinPrice.HasValue
+                    || x.Price >= query.MinPrice)
+                    && (!query.MaxPrice.HasValue
+                    || x.Price <= query.MaxPrice)
+                    && (!query.MinSquare.HasValue
+                    || x.SquareFootage >= query.MinSquare)
+                    && (!query.MaxSquare.HasValue
+                    || x.SquareFootage <= query.MaxSquare)
+                    && (!query.MinSleepingCount.HasValue
+                    || x.SleepingPlaceCount >= query.MinSleepingCount)
+                    && (!query.MaxSleepingCount.HasValue
+                    || x.SleepingPlaceCount <= query.MaxSleepingCount)
+                    && (query.MainCategory.IsNullOrEmpty()
+                    || x.MainCategory.MainCategoryName == query.MainCategory)
+                    && x.Confirmed == false && !x.User.isDeleted).OrderBy(selectedColumn).ToListAsync();
+            }
+            else
+            {
+                rentPosts = await _context.ForRentPosts
+                    .Include(x => x.Features)
+                    .Include(x => x.User)
+                    .Include(x => x.MainCategory)
+                    .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                    || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                    || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                    && (query.FeatureFilters.IsNullOrEmpty()
+                    || x.Features.Any(y => query.FeatureFilters.Contains(y.FeatureName)))
+                    && (!query.MinPrice.HasValue
+                    || x.Price >= query.MinPrice)
+                    && (!query.MaxPrice.HasValue
+                    || x.Price <= query.MaxPrice)
+                    && (!query.MinSquare.HasValue
+                    || x.SquareFootage >= query.MinSquare)
+                    && (!query.MaxSquare.HasValue
+                    || x.SquareFootage <= query.MaxSquare)
+                    && (!query.MinSleepingCount.HasValue
+                    || x.SleepingPlaceCount >= query.MinSleepingCount)
+                    && (!query.MaxSleepingCount.HasValue
+                    || x.SleepingPlaceCount <= query.MaxSleepingCount)
+                    && (query.MainCategory.IsNullOrEmpty()
+                    || x.MainCategory.MainCategoryName == query.MainCategory)
+                    && x.Confirmed == false && !x.User.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
+            }
+            var result = rentPosts
+                    .Skip(query.PageSize * (query.PageNumber - 1))
+                    .Take(query.PageSize);
+            var totalItemsCount = rentPosts.Count;
+            var mappedResult = _mapper.Map<List<PostDto>>(result);
+            foreach (var post in mappedResult)
+            {
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
+        }
+
+        private async Task<PageResult<PostDto>> GetUnconfirmedSalePosts(PostQuery query)
+        {
+            var columnSelectors = new Dictionary<string, Expression<Func<Post, object>>>
+            {
+                { nameof(Post.AddDate), x => x.AddDate },
+                { nameof(Post.Price), x => x.Price },
+                { nameof(Post.SquareFootage), x => x.SquareFootage },
+            };
+            var selectedColumn = columnSelectors[query.SortBy];
+            List<Post> salePosts = new List<Post>();
+            if (query.SortDirection == SortDirection.ASC)
+            {
+                salePosts = await _context.ForSalePosts
+                        .Include(x => x.User)
+                        .Include(x => x.MainCategory)
+                        .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                        || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                        || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                        && (!query.MinPrice.HasValue
+                        || x.Price >= query.MinPrice)
+                        && (!query.MaxPrice.HasValue
+                        || x.Price <= query.MaxPrice)
+                        && (!query.MinSquare.HasValue
+                        || x.SquareFootage >= query.MinSquare)
+                        && (!query.MaxSquare.HasValue
+                        || x.SquareFootage <= query.MaxSquare)
+                        && (query.MainCategory.IsNullOrEmpty()
+                        || x.MainCategory.MainCategoryName == query.MainCategory)
+                        && x.Confirmed == true && !x.User.isDeleted).OrderBy(selectedColumn).ToListAsync();
+            }
+            else
+            {
+                salePosts = await _context.ForSalePosts
+                        .Include(x => x.User)
+                        .Include(x => x.MainCategory)
+                        .Where(x => (string.IsNullOrEmpty(query.SearchPhrase)
+                        || (x.Title.ToLower().Contains(query.SearchPhrase.ToLower())
+                        || x.Description.ToLower().Contains(query.SearchPhrase.ToLower())))
+                        && (!query.MinPrice.HasValue
+                        || x.Price >= query.MinPrice)
+                        && (!query.MaxPrice.HasValue
+                        || x.Price <= query.MaxPrice)
+                        && (!query.MinSquare.HasValue
+                        || x.SquareFootage >= query.MinSquare)
+                        && (!query.MaxSquare.HasValue
+                        || x.SquareFootage <= query.MaxSquare)
+                        && (query.MainCategory.IsNullOrEmpty()
+                        || x.MainCategory.MainCategoryName == query.MainCategory)
+                        && x.Confirmed == true && !x.User.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
+            }
+            var result = salePosts
+                    .Skip(query.PageSize * (query.PageNumber - 1))
+                    .Take(query.PageSize);
+            var totalItemsCount = salePosts.Count;
+            var mappedResult = _mapper.Map<List<PostDto>>(result);
+            foreach (var post in mappedResult)
+            {
+                post.isFollowedByUser = await CheckIfUserFollowsPost(post.PostId);
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return new PageResult<PostDto>(mappedResult, totalItemsCount, query.PageSize, query.PageNumber);
         }
     }
 }

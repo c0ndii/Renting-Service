@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-sidenavbar',
@@ -37,6 +38,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatSelectModule,
     MatFormFieldModule,
     MatButtonToggleModule,
+    RouterOutlet,
   ],
 })
 export class SidenavbarComponent implements OnInit {
