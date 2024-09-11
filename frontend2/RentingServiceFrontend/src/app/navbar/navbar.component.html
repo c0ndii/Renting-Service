@@ -21,6 +21,7 @@
           @if (sideNavbarService.filters.controls.searchPhrase) {
           <button
             matSuffix
+            [disabled]="navbar.inputsDisabled"
             mat-icon-button
             aria-label="Clear"
             (click)="

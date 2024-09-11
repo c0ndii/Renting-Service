@@ -22,11 +22,13 @@ export class NavbarService {
   disableInputs() {
     this.sidenavbarService.filters.disable();
     this.sidenavbarService.filtersMap.disable();
+    this.sidenavbarService.filtersOther.enable();
     this.inputsDisabled = true;
   }
   enableInputs() {
     this.sidenavbarService.filters.enable();
     this.sidenavbarService.filtersMap.enable();
+    this.sidenavbarService.filtersOther.disable();
     this.inputsDisabled = false;
   }
   public set SelectedValue(selectedValue: string) {

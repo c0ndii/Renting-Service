@@ -28,6 +28,23 @@ export class SidenavbarService {
     featureFilters: new FormControl<string[] | null>(null),
   });
 
+  filtersOther = new FormGroup({
+    searchPhrase: new FormControl(''),
+    pageNumber: new FormControl(1),
+    pageSize: new FormControl(10),
+    sortBy: new FormControl('AddDate'),
+    postType: new FormControl('rent'),
+    sortDirection: new FormControl(1),
+    minPrice: new FormControl<number | null>(null),
+    maxPrice: new FormControl<number | null>(null),
+    minSquare: new FormControl<number | null>(null),
+    maxSquare: new FormControl<number | null>(null),
+    minSleepingCount: new FormControl<number | null>(null),
+    maxSleepingCount: new FormControl<number | null>(null),
+    mainCategory: new FormControl<string | null>(null),
+    featureFilters: new FormControl<string[] | null>(null),
+  });
+
   postQueryMap = new BehaviorSubject<postQueryMap>({} as postQueryMap);
   filtersMap = new FormGroup({
     searchPhrase: new FormControl(''),
@@ -87,6 +104,26 @@ export class SidenavbarService {
       } as postQuery;
       this.postQuery.next(queryFilters);
     });
+
+    this.filtersOther.valueChanges.subscribe(() => {
+      let queryFilters = {
+        searchPhrase: this.filters.controls.searchPhrase.value,
+        pageNumber: this.filters.controls.pageNumber.value,
+        pageSize: this.filters.controls.pageSize.value,
+        sortBy: this.filters.controls.sortBy.value,
+        postType: this.filters.controls.postType.value,
+        sortDirection: this.filters.controls.sortDirection.value,
+        minPrice: this.filters.controls.minPrice.value,
+        maxPrice: this.filters.controls.maxPrice.value,
+        minSquare: this.filters.controls.minSquare.value,
+        maxSquare: this.filters.controls.maxSquare.value,
+        minSleepingCount: this.filters.controls.minSleepingCount.value,
+        maxSleepingCount: this.filters.controls.maxSleepingCount.value,
+        mainCategory: this.filters.controls.mainCategory.value,
+        featureFilters: this.filters.controls.featureFilters.value,
+      } as postQuery;
+      this.postQuery.next(queryFilters);
+    });
   }
 
   resetFilters(postType: string) {
@@ -104,6 +141,23 @@ export class SidenavbarService {
     this.filters.controls.maxSleepingCount.setValue(null);
     this.filters.controls.mainCategory.setValue(null);
     this.filters.controls.featureFilters.setValue(null);
+  }
+
+  resetFiltersOther(postType: string) {
+    this.filtersOther.controls.searchPhrase.setValue('');
+    this.filtersOther.controls.pageNumber.setValue(1);
+    this.filtersOther.controls.pageSize.setValue(10);
+    this.filtersOther.controls.sortBy.setValue('AddDate');
+    this.filtersOther.controls.postType.setValue(postType);
+    this.filtersOther.controls.sortDirection.setValue(1);
+    this.filtersOther.controls.minPrice.setValue(null);
+    this.filtersOther.controls.maxPrice.setValue(null);
+    this.filtersOther.controls.minSquare.setValue(null);
+    this.filtersOther.controls.maxSquare.setValue(null);
+    this.filtersOther.controls.minSleepingCount.setValue(null);
+    this.filtersOther.controls.maxSleepingCount.setValue(null);
+    this.filtersOther.controls.mainCategory.setValue(null);
+    this.filtersOther.controls.featureFilters.setValue(null);
   }
 
   resetFiltersMap(postType: string) {
