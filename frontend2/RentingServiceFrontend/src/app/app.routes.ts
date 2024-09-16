@@ -11,6 +11,7 @@ import { SalepostComponent } from './salepost/salepost.component';
 import { EditRentPostComponent } from './edit-rent-post/edit-rent-post.component';
 import { FollowedPostsComponent } from './followed-posts/followed-posts.component';
 import { EditSalePostComponent } from './edit-sale-post/edit-sale-post.component';
+import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -25,4 +26,5 @@ export const routes: Routes = [
   { path: 'myposts/rentpost/:id', component: EditRentPostComponent },
   { path: 'followedposts', component: FollowedPostsComponent },
   { path: 'myposts/salepost/:id', component: EditSalePostComponent },
+  { path: 'admin/posts', component: AdminPanelComponent },
 ];

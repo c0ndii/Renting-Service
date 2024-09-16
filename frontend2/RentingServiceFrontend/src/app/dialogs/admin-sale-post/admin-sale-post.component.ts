@@ -1,26 +1,56 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { forRentPostDto } from '../interfaces/forRentPostDto';
-import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { backendUrlBase } from '../appsettings/constant';
-import { CommonModule, NgFor } from '@angular/common';
-import { userDto } from '../interfaces/userDto';
-import { Gallery } from 'ng-gallery';
-import { NgImageSliderModule } from 'ng-image-slider';
+import {
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../services/auth.service';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { SnackbarService } from '../../services/snackbar.service';
+import { AuthService } from '../../services/auth.service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { backendUrlBase } from '../../appsettings/constant';
+import { NavbarService } from '../../services/navbar.service';
+import { Gallery } from 'ng-gallery';
+import { BehaviorSubject, Observable, map, catchError } from 'rxjs';
+import { forRentPostDto } from '../../interfaces/forRentPostDto';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
+import { CommonModule, NgFor } from '@angular/common';
+import { NgImageSliderModule } from 'ng-image-slider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
-import { SnackbarService } from '../services/snackbar.service';
-import { forSalePostDto } from '../interfaces/forSalePostDto';
+import { forSalePostDto } from '../../interfaces/forSalePostDto';
 
 @Component({
-  selector: 'app-salepost',
+  selector: 'app-admin-sale-post',
   standalone: true,
   imports: [
+    MatButtonModule,
+    MatDialogActions,
+    MatDialogClose,
+    MatDialogTitle,
+    MatDialogContent,
+    MatInputModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatDividerModule,
     CommonModule,
     NgFor,
     NgImageSliderModule,
@@ -29,10 +59,10 @@ import { forSalePostDto } from '../interfaces/forSalePostDto';
     MatProgressSpinnerModule,
     MatChipsModule,
   ],
-  templateUrl: './salepost.component.html',
-  styleUrl: './salepost.component.scss',
+  templateUrl: './admin-sale-post.component.html',
+  styleUrl: './admin-sale-post.component.scss',
 })
-export class SalepostComponent implements OnInit, OnDestroy {
+export class AdminSalePostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
   postId?: number;
   post = new BehaviorSubject<forSalePostDto>({} as forSalePostDto);
@@ -109,40 +139,6 @@ export class SalepostComponent implements OnInit, OnDestroy {
     return this.http.get<forSalePostDto>(
       backendUrlBase + 'post/salepost/' + this.postId
     );
-  }
-  editPost(postId: number) {
-    this.router.navigate(['myposts/salepost', postId]);
-  }
-  deletePost(postId: number) {
-    this.http.delete(backendUrlBase + 'post/' + postId).subscribe(() => {
-      this.router.navigate(['myposts']);
-    });
-  }
-  followPost(postId: number) {
-    this.http
-      .get(backendUrlBase + 'post/togglefollow/' + postId)
-      .pipe(
-        map((result) => {
-          if (result !== true) {
-            this.post.value.isFollowedByUser = false;
-            this.snackbar.openSnackbar(
-              'Post przestał być obserwowany',
-              'success'
-            );
-          } else {
-            this.post.value.isFollowedByUser = true;
-            this.snackbar.openSnackbar('Post został zaobserwowany', 'success');
-          }
-        }),
-        catchError(() => {
-          this.snackbar.openSnackbar(
-            'Wystąpił błąd podczas próby obserwacji posta',
-            'error'
-          );
-          throw new Error();
-        })
-      )
-      .subscribe();
   }
 }
 export const getLayers = (): Leaflet.Layer[] => {

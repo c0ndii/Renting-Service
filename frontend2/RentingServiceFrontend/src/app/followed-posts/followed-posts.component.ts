@@ -109,14 +109,14 @@ export class FollowedPostsComponent {
       .subscribe();
   }
   followSalePost(postId: number) {
-    let tmpList = this.rentPosts.value;
+    let tmpList = this.salePosts.value;
     this.http
       .get(backendUrlBase + 'post/togglerentfollow/' + postId)
       .pipe(
         map((result) => {
           if (result !== true) {
             tmpList = tmpList.filter((item) => item.postId !== postId);
-            this.rentPosts.next(tmpList);
+            this.salePosts.next(tmpList);
             this.snackbar.openSnackbar(
               'Post przestał być obserwowany',
               'success'

@@ -49,4 +49,7 @@ export class NavbarService {
   navigateToFollowedPosts() {
     this.router.navigate(['followedposts']);
   }
+  navigateToAdminPanel() {
+    this.router.navigate(['admin/posts']);
+  }
 }

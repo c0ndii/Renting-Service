@@ -134,5 +134,37 @@ namespace RentingServiceBackend.Controllers
             var result = await _postService.GetAllPostsMap(query);
             return Ok(result);
         }
+
+        [HttpGet("admin/rent")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUnconfirmedRentPosts()
+        {
+            var result = await _postService.GetUnconfirmedRentPosts();
+            return Ok(result);
+        }
+
+        [HttpGet("admin/sale")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUnconfirmedSalePosts()
+        {
+            var result = await _postService.GetUnconfirmedSalePosts();
+            return Ok(result);
+        }
+
+        [HttpPost("admin/confirm/{postId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ConfirmPost(int postId)
+        {
+            await _postService.ConfirmPost(postId);
+            return Ok();
+        }
+
+        [HttpPost("admin/delete/{postId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RejectPost(int postId)
+        {
+            await _postService.RejectPost(postId);
+            return Ok();
+        }
     }
 }

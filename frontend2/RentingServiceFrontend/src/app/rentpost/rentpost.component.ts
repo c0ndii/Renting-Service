@@ -94,6 +94,13 @@ export class RentpostComponent implements OnInit, OnDestroy {
           thumbImage: 'data:image/png;base64,' + picture,
         });
       });
+      if (
+        !response.confirmed &&
+        (this.authService.user.value.userId !== response.user.userId ||
+          this.authService.getRole() !== 'Admin')
+      ) {
+        this.router.navigate(['']);
+      }
       this.post.next(response);
     });
   }

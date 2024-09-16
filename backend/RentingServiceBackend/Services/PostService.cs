@@ -27,6 +27,10 @@ namespace RentingServiceBackend.Services
         Task<bool> ToggleFollow(int postId);
         Task<PageResult<PostDto>> GetAllPostsList(PostQuery query);
         Task<PageResult<PostDto>> GetAllPostsMap(PostQueryMap query);
+        Task<List<ForSalePostDto>> GetUnconfirmedSalePosts();
+        Task<List<ForRentPostDto>> GetUnconfirmedRentPosts();
+        Task ConfirmPost(int postId);
+        Task RejectPost(int postId);
     }
 
     public class PostService : IPostService
@@ -376,6 +380,7 @@ namespace RentingServiceBackend.Services
                 post.District = dto.District;
                 post.City = dto.City;
                 post.Country = dto.Country;
+                post.Confirmed = false;
                 await _context.SaveChangesAsync();
             }
         }
@@ -402,6 +407,7 @@ namespace RentingServiceBackend.Services
                 post.District = dto.District;
                 post.City = dto.City;
                 post.Country = dto.Country;
+                post.Confirmed = false;
                 await _context.SaveChangesAsync();
             }
         }
@@ -414,7 +420,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
@@ -438,11 +444,47 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed).ToListAsync();
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
                 post.isFollowedByUser = true;
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+
+        public async Task<List<ForSalePostDto>> GetUnconfirmedSalePosts()
+        {
+            var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
+                .Where(x => x.Confirmed == false && !x.User.isDeleted).ToListAsync();
+            var result = _mapper.Map<List<ForSalePostDto>>(posts);
+            foreach (var post in result)
+            {
+                var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    string image = Convert.ToBase64String(bytes);
+                    post.Pictures.Add(image);
+                }
+            }
+            return result;
+        }
+
+        public async Task<List<ForRentPostDto>> GetUnconfirmedRentPosts()
+        {
+            var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
+                .Where(x => x.Confirmed == false && !x.User.isDeleted).ToListAsync();
+            var result = _mapper.Map<List<ForRentPostDto>>(posts);
+            foreach (var post in result)
+            {
                 var path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image0.png");
                 if (File.Exists(path))
                 {
@@ -478,6 +520,34 @@ namespace RentingServiceBackend.Services
             }
 
         }
+
+        public async Task ConfirmPost(int postId)
+        {
+            var post = await _context.Posts.Include(x => x.User)
+                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId);
+            if(post is null)
+            {
+                throw new NotFoundException("Post to confirm not found");
+            }
+
+            post.Confirmed = true;
+            _context.Update(post);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RejectPost(int postId)
+        {
+            var post = await _context.Posts.Include(x => x.User)
+                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId);
+            if (post is null)
+            {
+                throw new NotFoundException("Post to reject not found");
+            }
+
+            _context.Remove(post);
+            await _context.SaveChangesAsync();
+        }
+
         private async Task<bool?> CheckIfUserFollowsPost(int postId)
         {
             var isUserLoggedIn = _userContextService.isUserLogged;
