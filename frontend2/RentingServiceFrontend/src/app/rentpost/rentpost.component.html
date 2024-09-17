@@ -90,10 +90,30 @@
       </mat-chip-set>
     </div>
   </div>
-  <div class="container-full" *ngFor="let comment of post.comments">
-    <div class="comment">
-      <div class="user-section"></div>
-      <div class="comment-section"></div>
+  <div class="container-full scrollable">
+    <div class="comment" *ngFor="let comment of post.comments">
+      <div class="user-section">
+        <div class="avatar-name">
+          <div class="img-holder">
+            <img [src]="'data:image/png;base64,' + comment.user.picture" />
+          </div>
+          <span>{{ comment.user.name }}</span>
+        </div>
+      </div>
+      <div class="comment-section">{{ comment.commentText }}</div>
+      <div class="datetime-section">
+        <div class="buttons">
+          <mat-icon
+            *ngIf="
+              post.user.userId === authService.user.value.userId ||
+              authService.getRole() === 'Admin'
+            "
+            (click)="deletePost(post.postId)"
+            >delete</mat-icon
+          >
+        </div>
+        <div>{{ comment.commentTime | date : "shortDate" }}</div>
+      </div>
     </div>
   </div>
 </div>

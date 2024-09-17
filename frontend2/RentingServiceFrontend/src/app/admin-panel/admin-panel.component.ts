@@ -44,6 +44,7 @@ import { AdminSalePostComponent } from '../dialogs/admin-sale-post/admin-sale-po
 })
 export class AdminPanelComponent implements OnInit {
   ngOnInit(): void {
+    this.navbar.disableInputs();
     if (this.authService.getRole() !== 'Admin') {
       this.router.navigate(['']);
     }
@@ -78,7 +79,7 @@ export class AdminPanelComponent implements OnInit {
   confirmRentPost(postId: number) {
     let tmpList = this.rentPosts.value;
     this.http
-      .get(backendUrlBase + 'post/admin/confirm/' + postId)
+      .post(backendUrlBase + 'post/admin/confirm/' + postId, '')
       .pipe(
         map((result) => {
           if (result !== true) {
@@ -100,7 +101,7 @@ export class AdminPanelComponent implements OnInit {
   confirmSalePost(postId: number) {
     let tmpList = this.salePosts.value;
     this.http
-      .get(backendUrlBase + 'post/admin/confirm/' + postId)
+      .post(backendUrlBase + 'post/admin/confirm/' + postId, '')
       .pipe(
         map((result) => {
           if (result !== true) {
@@ -122,7 +123,7 @@ export class AdminPanelComponent implements OnInit {
   rejectRentPost(postId: number) {
     let tmpList = this.rentPosts.value;
     this.http
-      .get(backendUrlBase + 'post/admin/delete/' + postId)
+      .post(backendUrlBase + 'post/admin/delete/' + postId, '')
       .pipe(
         map((result) => {
           if (result !== true) {
@@ -144,7 +145,7 @@ export class AdminPanelComponent implements OnInit {
   rejectSalePost(postId: number) {
     let tmpList = this.salePosts.value;
     this.http
-      .get(backendUrlBase + 'post/admin/delete/' + postId)
+      .post(backendUrlBase + 'post/admin/delete/' + postId, '')
       .pipe(
         map((result) => {
           if (result !== true) {

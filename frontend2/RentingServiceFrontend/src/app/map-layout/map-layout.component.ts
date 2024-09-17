@@ -79,13 +79,13 @@ export class MapLayoutComponent implements OnInit {
         ).bindPopup(
           '<h1>' +
             post.title +
-            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border: 1px solid black; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
             post.pictures[0] +
             '" style="width: 200px; height: 200px;" /></div><div style="display: flex; flex-direction: column"><div><h3>Cena: ' +
             post.price +
             ' pln</h3></div><div><h3>Metraż: ' +
             post.squareFootage +
-            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; border-radius: 0.65rem" href=http://localhost:4200/rentpost/' +
+            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; padding: 1px; border-radius: 0.65rem" href=http://localhost:4200/rentpost/' +
             post.postId +
             '> Przejdź do posta </a></h2></div>'
         );
@@ -108,13 +108,13 @@ export class MapLayoutComponent implements OnInit {
         ).bindPopup(
           '<h1>' +
             post.title +
-            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
+            '</h1><div class="img-holder" style="width: 200px; height: 200px; overflow: hidden; border: 1px solid black; border-radius: 0.65rem; margin-bottom: 3px;"><img src="data:image/png;base64,' +
             post.pictures[0] +
             '" style="width: 200px; height: 200px;" /></div><div style="display: flex; flex-direction: column"><div><h3>Cena: ' +
             post.price +
             ' pln</h3></div><div><h3>Metraż: ' +
             post.squareFootage +
-            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; border-radius: 0.65rem" href=http://localhost:4200/salepost/' +
+            ' m2</h3></div></div><div style="display:flex; flex-direction:row; justify-content: center"><h2><a style="text-decoration: none; border: 1px solid black; border-radius: 0.65rem; padding: 1px" href=http://localhost:4200/salepost/' +
             post.postId +
             '> Przejdź do posta </a></h2></div>'
         );

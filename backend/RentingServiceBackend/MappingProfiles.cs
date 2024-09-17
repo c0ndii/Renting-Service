@@ -11,7 +11,7 @@ namespace RentingServiceBackend
         {
             CreateMap<User, UserDto>();
             CreateMap<Comment, CommentDto>()
-                .ForMember(x => x.User, y => y.MapFrom(z => new UserDto() { Name = z.User.Name, UserId = z.User.UserId }));
+                .ForMember(x => x.User, y => y.MapFrom(z => new UserDto() { Name = z.User.Name, UserId = z.User.UserId, Picture = z.User.Picture }));
             CreateMap<Feature, string>()
                 .ConvertUsing(x => x.FeatureName);
             CreateMap<RegisterUserDto, User>()

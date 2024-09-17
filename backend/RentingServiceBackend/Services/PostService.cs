@@ -40,6 +40,7 @@ namespace RentingServiceBackend.Services
         private readonly IUserContextService _userContextService;
         private readonly IMapper _mapper;
         private readonly string userPostPicturesPath = Path.Combine(System.Environment.CurrentDirectory, $"images\\postPictures\\");
+        private readonly string userPicturesPath = Path.Combine(System.Environment.CurrentDirectory, $"images\\profilePictures\\");
 
         public PostService(AppDbContext context, IEmailSenderService emailSenderService, IUserContextService userContextService, IMapper mapper)
         {
@@ -197,6 +198,22 @@ namespace RentingServiceBackend.Services
                 result.Pictures.Add(image);
                 path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{++iter}.png");
             }
+
+            var pathUser = Path.Combine(userPicturesPath, $"{post.User.Picture}.png");
+            if (File.Exists(pathUser))
+            {
+                byte[] bytes = File.ReadAllBytes(pathUser);
+                string image = Convert.ToBase64String(bytes);
+                result.User.Picture = image;
+            }
+
+            foreach(var comment in result.Comments)
+            {
+                var pathComment = Path.Combine(userPicturesPath, $"{comment.User.Picture}.png");
+                byte[] bytes = File.ReadAllBytes(pathComment);
+                string image = Convert.ToBase64String(bytes);
+                comment.User.Picture = image;
+            }
             return result;
         }
         public async Task<ForSalePostDto> GetSalePostById(int postId)
@@ -217,6 +234,14 @@ namespace RentingServiceBackend.Services
                 string image = Convert.ToBase64String(bytes);
                 result.Pictures.Add(image);
                 path = Path.Combine(userPostPicturesPath, $"{post.PicturesPath}\\image{++iter}.png");
+            }
+
+            var pathUser = Path.Combine(userPicturesPath, $"{post.User.Picture}.png");
+            if (File.Exists(pathUser))
+            {
+                byte[] bytes = File.ReadAllBytes(pathUser);
+                string image = Convert.ToBase64String(bytes);
+                result.User.Picture = image;
             }
             return result;
         }
