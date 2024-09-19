@@ -210,9 +210,12 @@ namespace RentingServiceBackend.Services
             foreach(var comment in result.Comments)
             {
                 var pathComment = Path.Combine(userPicturesPath, $"{comment.User.Picture}.png");
-                byte[] bytes = File.ReadAllBytes(pathComment);
-                string image = Convert.ToBase64String(bytes);
-                comment.User.Picture = image;
+                if (File.Exists(pathComment))
+                {
+                    byte[] bytes = File.ReadAllBytes(pathComment);
+                    string image = Convert.ToBase64String(bytes);
+                    comment.User.Picture = image;
+                }
             }
             return result;
         }

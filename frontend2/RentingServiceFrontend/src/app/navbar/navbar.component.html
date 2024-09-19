@@ -113,7 +113,9 @@
             Obserwowane ogłoszenia
           </button>
           <button mat-menu-item>Rezerwacje</button>
-          <button mat-menu-item>Komentarze</button>
+          <button (click)="this.navbar.navigateToMyComments()" mat-menu-item>
+            Komentarze
+          </button>
           <button
             (click)="this.navbar.navigateToAdminPanel()"
             *ngIf="authService.getRole() === 'Admin'"

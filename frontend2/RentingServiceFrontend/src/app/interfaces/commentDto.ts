@@ -1,8 +1,10 @@
-import { userDto } from "./userDto";
-
+import { postDto } from './postDto';
+import { userDto } from './userDto';
 
 export interface commentDto {
-    commentText: string;
-    commentTime: Date;
-    user: userDto;
+  commentId: number;
+  commentText: string;
+  commentTime: Date;
+  user: userDto;
+  forRentPost: postDto;
 }

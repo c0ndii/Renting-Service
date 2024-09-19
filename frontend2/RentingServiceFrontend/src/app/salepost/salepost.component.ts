@@ -89,6 +89,9 @@ export class SalepostComponent implements OnInit, OnDestroy {
 
   preparePostData() {
     this.getPostData().subscribe((response: forSalePostDto) => {
+      if (response === undefined) {
+        this.router.navigate(['']);
+      }
       response.pictures.forEach((picture) => {
         this.pictures.push({
           image: 'data:image/png;base64,' + picture,

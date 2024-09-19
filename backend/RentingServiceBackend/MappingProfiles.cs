@@ -53,6 +53,13 @@ namespace RentingServiceBackend
                 .ForMember(x => x.Lat, y => y.MapFrom(z => z.Lat.ToString()))
                 .ForMember(x => x.Lng, y => y.MapFrom(z => z.Lng.ToString()))
                 .IncludeMembers();
+            CreateMap<Comment, CommentDto>()
+                .ForMember(x => x.ForRentPost, y => y.MapFrom(z => new ForRentPost()
+                {
+                    Title = z.Post.Title,
+                    MainCategory = z.Post.MainCategory,
+                    PostId = z.PostId
+                }));
         }
     }
 }

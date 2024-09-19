@@ -52,4 +52,7 @@ export class NavbarService {
   navigateToAdminPanel() {
     this.router.navigate(['admin/posts']);
   }
+  navigateToMyComments() {
+    this.router.navigate(['mycomments']);
+  }
 }

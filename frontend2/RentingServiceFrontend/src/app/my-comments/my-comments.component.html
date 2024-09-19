@@ -1,1 +1,52 @@
-<p>my-comments works!</p>
+<div class="body">
+  @defer {
+  <div class="posts-container-outer">
+    <div class="posts-container">
+      <div class="title-holder">
+        <p>Moje komentarze</p>
+      </div>
+      <div class="post-list-holder">
+        <ul *ngFor="let comment of comments | async">
+          <li
+            class="single-holder"
+            (click)="redirectToRentPost(comment.forRentPost.postId)"
+          >
+            <div class="title-button">
+              <h2>
+                Ogłoszenie:
+                {{ comment.forRentPost.title }}
+              </h2>
+              <div>
+                <mat-icon
+                  (click)="
+                    this.deleteComment(comment.commentId);
+                    $event.stopPropagation()
+                  "
+                  >delete</mat-icon
+                >
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <div class="text-datetime-holder">
+                  <div>
+                    {{ comment.commentText }}
+                  </div>
+                  <div>
+                    {{ comment.commentTime | date : "short" }}
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  } @loading (; minimum 1.5s) {
+  <div class="spinner-holder">
+    <mat-spinner></mat-spinner>
+  </div>
+  }
+</div>
