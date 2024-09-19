@@ -76,7 +76,6 @@ export class MyCommentsComponent implements OnInit {
     this.http
       .get<commentDto[]>(backendUrlBase + 'comment')
       .subscribe((response) => {
-        console.log(response);
         this.comments.next(response);
       });
   }

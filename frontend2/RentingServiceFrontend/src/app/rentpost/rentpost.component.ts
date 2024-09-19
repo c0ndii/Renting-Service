@@ -16,6 +16,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { SnackbarService } from '../services/snackbar.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ReservationDialogComponent } from '../dialogs/reservation-dialog/reservation-dialog.component';
 
 @Component({
   selector: 'app-rentpost',
@@ -43,6 +45,7 @@ export class RentpostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     public gallery: Gallery,
+    public dialog: MatDialog,
     protected authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService
@@ -147,6 +150,44 @@ export class RentpostComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+  deleteComment(commentId: number) {
+    this.http
+      .delete(backendUrlBase + 'comment/' + commentId)
+      .pipe(
+        map(() => {
+          let tmpPost = this.post.value;
+          tmpPost.comments = tmpPost.comments.filter(
+            (item) => item.commentId !== commentId
+          );
+          this.post.next(tmpPost);
+          this.snackbar.openSnackbar('Komentarz został usunięty', 'success');
+        }),
+        catchError(() => {
+          this.snackbar.openSnackbar(
+            'Wystąpił błąd podczas próby usunięcia komentarza',
+            'error'
+          );
+          throw new Error();
+        })
+      )
+      .subscribe();
+  }
+  openRentPostDialog(
+    enterAnimationDuration: string,
+    exitAnimationDuration: string,
+    postId: number,
+    postTitle: string
+  ) {
+    let dialogRef = this.dialog.open(ReservationDialogComponent, {
+      width: '40vw',
+      minHeight: '30vh',
+      enterAnimationDuration,
+      exitAnimationDuration,
+    });
+
+    dialogRef.componentInstance.postId.next(postId);
+    dialogRef.componentInstance.postTitle.next(postTitle);
   }
 }
 export const getLayers = (): Leaflet.Layer[] => {

@@ -217,6 +217,7 @@ namespace RentingServiceBackend.Services
                     comment.User.Picture = image;
                 }
             }
+            result.Comments = result.Comments.OrderByDescending(x => x.CommentTime).ToList();
             return result;
         }
         public async Task<ForSalePostDto> GetSalePostById(int postId)

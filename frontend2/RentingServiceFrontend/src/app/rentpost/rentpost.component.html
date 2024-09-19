@@ -64,7 +64,12 @@
     <div>{{ post.user.email }}</div>
     <br />
     <b>Rezerwacje</b>
-    <button mat-stroked-button>Sprawdź rezerwacje</button>
+    <button
+      (click)="openRentPostDialog('300ms', '150ms', post.postId, post.title)"
+      mat-stroked-button
+    >
+      Sprawdź rezerwacje
+    </button>
   </div>
   <div class="double-container">
     <div class="container-60">
@@ -118,14 +123,14 @@
         <div class="buttons">
           <mat-icon
             *ngIf="
-              post.user.userId === authService.user.value.userId ||
+              comment.user.userId === authService.user.value.userId ||
               authService.getRole() === 'Admin'
             "
-            (click)="deletePost(post.postId)"
+            (click)="deleteComment(comment.commentId)"
             >delete</mat-icon
           >
         </div>
-        <div>{{ comment.commentTime | date : "shortDate" }}</div>
+        <div>{{ comment.commentTime | date : "short" }}</div>
       </div>
     </div>
   </div>

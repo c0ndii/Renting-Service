@@ -42,7 +42,7 @@ namespace RentingServiceBackend.Services
             }
 
             var comments = await _context.Comments.Include(x => x.Post).ThenInclude(x => x.MainCategory)
-                .Where(x => x.UserId == user.UserId).ToListAsync();
+                .Where(x => x.UserId == user.UserId).OrderByDescending(x => x.CommentTime).ToListAsync();
             var result = _mapper.Map<List<CommentDto>>(comments);
 
             return result;
@@ -62,7 +62,9 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var comment = await _context.Comments.Include(x => x.User).SingleOrDefaultAsync(x => x.UserId == user.UserId || x.User.Role.Name == "Admin");
+            var comment = await _context.Comments
+                .Include(x => x.User)
+                .SingleOrDefaultAsync(x => x.CommentId == commentId && (x.UserId == user.UserId || x.User.Role.Name == "Admin"));
             if (comment is null)
             {
                 throw new NotFoundException("Comment not found");

@@ -1,1 +1,4 @@
-<p>reservation-dialog works!</p>
+<div class="form-holder" *ngIf="postTitle | async as title">
+  <h2 mat-dialog-title>Stwórz rezerwacje dla ogłoszenia: {{ title }}</h2>
+  <mat-dialog-actions> </mat-dialog-actions>
+</div>
