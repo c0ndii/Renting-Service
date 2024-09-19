@@ -53,6 +53,19 @@
       </div>
     </div>
   </div>
+  <div class="user-container">
+    <b>Właściciel</b>
+    <div class="img-holder-user">
+      <img [src]="'data:image/png;base64,' + post.user.picture" />
+    </div>
+    <div>{{ post.user.name }}</div>
+    <br />
+    <b>Kontakt</b>
+    <div>{{ post.user.email }}</div>
+    <br />
+    <b>Rezerwacje</b>
+    <button mat-stroked-button>Sprawdź rezerwacje</button>
+  </div>
   <div class="double-container">
     <div class="container-60">
       <div class="subrow-holder">

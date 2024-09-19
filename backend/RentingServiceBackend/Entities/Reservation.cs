@@ -16,6 +16,6 @@
         public virtual ForRentPost Post {  get; set; }
         public DateTime FromDate {  get; set; }
         public DateTime ToDate { get; set; }
-        public int ReservationFlag {  get; set; }
+        public ReservationFlagEnum ReservationFlag {  get; set; }
     }
 }

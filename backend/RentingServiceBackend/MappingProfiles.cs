@@ -60,6 +60,9 @@ namespace RentingServiceBackend
                     MainCategory = z.Post.MainCategory,
                     PostId = z.PostId
                 }));
+            CreateMap<Reservation, ReservationDto>()
+                .ForMember(x => x.PostId, y => y.MapFrom(z => z.PostId))
+                .ForMember(x => x.UserId, y => y.MapFrom(z => z.UserId));
         }
     }
 }

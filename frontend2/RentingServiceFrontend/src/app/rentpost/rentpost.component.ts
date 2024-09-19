@@ -14,6 +14,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
 import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
@@ -27,6 +28,7 @@ import { SnackbarService } from '../services/snackbar.service';
     LeafletModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    MatButtonModule,
   ],
   templateUrl: './rentpost.component.html',
   styleUrl: './rentpost.component.scss',
