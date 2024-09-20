@@ -26,6 +26,7 @@ import localePl from '@angular/common/locales/pl';
 import { registerLocaleData } from '@angular/common';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginator } from './list-layout/custom-paginator';
+import { provideDaterangepickerLocale } from 'ngx-daterangepicker-bootstrap';
 
 registerLocaleData(localePl);
 
@@ -66,5 +67,9 @@ export const appConfig: ApplicationConfig = {
       provide: MatPaginatorIntl,
       useValue: CustomPaginator(),
     },
+    provideDaterangepickerLocale({
+      separator: '-',
+      applyLabel: 'Ok',
+    }),
   ],
 };

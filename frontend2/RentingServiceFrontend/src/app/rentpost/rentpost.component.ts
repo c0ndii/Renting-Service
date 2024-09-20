@@ -18,6 +18,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { SnackbarService } from '../services/snackbar.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReservationDialogComponent } from '../dialogs/reservation-dialog/reservation-dialog.component';
+import {
+  NgxDaterangepickerBootstrapDirective,
+  NgxDaterangepickerBootstrapComponent,
+} from 'ngx-daterangepicker-bootstrap';
+import dayjs, { Dayjs } from 'dayjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rentpost',
@@ -31,6 +37,9 @@ import { ReservationDialogComponent } from '../dialogs/reservation-dialog/reserv
     MatProgressSpinnerModule,
     MatChipsModule,
     MatButtonModule,
+    NgxDaterangepickerBootstrapComponent,
+    NgxDaterangepickerBootstrapDirective,
+    FormsModule,
   ],
   templateUrl: './rentpost.component.html',
   styleUrl: './rentpost.component.scss',
@@ -38,6 +47,7 @@ import { ReservationDialogComponent } from '../dialogs/reservation-dialog/reserv
 export class RentpostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
   postId?: number;
+  selectedDateRange?: { startDate: Dayjs; endDate: Dayjs };
   post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
   private mapLoaded = new BehaviorSubject<boolean>(false);
   private sub: any;

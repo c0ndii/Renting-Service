@@ -27,6 +27,7 @@
     "@types/leaflet.markercluster": "^1.5.4",
     "angular-leaflet-directive": "^0.10.0",
     "angular-material-fileupload": "^3.0.2",
+    "dayjs": "^1.11.13",
     "express": "^4.18.2",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
@@ -36,6 +37,7 @@
     "leaflet.markercluster": "^1.5.3",
     "ng-gallery": "^11.0.0",
     "ng-image-slider": "^7.0.1",
+    "ngx-daterangepicker-bootstrap": "^18.5.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

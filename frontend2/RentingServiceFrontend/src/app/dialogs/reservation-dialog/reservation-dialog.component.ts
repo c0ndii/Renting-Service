@@ -29,6 +29,11 @@ import { backendUrlBase } from '../../appsettings/constant';
 import { NavbarService } from '../../services/navbar.service';
 import { Gallery } from 'ng-gallery';
 import { BehaviorSubject } from 'rxjs';
+import {
+  NgxDaterangepickerBootstrapDirective,
+  NgxDaterangepickerBootstrapComponent,
+} from 'ngx-daterangepicker-bootstrap';
+import dayjs, { Dayjs } from 'dayjs';
 
 @Component({
   selector: 'app-reservation-dialog',
@@ -45,6 +50,8 @@ import { BehaviorSubject } from 'rxjs';
     MatFormFieldModule,
     MatDividerModule,
     CommonModule,
+    NgxDaterangepickerBootstrapComponent,
+    NgxDaterangepickerBootstrapDirective,
   ],
   templateUrl: './reservation-dialog.component.html',
   styleUrl: './reservation-dialog.component.scss',

@@ -171,11 +171,11 @@ h4 {
   overflow-x: hidden;
 }
 .user-container {
-  top: 15%;
+  top: calc(100% - (100% - 75px) + 30px);
   right: 9%;
   width: 10vw;
   height: 50vh;
-  position: fixed;
+  position: absolute;
   background-color: rgba(255, 255, 255, 0.9);
   border: 3px solid rgba(0, 0, 0, 0.12);
   border-radius: 0.6rem;
