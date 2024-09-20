@@ -64,22 +64,13 @@
     <div>{{ post.user.email }}</div>
     <br />
     <b>Rezerwacje</b>
-    <!-- <button
+    <button
       (click)="openRentPostDialog('300ms', '150ms', post.postId, post.title)"
-      mat-stroked-button
+      mat-flat-button
+      class="btn"
     >
-      Sprawdź rezerwacje
-    </button> -->
-    <input
-      type="text"
-      hidden="true"
-      ngxDaterangepickerBootstrap
-      [locale]="{ applyLabel: 'ok', format: 'DD-MM-YYYY' }"
-      startKey="start"
-      endKey="end"
-      name="daterange"
-      [(ngModel)]="selectedDateRange"
-    />
+      Stwórz rezerwacje
+    </button>
   </div>
   <div class="double-container">
     <div class="container-60">

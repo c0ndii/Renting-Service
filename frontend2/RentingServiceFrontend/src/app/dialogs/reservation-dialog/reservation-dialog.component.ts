@@ -28,12 +28,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { backendUrlBase } from '../../appsettings/constant';
 import { NavbarService } from '../../services/navbar.service';
 import { Gallery } from 'ng-gallery';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   NgxDaterangepickerBootstrapDirective,
   NgxDaterangepickerBootstrapComponent,
 } from 'ngx-daterangepicker-bootstrap';
 import dayjs, { Dayjs } from 'dayjs';
+import { reservationDto } from '../../interfaces/reservationDto';
 
 @Component({
   selector: 'app-reservation-dialog',
@@ -58,10 +59,11 @@ import dayjs, { Dayjs } from 'dayjs';
 })
 export class ReservationDialogComponent implements OnInit {
   postIdParam?: number;
-  postTitleParam?: string;
-  postTitle = new BehaviorSubject<string>('');
+  selectedDateRange?: { startDate: Dayjs; endDate: Dayjs };
+  disabledDays?: Dayjs[];
   postId = new BehaviorSubject<number>(0);
-  private sub: any;
+  todaysDate = dayjs().add(1, 'day');
+  notAllowedDates = new BehaviorSubject<reservationDto[]>([]);
 
   constructor(
     private route: ActivatedRoute,
@@ -71,5 +73,28 @@ export class ReservationDialogComponent implements OnInit {
     private router: Router,
     private snackbar: SnackbarService
   ) {}
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getDisabledDatesFetch(this.postId.value).subscribe((res) => {
+      console.log(res);
+      this.getDisabledDays(res);
+      this.notAllowedDates.next(res);
+    });
+  }
+
+  getDisabledDatesFetch(postId: number): Observable<reservationDto[]> {
+    return this.http.get<reservationDto[]>(
+      backendUrlBase + 'reservation/post/' + postId
+    );
+  }
+
+  getDisabledDays(excludeDates: reservationDto[]) {
+    excludeDates.forEach((element) => {
+      let startDate = dayjs(element.fromDate).add(-1, 'day');
+      let endDate = dayjs(element.toDate).add(2, 'day');
+      while (startDate.isBefore(endDate)) {
+        this.disabledDays?.push(startDate);
+        startDate = startDate.add(1, 'day');
+      }
+    });
+  }
 }

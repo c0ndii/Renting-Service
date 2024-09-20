@@ -1,4 +1,23 @@
-<div class="form-holder" *ngIf="postTitle | async as title">
-  <h2 mat-dialog-title>Stwórz rezerwacje dla ogłoszenia: {{ title }}</h2>
-  <mat-dialog-actions> </mat-dialog-actions>
+<div class="form-holder" *ngIf="postId | async as title">
+  <mat-dialog-actions>
+    <!-- <input
+      matInput
+      type="text"
+      ngxDaterangepickerBootstrap
+      [locale]="{ applyLabel: 'ok', format: 'DD-MM-YYYY' }"
+      startKey="start"
+      endKey="end"
+      name="daterange"
+      [(ngModel)]="selectedDateRange"
+    /> -->
+    <ngx-daterangepicker-bootstrap
+      (chosenDate)="(selectedDateRange)"
+      [locale]="{ applyLabel: 'Gotowe', format: 'DD-MM-YYYY' }"
+      startKey="start"
+      endKey="end"
+      [minDate]="todaysDate"
+      [showCancel]="true"
+    >
+    </ngx-daterangepicker-bootstrap>
+  </mat-dialog-actions>
 </div>

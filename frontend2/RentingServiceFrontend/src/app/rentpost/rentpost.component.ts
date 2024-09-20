@@ -47,7 +47,6 @@ import { FormsModule } from '@angular/forms';
 export class RentpostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
   postId?: number;
-  selectedDateRange?: { startDate: Dayjs; endDate: Dayjs };
   post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
   private mapLoaded = new BehaviorSubject<boolean>(false);
   private sub: any;
@@ -197,7 +196,6 @@ export class RentpostComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.componentInstance.postId.next(postId);
-    dialogRef.componentInstance.postTitle.next(postTitle);
   }
 }
 export const getLayers = (): Leaflet.Layer[] => {
