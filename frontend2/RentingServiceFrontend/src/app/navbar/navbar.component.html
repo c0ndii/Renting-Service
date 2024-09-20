@@ -10,7 +10,7 @@
         >
           <mat-icon class="home-icon">home</mat-icon>
         </button>
-        <mat-form-field class="searchbar">
+        <mat-form-field class="searchbar" *ngIf="selectedValue == 'list'">
           <input
             matInput
             type="text"
@@ -25,6 +25,27 @@
             aria-label="Clear"
             (click)="
               sideNavbarService.filters.controls.searchPhrase.setValue('')
+            "
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+        </mat-form-field>
+        <mat-form-field class="searchbar" *ngIf="selectedValue == 'map'">
+          <input
+            matInput
+            type="text"
+            [disabled]="navbar.inputsDisabled"
+            placeholder="Wyszukaj..."
+            [formControl]="sideNavbarService.filtersMap.controls.searchPhrase"
+          />
+          @if (sideNavbarService.filtersMap.controls.searchPhrase) {
+          <button
+            matSuffix
+            mat-icon-button
+            aria-label="Clear"
+            (click)="
+              sideNavbarService.filtersMap.controls.searchPhrase.setValue('')
             "
           >
             <mat-icon>close</mat-icon>
