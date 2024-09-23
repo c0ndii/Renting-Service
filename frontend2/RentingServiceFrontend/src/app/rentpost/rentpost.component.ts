@@ -23,7 +23,11 @@ import {
   NgxDaterangepickerBootstrapComponent,
 } from 'ngx-daterangepicker-bootstrap';
 import dayjs, { Dayjs } from 'dayjs';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { reservationDto } from '../interfaces/reservationDto';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-rentpost',
@@ -40,13 +44,28 @@ import { FormsModule } from '@angular/forms';
     NgxDaterangepickerBootstrapComponent,
     NgxDaterangepickerBootstrapDirective,
     FormsModule,
+    MatDatepickerModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   templateUrl: './rentpost.component.html',
   styleUrl: './rentpost.component.scss',
 })
 export class RentpostComponent implements OnInit, OnDestroy {
   pictures: Array<object> = [];
+  tomorrow: Date = new Date(dayjs().add(1, 'day').toDate());
   postId?: number;
+  selectedDateRange?: { startDate: Dayjs; endDate: Dayjs };
+  disabledDays: Date[] = [];
+  myFilter = (d: Date | null): boolean => {
+    if (d! < this.tomorrow) {
+      return false;
+    }
+    return !this.disabledDays.find((item) => {
+      return item.getTime() == d?.getTime();
+    });
+  };
   post = new BehaviorSubject<forRentPostDto>({} as forRentPostDto);
   private mapLoaded = new BehaviorSubject<boolean>(false);
   private sub: any;
@@ -58,7 +77,9 @@ export class RentpostComponent implements OnInit, OnDestroy {
     protected authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService
-  ) {}
+  ) {
+    console.log(this.tomorrow + 'tet');
+  }
 
   ngOnInit(): void {
     this.sub = this.route.params.subscribe((params) => {
@@ -81,6 +102,9 @@ export class RentpostComponent implements OnInit, OnDestroy {
           marker.addTo(this.map);
         });
       }
+    });
+    this.getDisabledDatesFetch(this.postId!).subscribe((res) => {
+      this.getDisabledDays(res);
     });
   }
   ngOnDestroy() {
@@ -197,7 +221,25 @@ export class RentpostComponent implements OnInit, OnDestroy {
 
     dialogRef.componentInstance.postId.next(postId);
   }
+
+  getDisabledDatesFetch(postId: number): Observable<reservationDto[]> {
+    return this.http.get<reservationDto[]>(
+      backendUrlBase + 'reservation/post/' + postId
+    );
+  }
+
+  getDisabledDays(excludeDates: reservationDto[]) {
+    excludeDates.forEach((element) => {
+      let startDate = dayjs(element.fromDate).add(-1, 'day');
+      let endDate = dayjs(element.toDate).add(2, 'day');
+      while (startDate.isBefore(endDate)) {
+        this.disabledDays?.push(startDate.toDate());
+        startDate = startDate.add(1, 'day');
+      }
+    });
+  }
 }
+
 export const getLayers = (): Leaflet.Layer[] => {
   return [
     new Leaflet.TileLayer(

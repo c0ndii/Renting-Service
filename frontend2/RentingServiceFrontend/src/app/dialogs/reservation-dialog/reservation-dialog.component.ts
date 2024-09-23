@@ -71,6 +71,7 @@ export class ReservationDialogComponent implements OnInit {
   postId = new BehaviorSubject<number>(0);
   myFilter = (d: Date | null): boolean => {
     return !this.disabledDays.find((item) => {
+      console.log('test');
       return item.getTime() == d?.getTime();
     });
   };

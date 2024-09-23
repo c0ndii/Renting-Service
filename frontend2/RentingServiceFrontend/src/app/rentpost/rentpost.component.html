@@ -64,11 +64,22 @@
     <div>{{ post.user.email }}</div>
     <br />
     <b>Rezerwacje</b>
-    <button
-      (click)="openRentPostDialog('300ms', '150ms', post.postId, post.title)"
-      mat-flat-button
-      class="btn"
-    >
+    <div [hidden]="true">
+      <mat-form-field>
+        <mat-label>Wybierz zakres rezerwacji</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [dateFilter]="myFilter">
+          <input matStartDate placeholder="od" />
+          <input matEndDate placeholder="do" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker touchUi #picker> </mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <button (click)="picker.open()" mat-flat-button class="btn">
       Stwórz rezerwacje
     </button>
   </div>
