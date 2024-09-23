@@ -6,7 +6,7 @@ import {
   MatDialogContent,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,6 +35,11 @@ import {
 } from 'ngx-daterangepicker-bootstrap';
 import dayjs, { Dayjs } from 'dayjs';
 import { reservationDto } from '../../interfaces/reservationDto';
+import { CalendarOptions, EventSourceInput } from '@fullcalendar/core';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-reservation-dialog',
@@ -53,6 +58,8 @@ import { reservationDto } from '../../interfaces/reservationDto';
     CommonModule,
     NgxDaterangepickerBootstrapComponent,
     NgxDaterangepickerBootstrapDirective,
+    FullCalendarModule,
+    MatDatepickerModule,
   ],
   templateUrl: './reservation-dialog.component.html',
   styleUrl: './reservation-dialog.component.scss',
@@ -60,10 +67,13 @@ import { reservationDto } from '../../interfaces/reservationDto';
 export class ReservationDialogComponent implements OnInit {
   postIdParam?: number;
   selectedDateRange?: { startDate: Dayjs; endDate: Dayjs };
-  disabledDays?: Dayjs[];
+  disabledDays: Date[] = [];
   postId = new BehaviorSubject<number>(0);
-  todaysDate = dayjs().add(1, 'day');
-  notAllowedDates = new BehaviorSubject<reservationDto[]>([]);
+  myFilter = (d: Date | null): boolean => {
+    return !this.disabledDays.find((item) => {
+      return item.getTime() == d?.getTime();
+    });
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -75,9 +85,7 @@ export class ReservationDialogComponent implements OnInit {
   ) {}
   ngOnInit(): void {
     this.getDisabledDatesFetch(this.postId.value).subscribe((res) => {
-      console.log(res);
       this.getDisabledDays(res);
-      this.notAllowedDates.next(res);
     });
   }
 
@@ -92,7 +100,7 @@ export class ReservationDialogComponent implements OnInit {
       let startDate = dayjs(element.fromDate).add(-1, 'day');
       let endDate = dayjs(element.toDate).add(2, 'day');
       while (startDate.isBefore(endDate)) {
-        this.disabledDays?.push(startDate);
+        this.disabledDays?.push(startDate.toDate());
         startDate = startDate.add(1, 'day');
       }
     });

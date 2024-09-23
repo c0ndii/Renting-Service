@@ -27,6 +27,7 @@ import { registerLocaleData } from '@angular/common';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginator } from './list-layout/custom-paginator';
 import { provideDaterangepickerLocale } from 'ngx-daterangepicker-bootstrap';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 registerLocaleData(localePl);
 
