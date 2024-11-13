@@ -17,6 +17,8 @@ import { SidenavbarService } from '../services/sidenavbar.service';
 import { postDto } from '../interfaces/postDto';
 import { postQueryMap } from '../interfaces/postQueryMap';
 import { LeafletMarkerClusterModule } from '../marker-cluster/leaflet-markercluster.module';
+import 'leaflet/dist/images/marker-shadow.png';
+import 'leaflet/dist/images/marker-icon.png';
 
 @Component({
   selector: 'app-map-layout',

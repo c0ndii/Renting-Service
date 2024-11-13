@@ -19,7 +19,7 @@ namespace RentingServiceBackend.Services
         }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var client = new SmtpClient("smtp-mail.outlook.com", 587)
+            var client = new SmtpClient("smtp.gmail.com", 587)
             {
                 EnableSsl = true,
                 Credentials = new NetworkCredential(_settings.Email, _settings.Password)
