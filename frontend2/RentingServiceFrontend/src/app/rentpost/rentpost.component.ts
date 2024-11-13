@@ -28,6 +28,7 @@ import { reservationDto } from '../interfaces/reservationDto';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ReservationLongDialogComponent } from '../dialogs/reservation-long-dialog/reservation-long-dialog.component';
 
 @Component({
   selector: 'app-rentpost',
@@ -77,9 +78,7 @@ export class RentpostComponent implements OnInit, OnDestroy {
     protected authService: AuthService,
     private router: Router,
     private snackbar: SnackbarService
-  ) {
-    console.log(this.tomorrow + 'tet');
-  }
+  ) {}
 
   ngOnInit(): void {
     this.sub = this.route.params.subscribe((params) => {
@@ -102,9 +101,6 @@ export class RentpostComponent implements OnInit, OnDestroy {
           marker.addTo(this.map);
         });
       }
-    });
-    this.getDisabledDatesFetch(this.postId!).subscribe((res) => {
-      this.getDisabledDays(res);
     });
   }
   ngOnDestroy() {
@@ -206,37 +202,58 @@ export class RentpostComponent implements OnInit, OnDestroy {
       )
       .subscribe();
   }
+
+  openDialog() {
+    console.log(this.post.value.mainCategory);
+    if (this.post.value.mainCategory !== 'Wypoczynek') {
+      this.openRentPostDialog(
+        '300ms',
+        '150ms',
+        this.post.value.postId,
+        this.post.value.price
+      );
+    } else {
+      this.openRentPostDialogLong(
+        '300ms',
+        '150ms',
+        this.post.value.postId,
+        this.post.value.price
+      );
+    }
+  }
+
   openRentPostDialog(
     enterAnimationDuration: string,
     exitAnimationDuration: string,
     postId: number,
-    postTitle: string
+    price: number
   ) {
     let dialogRef = this.dialog.open(ReservationDialogComponent, {
       width: '40vw',
-      minHeight: '30vh',
+      minHeight: '20vh',
       enterAnimationDuration,
       exitAnimationDuration,
     });
 
     dialogRef.componentInstance.postId.next(postId);
+    dialogRef.componentInstance.price.next(price);
   }
 
-  getDisabledDatesFetch(postId: number): Observable<reservationDto[]> {
-    return this.http.get<reservationDto[]>(
-      backendUrlBase + 'reservation/post/' + postId
-    );
-  }
-
-  getDisabledDays(excludeDates: reservationDto[]) {
-    excludeDates.forEach((element) => {
-      let startDate = dayjs(element.fromDate).add(-1, 'day');
-      let endDate = dayjs(element.toDate).add(2, 'day');
-      while (startDate.isBefore(endDate)) {
-        this.disabledDays?.push(startDate.toDate());
-        startDate = startDate.add(1, 'day');
-      }
+  openRentPostDialogLong(
+    enterAnimationDuration: string,
+    exitAnimationDuration: string,
+    postId: number,
+    price: number
+  ) {
+    let dialogRef = this.dialog.open(ReservationLongDialogComponent, {
+      width: '40vw',
+      minHeight: '20vh',
+      enterAnimationDuration,
+      exitAnimationDuration,
     });
+
+    dialogRef.componentInstance.postId.next(postId);
+    dialogRef.componentInstance.price.next(price);
   }
 }
 

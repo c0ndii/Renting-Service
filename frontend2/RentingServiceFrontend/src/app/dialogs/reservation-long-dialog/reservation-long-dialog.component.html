@@ -7,31 +7,27 @@
         <mat-form-field>
           <mat-label>Data początkowa</mat-label>
           <input
-            #pickerInput
             matInput
             [matDatepickerFilter]="myFilter"
             [matDatepicker]="picker"
             [(ngModel)]="startDate"
+            (dateChange)="updateSecondPicker()"
           />
           <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle
             matIconSuffix
             [for]="picker"
           ></mat-datepicker-toggle>
-          <mat-datepicker
-            (monthSelected)="monthSelectedFirst($event, picker, pickerInput)"
-            startView="multi-year"
-            #picker
-          ></mat-datepicker>
+          <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Data końcowa</mat-label>
           <input
-            #pickerInputSecond
             matInput
             [matDatepickerFilter]="myFilterSecond"
             [matDatepicker]="pickerSecond"
             [(ngModel)]="stopDate"
+            (dateChange)="checkedDate()"
             [disabled]="startDate === null"
           />
           <mat-hint>MM/DD/YYYY</mat-hint>
@@ -43,10 +39,6 @@
           <mat-datepicker
             [disabled]="startDate === null"
             #pickerSecond
-            (monthSelected)="
-              monthSelectedSecond($event, pickerSecond, pickerInputSecond)
-            "
-            startView="multi-year"
           ></mat-datepicker>
         </mat-form-field>
       </div>

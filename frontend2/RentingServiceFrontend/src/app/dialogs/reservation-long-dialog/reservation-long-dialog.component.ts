@@ -45,7 +45,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { createReservationDto } from '../../interfaces/createReservationDto';
 
 @Component({
-  selector: 'app-reservation-dialog',
+  selector: 'app-reservation-long-dialog',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -65,10 +65,10 @@ import { createReservationDto } from '../../interfaces/createReservationDto';
     MatDatepickerModule,
     MatCardModule,
   ],
-  templateUrl: './reservation-dialog.component.html',
-  styleUrl: './reservation-dialog.component.scss',
+  templateUrl: './reservation-long-dialog.component.html',
+  styleUrl: './reservation-long-dialog.component.scss',
 })
-export class ReservationDialogComponent implements OnInit {
+export class ReservationLongDialogComponent implements OnInit {
   postIdParam?: number;
   totalPrice = new BehaviorSubject<number>(0);
   postId = new BehaviorSubject<number>(0);
@@ -90,31 +90,11 @@ export class ReservationDialogComponent implements OnInit {
     });
   };
 
-  monthSelectedFirst(event: any, dp: any, input: any) {
-    dp.close();
-    input.value = event.toISOString().split('-').join('/').substr(0, 7);
-    this.startDate = dayjs(input.value)
-      .add(1, 'month')
-      .add(1, 'minute')
-      .toDate();
-    this.updateSecondPicker();
-  }
-
-  monthSelectedSecond(event: any, dp: any, input: any) {
-    dp.close();
-    input.value = event.toISOString().split('-').join('/').substr(0, 7);
-    this.stopDate = dayjs(input.value)
-      .add(1, 'month')
-      .add(1, 'minute')
-      .toDate();
-    this.checkedDate();
-  }
-
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     protected authService: AuthService,
-    public dialog: MatDialogRef<ReservationDialogComponent>,
+    public dialog: MatDialogRef<ReservationLongDialogComponent>,
     private router: Router,
     private snackbar: SnackbarService
   ) {}
@@ -134,7 +114,7 @@ export class ReservationDialogComponent implements OnInit {
 
   disableBeforeDates() {
     let startDate = dayjs().startOf('year').add(-10, 'year');
-    let currentDate = dayjs().endOf('month');
+    let currentDate = dayjs().startOf('day');
     while (startDate.isBefore(currentDate)) {
       this.disabledDays?.push(startDate.toDate());
       startDate = startDate.add(1, 'day');
@@ -144,7 +124,7 @@ export class ReservationDialogComponent implements OnInit {
   disableBeforeDatesSecond() {
     this.disabledDaysSecond = [];
     let startDate = dayjs().startOf('year').add(-10, 'year');
-    let checkedDate = dayjs(this.startDate).endOf('month');
+    let checkedDate = dayjs(this.startDate);
     while (startDate.isBefore(checkedDate)) {
       this.disabledDaysSecond?.push(startDate.toDate());
       startDate = startDate.add(1, 'day');
@@ -153,8 +133,8 @@ export class ReservationDialogComponent implements OnInit {
 
   getDisabledDays(excludeDates: reservationDto[]) {
     excludeDates.forEach((element) => {
-      let startDate = dayjs(element.fromDate).add(-1, 'month');
-      let endDate = dayjs(element.toDate).add(1, 'month');
+      let startDate = dayjs(element.fromDate).add(-1, 'day');
+      let endDate = dayjs(element.toDate).add(2, 'day');
       while (startDate.isBefore(endDate)) {
         this.disabledDays?.push(startDate.toDate());
         startDate = startDate.add(1, 'day');
@@ -164,8 +144,8 @@ export class ReservationDialogComponent implements OnInit {
 
   getDisabledDaysSecond(excludeDates: reservationDto[]) {
     excludeDates.forEach((element) => {
-      let checkedDate = dayjs(this.startDate).startOf('month');
-      let startDate = dayjs(element.fromDate).startOf('month');
+      let checkedDate = dayjs(this.startDate);
+      let startDate = dayjs(element.fromDate).add(-1, 'day');
       if (checkedDate.isBefore(startDate)) {
         let lastDayOfYear = dayjs().endOf('year').add(10, 'year');
         while (startDate.isBefore(lastDayOfYear)) {
@@ -185,13 +165,13 @@ export class ReservationDialogComponent implements OnInit {
   checkedDate() {
     this.selectedRange = [];
     let startDate = dayjs(this.startDate);
-    let endDate = dayjs(this.stopDate).endOf('month');
+    let endDate = dayjs(this.stopDate);
     while (startDate.isBefore(endDate)) {
       this.selectedRange?.push(startDate.toDate());
-      startDate = startDate.add(1, 'month');
+      startDate = startDate.add(1, 'day');
     }
     let multipler = this.selectedRange.length;
-    this.totalPrice.next((multipler + 1) * this.price.value);
+    this.totalPrice.next(multipler * this.price.value);
   }
 
   reserve() {

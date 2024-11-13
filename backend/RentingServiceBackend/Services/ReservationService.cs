@@ -43,7 +43,8 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var reservations = await _context.Reservations.Include(x => x.Post).Where(x => x.PostId == postId).ToListAsync();
+            var reservations = await _context.Reservations.Include(x => x.Post)
+                .Where(x => x.PostId == postId && (x.ReservationFlag == ReservationFlagEnum.NotConfirmed || x.ReservationFlag == ReservationFlagEnum.Confirmed)).ToListAsync();
             var result = _mapper.Map<List<ReservationDto>>(reservations);
 
             return result;
@@ -94,7 +95,7 @@ namespace RentingServiceBackend.Services
             var isDateFree = await _context.Reservations
                 .Include(x => x.Post).ThenInclude(x => x.User)
                 .AnyAsync(x => x.Post.PostId == postId && x.Post.User.UserId != userId
-                && !(dto.FromDate <= x.ToDate && x.FromDate <= dto.ToDate));
+                && (dto.FromDate <= x.ToDate && x.FromDate <= dto.ToDate));
 
             if (isDateFree)
             {
@@ -103,7 +104,8 @@ namespace RentingServiceBackend.Services
 
             var reservation = new Reservation()
             {
-                FromDate = dto.FromDate,
+                PostId = postId,
+                FromDate = dto.FromDate.Date,
                 ToDate = dto.ToDate,
                 User = user,
             };
