@@ -25,7 +25,7 @@ import { getLayers } from '../map-layout/map-layout.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
   CdkDragDrop,
   CdkDrag,
@@ -33,7 +33,6 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { createForRentPostDto } from '../interfaces/createForRentPostDto';
 import { createForSalePostDto } from '../interfaces/createForSalePostDto';
 import { NavbarService } from '../services/navbar.service';
 import { AuthService } from '../services/auth.service';

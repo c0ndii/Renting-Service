@@ -6,28 +6,19 @@ import {
   MatDialogContent,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  FormControl,
-  FormGroupDirective,
-  NgForm,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SnackbarService } from '../../services/snackbar.service';
 import { AuthService } from '../../services/auth.service';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { backendUrlBase } from '../../appsettings/constant';
-import { NavbarService } from '../../services/navbar.service';
 import { Gallery } from 'ng-gallery';
-import { BehaviorSubject, Observable, map, catchError } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { forRentPostDto } from '../../interfaces/forRentPostDto';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';

@@ -25,7 +25,7 @@ import { getLayers } from '../map-layout/map-layout.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as Leaflet from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
   CdkDragDrop,
   CdkDrag,
