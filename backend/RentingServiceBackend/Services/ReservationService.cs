@@ -44,8 +44,8 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var reservations = await _context.Reservations.Include(x => x.Post)
-                .Where(x => x.PostId == postId && (x.ReservationFlag == ReservationFlagEnum.NotConfirmed || x.ReservationFlag == ReservationFlagEnum.Confirmed)).ToListAsync();
+            var reservations = await _context.Reservations.Include(x => x.Post).ThenInclude(x => x.User)
+                .Where(x => x.PostId == postId && !x.Post.isDeleted && !x.Post.User.isDeleted && (x.ReservationFlag == ReservationFlagEnum.NotConfirmed || x.ReservationFlag == ReservationFlagEnum.Confirmed)).ToListAsync();
             var result = _mapper.Map<List<ReservationDto>>(reservations);
 
             return result;
@@ -65,7 +65,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var reservations = await _context.Reservations.Include(x => x.Post).Include(x => x.User).Where(x => x.Post.UserId == userId && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
+            var reservations = await _context.Reservations.Include(x => x.Post).ThenInclude(x => x.User).Include(x => x.User).Where(x => x.Post.UserId == userId && !x.Post.isDeleted && !x.Post.User.isDeleted && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
             var result = _mapper.Map<List<ReservationDto>>(reservations);
 
             return result;
@@ -85,7 +85,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var reservations = await _context.Reservations.Include(x => x.Post).Include(x => x.User).Where(x => x.UserId == userId && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
+            var reservations = await _context.Reservations.Include(x => x.Post).ThenInclude(x => x.User).Include(x => x.User).Where(x => x.UserId == userId && !x.Post.isDeleted && !x.Post.User.isDeleted && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
             var result = _mapper.Map<List<ReservationDto>>(reservations);
 
             return result;
@@ -107,7 +107,7 @@ namespace RentingServiceBackend.Services
 
             var post = await _context.ForRentPosts
                 .Include(x => x.User).Include(x => x.MainCategory)
-                .SingleOrDefaultAsync(x => x.PostId == postId && x.Confirmed && !x.User.isDeleted && x.User.UserId != user.UserId);
+                .SingleOrDefaultAsync(x => x.PostId == postId && x.Confirmed && !x.isDeleted && !x.User.isDeleted && x.User.UserId != user.UserId);
             if (post is null)
             {
                 throw new NotFoundException("Post not found");
@@ -165,7 +165,7 @@ namespace RentingServiceBackend.Services
                 .Include(x => x.Post).ThenInclude(x => x.User)
                 .SingleOrDefaultAsync(x => x.ReservationId == reservationId
                 && x.ReservationFlag != ReservationFlagEnum.Confirmed
-                && x.Post.User.UserId == userId);
+                && x.Post.User.UserId == userId && !x.Post.isDeleted && !x.Post.User.isDeleted);
 
             if (reservation is null)
             {
@@ -195,7 +195,7 @@ namespace RentingServiceBackend.Services
                 .Include(x => x.User)
                 .Include(x => x.Post).ThenInclude(x => x.User)
                 .SingleOrDefaultAsync(x => x.ReservationId == reservationId
-                && x.ReservationFlag != ReservationFlagEnum.Canceled
+                && x.ReservationFlag != ReservationFlagEnum.Canceled && !x.Post.isDeleted && !x.Post.User.isDeleted
                 && (x.Post.User.UserId == userId || x.UserId == user.UserId));
 
             if (reservation is null)
@@ -227,8 +227,8 @@ namespace RentingServiceBackend.Services
             }
 
             var reservation = await _context.Reservations
-                .Include(x => x.Post)
-                .SingleOrDefaultAsync(x => x.ReservationId == reservationId
+                .Include(x => x.Post).ThenInclude(x => x.User)
+                .SingleOrDefaultAsync(x => x.ReservationId == reservationId && !x.Post.isDeleted && !x.Post.User.isDeleted
                 && x.ReservationFlag != ReservationFlagEnum.Completed
                 && x.Post.User.UserId == userId);
 
@@ -237,7 +237,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("Reservation not found");
             }
 
-            if(reservation.ToDate <= DateTime.Today)
+            if(reservation.ToDate >= DateTime.Today)
             {
                 throw new BadRequestException("Too early to complete reservation");
             }

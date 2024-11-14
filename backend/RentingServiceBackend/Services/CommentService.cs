@@ -43,8 +43,8 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var comments = await _context.Comments.Include(x => x.Post).ThenInclude(x => x.MainCategory)
-                .Where(x => x.UserId == user.UserId).OrderByDescending(x => x.CommentTime).ToListAsync();
+            var comments = await _context.Comments.Include(x => x.Post).ThenInclude(x => x.MainCategory).Include(x => x.Post).ThenInclude(x=>x.User)
+                .Where(x => x.UserId == user.UserId && !x.Post.isDeleted && !x.Post.User.isDeleted).OrderByDescending(x => x.CommentTime).ToListAsync();
             var result = _mapper.Map<List<CommentDto>>(comments);
 
             return result;
@@ -65,8 +65,8 @@ namespace RentingServiceBackend.Services
             }
 
             var comment = await _context.Comments
-                .Include(x => x.User)
-                .SingleOrDefaultAsync(x => x.CommentId == commentId && (x.UserId == user.UserId || x.User.Role.Name == "Admin"));
+                .Include(x => x.User).Include(x => x.Post)
+                .SingleOrDefaultAsync(x => x.CommentId == commentId && !x.User.isDeleted && !x.Post.isDeleted && (x.UserId == user.UserId || x.User.Role.Name == "Admin"));
             if (comment is null)
             {
                 throw new NotFoundException("Comment not found");
@@ -91,8 +91,9 @@ namespace RentingServiceBackend.Services
 
             var canComment = await _context.Comments
                 .Include(x => x.Post)
+                .Include(x => x.User)
                 .ThenInclude(x => x.Reservations)
-                .Where(x => x.PostId == postId && x.Post.Reservations
+                .Where(x => x.PostId == postId && !x.Post.isDeleted && !x.User.isDeleted && x.Post.Reservations
                     .Any(x => x.PostId == postId && x.UserId == userId && x.ReservationFlag == ReservationFlagEnum.Completed)).ToListAsync();
 
             if(canComment.Count() > 0)
@@ -128,8 +129,9 @@ namespace RentingServiceBackend.Services
 
             var canComment = await _context.Comments
                 .Include(x => x.Post)
+                .Include(x => x.User)
                 .ThenInclude(x => x.Reservations)
-                .Where(x => x.PostId == postId && x.Post.Reservations
+                .Where(x => x.PostId == postId && !x.User.isDeleted && !x.Post.isDeleted && x.Post.Reservations
                     .Any(x => x.PostId == postId && x.UserId == userId && x.ReservationFlag == ReservationFlagEnum.Completed)).ToListAsync();
 
             if (canComment.Count() > 0)

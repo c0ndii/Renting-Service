@@ -86,7 +86,7 @@ export class FollowedPostsComponent {
   followRentPost(postId: number) {
     let tmpList = this.rentPosts.value;
     this.http
-      .get(backendUrlBase + 'post/togglerentfollow/' + postId)
+      .get(backendUrlBase + 'post/togglefollow/' + postId)
       .pipe(
         map((result) => {
           if (result !== true) {

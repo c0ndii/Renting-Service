@@ -20,5 +20,6 @@
         public virtual List<User> FollowedBy { get; set; } = new List<User>();
         public int UserId { get; set; }
         public virtual User User { get; set; }
+        public bool isDeleted { get; set; } = false;
     }
 }

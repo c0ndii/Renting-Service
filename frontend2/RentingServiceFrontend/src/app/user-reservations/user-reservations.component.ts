@@ -181,18 +181,12 @@ export class UserReservationsComponent implements OnInit {
             .filter((e) => e)
             .map((e) => {
               if (e.reservationFlag == 0) {
-                let tmp = {} as reservationDto;
-                tmp.fromDate = e.fromDate;
-                tmp.toDate = e.toDate;
-                tmp.reservationFlag = 1;
-                tmp.postId = e.postId;
-                tmp.reservationId = e.reservationId;
-                tmp.userId = e.userId;
-                return tmp;
+                e.reservationFlag = 1;
               }
               return e;
             });
           this.toMeReservations.next(tmpList);
+          this.changeFilters();
           this.snackbar.openSnackbar(
             'Rezerwacja została potwierdzona',
             'success'
@@ -219,14 +213,7 @@ export class UserReservationsComponent implements OnInit {
             .filter((e) => e)
             .map((e) => {
               if (e.reservationFlag == 0) {
-                let tmp = {} as reservationDto;
-                tmp.fromDate = e.fromDate;
-                tmp.toDate = e.toDate;
-                tmp.reservationFlag = 3;
-                tmp.postId = e.postId;
-                tmp.reservationId = e.reservationId;
-                tmp.userId = e.userId;
-                return tmp;
+                e.reservationFlag = 3;
               }
               return e;
             });
@@ -238,7 +225,7 @@ export class UserReservationsComponent implements OnInit {
         }),
         catchError(() => {
           this.snackbar.openSnackbar(
-            'Brak wystarczających uprawnień do zakończenia rezerwacji',
+            'Okres wynajmu jeszcze nie minął!',
             'error'
           );
           throw new Error();

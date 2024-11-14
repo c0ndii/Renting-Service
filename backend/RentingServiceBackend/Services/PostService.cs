@@ -180,9 +180,9 @@ namespace RentingServiceBackend.Services
                 .Include(x => x.User)
                 .Include(x => x.MainCategory)
                 .Include(x => x.Features)
-                .Include(x => x.Comments)
+                .Include(x => x.Comments).ThenInclude(x => x.User)
                 .Include(x => x.FollowedBy)
-                .SingleOrDefaultAsync(x => x.PostId == postId && !x.User.isDeleted);
+                .SingleOrDefaultAsync(x => x.PostId == postId && !x.User.isDeleted && !x.isDeleted);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
@@ -223,7 +223,7 @@ namespace RentingServiceBackend.Services
         public async Task<ForSalePostDto> GetSalePostById(int postId)
         {
             var post = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .SingleOrDefaultAsync(x => x.PostId == postId && !x.User.isDeleted);
+                .SingleOrDefaultAsync(x => x.PostId == postId && !x.User.isDeleted && !x.isDeleted);
             if (post == null)
             {
                 throw new NotFoundException("Post not found");
@@ -263,7 +263,7 @@ namespace RentingServiceBackend.Services
             }
             var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
                 .Include(x => x.Features).Include(x => x.Comments)
-                .Where(x => x.UserId == userId && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.UserId == userId && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach(var post in result)
             {
@@ -286,7 +286,7 @@ namespace RentingServiceBackend.Services
             }
             var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
                 .Include(x => x.Features).Include(x => x.Comments)
-                .Where(x => x.UserId == userId && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.UserId == userId && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
@@ -314,7 +314,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.UserId == userId && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.UserId == userId && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
@@ -336,7 +336,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.UserId == userId && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.UserId == userId && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
@@ -359,12 +359,13 @@ namespace RentingServiceBackend.Services
             {
                 throw new UnauthorizedException("Could not authorize user");
             }
-            var post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId);
+            var post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId && !x.isDeleted);
             if(post == null)
             {
                 throw new NotFoundException("Post not found");
             }
-            _context.Posts.Remove(post);
+            post.isDeleted = true;
+            _context.Update(post);
             await _context.SaveChangesAsync();
         }
         public async Task<bool> IsOwner(int postId)
@@ -380,14 +381,14 @@ namespace RentingServiceBackend.Services
                 return false;
             }
             var result = await _context.Posts.Include(x => x.User)
-                .AnyAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted);
+                .AnyAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted && !x.isDeleted);
             return result;
         }
         public async Task EditRentPost(int postId, CreateForRentPostDto dto)
         {
             var userId = _userContextService.GetUserId;
             var post = await _context.ForRentPosts.Include(x => x.MainCategory).Include(x => x.Features).Include(x => x.User)
-                .SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted);
+                .SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted && !x.isDeleted);
             if (post is not null)
             {
                 if(post.MainCategory != await _context.ForRentMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory))
@@ -417,7 +418,7 @@ namespace RentingServiceBackend.Services
         {
             var userId = _userContextService.GetUserId;
             var post = await _context.ForSalePosts.Include(x => x.User)
-                .SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted);
+                .SingleOrDefaultAsync(x => x.PostId == postId && x.UserId == userId && !x.User.isDeleted && !x.isDeleted);
             if (post is not null)
             {
                 if (post.MainCategory != await _context.ForSaleMainCategories.SingleOrDefaultAsync(x => x.MainCategoryName == dto.MainCategory))
@@ -449,7 +450,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed).ToListAsync();
+                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
@@ -473,7 +474,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed).ToListAsync();
+                .Where(x => x.FollowedBy.Contains(user) && !x.User.isDeleted && x.Confirmed && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
@@ -492,7 +493,7 @@ namespace RentingServiceBackend.Services
         public async Task<List<ForSalePostDto>> GetUnconfirmedSalePosts()
         {
             var posts = await _context.ForSalePosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.Confirmed == false && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.Confirmed == false && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForSalePostDto>>(posts);
             foreach (var post in result)
             {
@@ -510,7 +511,7 @@ namespace RentingServiceBackend.Services
         public async Task<List<ForRentPostDto>> GetUnconfirmedRentPosts()
         {
             var posts = await _context.ForRentPosts.Include(x => x.User).Include(x => x.MainCategory)
-                .Where(x => x.Confirmed == false && !x.User.isDeleted).ToListAsync();
+                .Where(x => x.Confirmed == false && !x.User.isDeleted && !x.isDeleted).ToListAsync();
             var result = _mapper.Map<List<ForRentPostDto>>(posts);
             foreach (var post in result)
             {
@@ -534,7 +535,7 @@ namespace RentingServiceBackend.Services
                 throw new UnauthorizedException("Could not authorize user");
             }
             var post = await _context.Posts.Include(x => x.User).Include(x => x.FollowedBy)
-                .SingleOrDefaultAsync(x => x.PostId == postId && x.User != user && !x.User.isDeleted);
+                .SingleOrDefaultAsync(x => x.PostId == postId && x.User != user && !x.User.isDeleted && !x.isDeleted);
             if (post.FollowedBy.Contains(user))
             {
                 post.FollowedBy.Remove(user);
@@ -553,7 +554,7 @@ namespace RentingServiceBackend.Services
         public async Task ConfirmPost(int postId)
         {
             var post = await _context.Posts.Include(x => x.User)
-                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId);
+                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId && !x.isDeleted);
             if(post is null)
             {
                 throw new NotFoundException("Post to confirm not found");
@@ -567,7 +568,7 @@ namespace RentingServiceBackend.Services
         public async Task RejectPost(int postId)
         {
             var post = await _context.Posts.Include(x => x.User)
-                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId);
+                .SingleOrDefaultAsync(x => !x.User.isDeleted && x.Confirmed == false && x.PostId == postId && !x.isDeleted);
             if (post is null)
             {
                 throw new NotFoundException("Post to reject not found");
@@ -595,7 +596,7 @@ namespace RentingServiceBackend.Services
                 return null;
             }
             var result = await _context.Posts.Include(x => x.FollowedBy)
-                .AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user) && !x.User.isDeleted);
+                .AnyAsync(x => x.PostId == postId && x.FollowedBy.Contains(user) && !x.User.isDeleted && !x.isDeleted);
             return result;
         }
         public async Task<PageResult<PostDto>> GetAllPostsList(PostQuery query) 
@@ -646,7 +647,7 @@ namespace RentingServiceBackend.Services
                     || x.SleepingPlaceCount <= query.MaxSleepingCount)
                     && (query.MainCategory.IsNullOrEmpty()
                     || x.MainCategory.MainCategoryName == query.MainCategory)
-                    && x.Confirmed == true && !x.User.isDeleted).OrderBy(selectedColumn).ToListAsync();
+                    && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted).OrderBy(selectedColumn).ToListAsync();
             }
             else
             {
@@ -673,7 +674,7 @@ namespace RentingServiceBackend.Services
                     || x.SleepingPlaceCount <= query.MaxSleepingCount)
                     && (query.MainCategory.IsNullOrEmpty()
                     || x.MainCategory.MainCategoryName == query.MainCategory)
-                    && x.Confirmed == true && !x.User.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
+                    && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
             }
             var result = rentPosts
                     .Skip(query.PageSize * (query.PageNumber - 1))
@@ -721,7 +722,7 @@ namespace RentingServiceBackend.Services
                         || x.SquareFootage <= query.MaxSquare)
                         && (query.MainCategory.IsNullOrEmpty()
                         || x.MainCategory.MainCategoryName == query.MainCategory)
-                        && x.Confirmed == true && !x.User.isDeleted).OrderBy(selectedColumn).ToListAsync();
+                        && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted).OrderBy(selectedColumn).ToListAsync();
             }
             else
             {
@@ -741,7 +742,7 @@ namespace RentingServiceBackend.Services
                         || x.SquareFootage <= query.MaxSquare)
                         && (query.MainCategory.IsNullOrEmpty()
                         || x.MainCategory.MainCategoryName == query.MainCategory)
-                        && x.Confirmed == true && !x.User.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
+                        && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted).OrderByDescending(selectedColumn).ToListAsync();
             }
             var result = salePosts
                     .Skip(query.PageSize * (query.PageNumber - 1))
@@ -802,7 +803,7 @@ namespace RentingServiceBackend.Services
                 || x.SleepingPlaceCount <= query.MaxSleepingCount)
                 && (query.MainCategory.IsNullOrEmpty()
                 || x.MainCategory.MainCategoryName == query.MainCategory)
-                && x.Confirmed == true && !x.User.isDeleted
+                && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted
                 && x.Lat <= Double.Parse(query.NorthEastLat.Replace(".", ","))
                 && x.Lat >= Double.Parse(query.SouthWestLat.Replace(".", ","))
                 && x.Lng <= Double.Parse(query.NorthEastLng.Replace(".", ","))
@@ -840,7 +841,7 @@ namespace RentingServiceBackend.Services
                 || x.SquareFootage <= query.MaxSquare)
                 && (query.MainCategory.IsNullOrEmpty()
                 || x.MainCategory.MainCategoryName == query.MainCategory)
-                && x.Confirmed == true && !x.User.isDeleted
+                && x.Confirmed == true && !x.User.isDeleted && !x.isDeleted
                 && x.Lat <= Double.Parse(query.NorthEastLat.Replace(".", ","))
                 && x.Lat >= Double.Parse(query.SouthWestLat.Replace(".", ","))
                 && x.Lng <= Double.Parse(query.NorthEastLng.Replace(".", ","))
