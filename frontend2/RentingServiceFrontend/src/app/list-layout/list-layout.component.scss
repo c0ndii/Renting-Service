@@ -1,8 +1,5 @@
 .body {
-  background-image: url("/assets/lrbg.jpg");
-  background-position: 25%;
-  background-size: cover;
-  max-width: 100%;
+  background-color: blanchedalmond;
   height: calc(100vh - 75px);
 }
 .posts-container {
@@ -31,11 +28,7 @@
   align-items: center;
   justify-content: center;
 }
-.background-holder {
-  background-image: url("/assets/lrbg.jpg");
-  background-position: 25%;
-  background-size: cover;
-}
+
 .title-holder {
   display: flex;
   flex-direction: column;

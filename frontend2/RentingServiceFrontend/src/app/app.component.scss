@@ -1,9 +1,6 @@
 .body {
-  background-image: url("/assets/lrbg.jpg");
-  background-position: 25%;
-  background-size: cover;
-  max-width: 100%;
-  height: auto;
+  background-color: blanchedalmond;
+  min-height: calc(100vh - 75px);
 }
 .body-outer {
   width: 100%;

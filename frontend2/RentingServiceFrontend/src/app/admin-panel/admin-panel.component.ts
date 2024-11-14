@@ -14,7 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { forRentPostDto } from '../interfaces/forRentPostDto';
 import { HttpClient } from '@angular/common/http';
 import { backendUrlBase } from '../appsettings/constant';
-import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import { forSalePostDto } from '../interfaces/forSalePostDto';
 import { CommonModule, NgFor } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
