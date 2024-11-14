@@ -22,8 +22,6 @@ namespace RentingServiceBackend.Models.Validators
                 .NotEmpty();
             RuleFor(x => x.Lng)
                 .NotEmpty();
-            RuleFor(x => x.Features)
-                .NotEmpty();
             //RuleFor(x => x.Categories)
             //    .NotEmpty();
             RuleFor(x => x.BuildingNumber)

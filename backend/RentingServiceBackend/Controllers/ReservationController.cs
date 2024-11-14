@@ -31,6 +31,13 @@ namespace RentingServiceBackend.Controllers
             return Ok(result);
         }
 
+        [HttpGet("owned")]
+        public async Task<IActionResult> GetPostReservations()
+        {
+            var result = await _reservationService.GetAllOwnedPropertyReservations();
+            return Ok(result);
+        }
+
         [HttpGet("user")]
         public async Task<IActionResult> GetUserReservations()
         {

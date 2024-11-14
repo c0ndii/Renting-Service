@@ -13,6 +13,7 @@ import { FollowedPostsComponent } from './followed-posts/followed-posts.componen
 import { EditSalePostComponent } from './edit-sale-post/edit-sale-post.component';
 import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 import { MyCommentsComponent } from './my-comments/my-comments.component';
+import { UserReservationsComponent } from './user-reservations/user-reservations.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,4 +30,5 @@ export const routes: Routes = [
   { path: 'myposts/salepost/:id', component: EditSalePostComponent },
   { path: 'admin/posts', component: AdminPanelComponent },
   { path: 'mycomments', component: MyCommentsComponent },
+  { path: 'myreservations', component: UserReservationsComponent },
 ];

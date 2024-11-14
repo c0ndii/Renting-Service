@@ -174,6 +174,8 @@ export class ReservationLongDialogComponent implements OnInit {
     this.totalPrice.next(multipler * this.price.value);
   }
 
+  errorMessage = '';
+  status = '';
   reserve() {
     if (this.startDate !== null && this.stopDate !== null) {
       let reservation = {} as createReservationDto;
@@ -189,6 +191,21 @@ export class ReservationLongDialogComponent implements OnInit {
             }
           },
           (error: HttpErrorResponse) => {
+            switch (error.status) {
+              case 400:
+                this.errorMessage =
+                  'Rezerwacja na ten okres została już stworzona, odśwież stronę';
+                this.status = 'Info';
+                break;
+              case 500:
+                this.errorMessage = 'Wewnętrzny błąd serwera';
+                this.status = 'Error';
+                break;
+              default:
+                this.errorMessage = 'Nie można połączyć się z serwerem';
+                this.status = 'Error';
+                break;
+            }
             this.snackbar.openSnackbar(
               'Wystąpił błąd, zaleca się odświeżenie strony',
               'error'

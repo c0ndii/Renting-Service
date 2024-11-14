@@ -14,6 +14,7 @@ namespace RentingServiceBackend.Services
         Task ConfirmReservation(int reservationId);
         Task<List<ReservationDto>> GetAllReservationsByPostId(int postId);
         Task<List<ReservationDto>> GetAllUserReservations();
+        Task<List<ReservationDto>> GetAllOwnedPropertyReservations();
     }
 
     public class ReservationService : IReservationService
@@ -50,6 +51,26 @@ namespace RentingServiceBackend.Services
             return result;
         }
 
+        public async Task<List<ReservationDto>> GetAllOwnedPropertyReservations()
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authenticate user");
+            }
+
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var reservations = await _context.Reservations.Include(x => x.Post).Include(x => x.User).Where(x => x.Post.UserId == userId && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
+            var result = _mapper.Map<List<ReservationDto>>(reservations);
+
+            return result;
+        }
+
         public async Task<List<ReservationDto>> GetAllUserReservations()
         {
             var userId = _userContextService.GetUserId;
@@ -64,7 +85,7 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
-            var reservations = await _context.Reservations.Include(x => x.Post).Include(x => x.User).Where(x => x.UserId == userId).ToListAsync();
+            var reservations = await _context.Reservations.Include(x => x.Post).Include(x => x.User).Where(x => x.UserId == userId && x.ReservationFlag != ReservationFlagEnum.Canceled).ToListAsync();
             var result = _mapper.Map<List<ReservationDto>>(reservations);
 
             return result;
@@ -85,7 +106,7 @@ namespace RentingServiceBackend.Services
             }
 
             var post = await _context.ForRentPosts
-                .Include(x => x.User)
+                .Include(x => x.User).Include(x => x.MainCategory)
                 .SingleOrDefaultAsync(x => x.PostId == postId && x.Confirmed && !x.User.isDeleted && x.User.UserId != user.UserId);
             if (post is null)
             {
@@ -95,11 +116,22 @@ namespace RentingServiceBackend.Services
             var isDateFree = await _context.Reservations
                 .Include(x => x.Post).ThenInclude(x => x.User)
                 .AnyAsync(x => x.Post.PostId == postId && x.Post.User.UserId != userId
-                && (dto.FromDate <= x.ToDate && x.FromDate <= dto.ToDate));
+                && (dto.FromDate <= x.ToDate && x.FromDate <= dto.ToDate) && x.ReservationFlag != ReservationFlagEnum.Canceled && x.ReservationFlag != ReservationFlagEnum.Completed);
 
             if (isDateFree)
             {
                 throw new BadRequestException("Date is already occupied");
+            }
+
+            double price;
+            if(post.MainCategory.MainCategoryName == "Wypoczynek")
+            {
+                var days = (dto.ToDate - dto.FromDate).Days;
+                price = days * post.Price;
+            } else
+            {
+                var months = ((dto.ToDate.Year - dto.FromDate.Year)*12) + dto.ToDate.Month - dto.FromDate.Month;
+                price = months * post.Price;
             }
 
             var reservation = new Reservation()
@@ -108,6 +140,7 @@ namespace RentingServiceBackend.Services
                 FromDate = dto.FromDate.Date,
                 ToDate = dto.ToDate,
                 User = user,
+                Price = price
             };
 
             await _context.Reservations.AddAsync(reservation);
@@ -170,6 +203,10 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("Reservation not found");
             }
 
+            if(reservation.FromDate <= DateTime.Today.AddDays(2))
+            {
+                throw new BadRequestException("Too late to cancel reservation");
+            }
             reservation.ReservationFlag = ReservationFlagEnum.Canceled;
             _context.Update(reservation);
             await _context.SaveChangesAsync();
@@ -198,6 +235,11 @@ namespace RentingServiceBackend.Services
             if (reservation is null)
             {
                 throw new NotFoundException("Reservation not found");
+            }
+
+            if(reservation.ToDate <= DateTime.Today)
+            {
+                throw new BadRequestException("Too early to complete reservation");
             }
 
             reservation.ReservationFlag = ReservationFlagEnum.Completed;

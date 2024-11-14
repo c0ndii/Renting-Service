@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using RentingServiceBackend.Entities;
 using RentingServiceBackend.Exceptions;
@@ -9,9 +10,10 @@ namespace RentingServiceBackend.Services
 {
     public interface ICommentService
     {
-        Task AddComment(int postId, CommentDto dto);
+        Task AddComment(int postId, CreateCommentDto dto);
         Task DeleteComment(int commentId);
         Task<List<CommentDto>> GetAllUserComments();
+        Task<bool> CanUserCommentPost(int postId);
     }
 
     public class CommentService : ICommentService
@@ -73,7 +75,7 @@ namespace RentingServiceBackend.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddComment(int postId, CommentDto dto)
+        public async Task AddComment(int postId, CreateCommentDto dto)
         {
             var userId = _userContextService.GetUserId;
             if (userId == null)
@@ -87,6 +89,17 @@ namespace RentingServiceBackend.Services
                 throw new NotFoundException("User not found");
             }
 
+            var canComment = await _context.Comments
+                .Include(x => x.Post)
+                .ThenInclude(x => x.Reservations)
+                .Where(x => x.PostId == postId && x.Post.Reservations
+                    .Any(x => x.PostId == postId && x.UserId == userId && x.ReservationFlag == ReservationFlagEnum.Completed)).ToListAsync();
+
+            if(canComment.Count() > 0)
+            {
+                throw new BadRequestException("Already commented");
+            }
+
             var comment = new Comment()
             {
                 CommentText = dto.CommentText,
@@ -97,6 +110,35 @@ namespace RentingServiceBackend.Services
 
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> CanUserCommentPost(int postId)
+        {
+            var userId = _userContextService.GetUserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("Could not authenticate user");
+            }
+
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserId == userId);
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var canComment = await _context.Comments
+                .Include(x => x.Post)
+                .ThenInclude(x => x.Reservations)
+                .Where(x => x.PostId == postId && x.Post.Reservations
+                    .Any(x => x.PostId == postId && x.UserId == userId && x.ReservationFlag == ReservationFlagEnum.Completed)).ToListAsync();
+
+            if (canComment.Count() > 0)
+            {
+                return false;
+            } else
+            {
+                return true;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RentingServiceBackend.Models;
 using RentingServiceBackend.Services;
 
 namespace RentingServiceBackend.Controllers
@@ -28,6 +29,20 @@ namespace RentingServiceBackend.Controllers
         {
             await _commentService.DeleteComment(commentId);
             return Ok();
+        }
+
+        [HttpPost("{postId}")]
+        public async Task<IActionResult> CreateComment([FromRoute]int postId, [FromBody]CreateCommentDto dto)
+        {
+            await _commentService.AddComment(postId, dto);
+            return Created();
+        }
+
+        [HttpGet("{postId}")]
+        public async Task<IActionResult> CanUserComment([FromRoute]int postId)
+        {
+            var result = await _commentService.CanUserCommentPost(postId);
+            return Ok(result);
         }
     }
 }

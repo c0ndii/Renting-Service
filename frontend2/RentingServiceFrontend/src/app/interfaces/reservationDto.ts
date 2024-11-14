@@ -1,3 +1,5 @@
+import { postDto } from './postDto';
+
 export interface reservationDto {
   reservationId: number;
   userId: number;
@@ -5,6 +7,8 @@ export interface reservationDto {
   fromDate: Date;
   toDate: Date;
   reservationFlag: ReservationFlagEnum;
+  post: postDto;
+  price: number;
 }
 
 export enum ReservationFlagEnum {

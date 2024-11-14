@@ -55,4 +55,7 @@ export class NavbarService {
   navigateToMyComments() {
     this.router.navigate(['mycomments']);
   }
+  navigateToReservations() {
+    this.router.navigate(['myreservations']);
+  }
 }

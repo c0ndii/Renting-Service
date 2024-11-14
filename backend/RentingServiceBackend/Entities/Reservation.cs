@@ -17,5 +17,6 @@
         public DateTime FromDate {  get; set; }
         public DateTime ToDate { get; set; }
         public ReservationFlagEnum ReservationFlag {  get; set; }
+        public double Price {  get; set; }
     }
 }

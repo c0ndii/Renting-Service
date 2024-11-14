@@ -72,7 +72,7 @@ export class CreateRentPostComponent implements OnInit {
   });
   title = new FormControl('', [
     Validators.required,
-    Validators.maxLength(20),
+    Validators.maxLength(50),
     Validators.minLength(8),
   ]);
   description = new FormControl('', [

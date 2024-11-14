@@ -1,0 +1,25 @@
+<div class="form-holder">
+  <h2 mat-dialog-title>Napisz komentarz</h2>
+  <mat-dialog-actions>
+    <form>
+      <mat-form-field>
+        <mat-label>Treść</mat-label>
+        <textarea matInput type="text" [formControl]="name"></textarea>
+        @if (name.hasError('required')) {
+        <mat-error>Treść jest <strong>wymagana!</strong></mat-error>
+        }
+      </mat-form-field>
+      <br />
+      <br />
+      <div class="button-holder">
+        <button (click)="dialog.close()" color="warn" mat-stroked-button>
+          Anuluj
+        </button>
+        <button (click)="createComment()" mat-stroked-button>
+          Dodaj komentarz
+        </button>
+      </div>
+    </form>
+    <br />
+  </mat-dialog-actions>
+</div>
