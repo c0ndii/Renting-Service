@@ -10,8 +10,8 @@
         public string? SearchPhrase { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
-        public string? SortBy { get; set; }
-        public SortDirection? SortDirection { get; set; }
+        public string SortBy { get; set; }
+        public SortDirection SortDirection { get; set; }
         //public string? DateFilter { get; set; }
         public string PostType { get; set; }
         public double? MinPrice {  get; set; }
